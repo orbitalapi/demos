@@ -1,3 +1,0 @@
-namespace io.vyne.films.providers {
-   type StreamingProviderName inherits String
-}
