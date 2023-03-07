@@ -1,3 +1,0 @@
-namespace language.types {
-   type LanguageId inherits Int
-}
