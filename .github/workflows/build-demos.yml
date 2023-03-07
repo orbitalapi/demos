@@ -48,7 +48,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
            context: .
-           file: ./importing-through-ui/docker/pagila-database"
+           file: importing-through-ui/docker/pagila-database"
            push: true
            tags: orbitalapi/demos-films-pagila:latest
 
@@ -57,4 +57,4 @@ jobs:
         with:
            context: "{{defaultContext}}:importing-through-ui"
            push: true
-           tags: orbitalapi/demos-films-ui-importing-listings-api:latest
+           tags: ${{ env.REGISTRY }}/orbitalapi/demos-films-ui-importing-listings-api:latest
