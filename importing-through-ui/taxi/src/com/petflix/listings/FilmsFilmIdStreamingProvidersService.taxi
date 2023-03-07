@@ -1,0 +1,8 @@
+import film.types.FilmId
+import com.petflix.listings.StreamingProvider
+namespace com.petflix.listings {
+   service FilmsFilmIdStreamingProvidersService {
+         @HttpOperation(method = "GET" , url = "http://localhost:9981/films/{filmId}/streamingProviders")
+         operation getStreamingProvidersForFilm( @PathVariable(value = "filmId") filmId : film.types.FilmId ) : StreamingProvider
+      }
+}

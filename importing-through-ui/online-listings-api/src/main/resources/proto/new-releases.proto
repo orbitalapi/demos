@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message NewFilmReleaseAnnouncement {
+  int32 filmId = 1;
+  string announcement = 2;
+}

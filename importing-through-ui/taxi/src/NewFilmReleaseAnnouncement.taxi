@@ -1,0 +1,6 @@
+import film.types.FilmId
+@lang.taxi.formats.ProtobufMessage(packageName = "" , messageName = "NewFilmReleaseAnnouncement")
+model NewFilmReleaseAnnouncement {
+   @lang.taxi.formats.ProtobufField(tag = 1 , protoType = "int32") filmId : film.types.FilmId?
+   @lang.taxi.formats.ProtobufField(tag = 2 , protoType = "string") announcement : String?
+}
