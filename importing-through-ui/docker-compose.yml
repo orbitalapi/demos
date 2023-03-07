@@ -24,12 +24,12 @@ services:
           memory: 2gb
 
   postgres:
-    image: registry.gitlab.com/vyne/demos/films/pagila-db:latest
+    image: ghcr.io/orbitalapi/demos-films-pagila:latest
     ports:
       - "5432:5432"
 
   films-api:
-    image: registry.gitlab.com/vyne/demos/films/films-api:latest
+    image:  ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
     expose:
       - 80
     ports:
@@ -46,7 +46,7 @@ services:
           memory: 300mb
 
   zookeeper:
-    image: ${REGISTRY}confluentinc/cp-zookeeper:7.3.1
+    image: confluentinc/cp-zookeeper:7.3.1
     platform: linux/x86_64
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -55,7 +55,7 @@ services:
       - "22181:2181"
 
   kafka:
-    image: ${REGISTRY}confluentinc/cp-kafka:7.3.1
+    image: confluentinc/cp-kafka:7.3.1
     platform: linux/x86_64
     depends_on:
       - zookeeper
