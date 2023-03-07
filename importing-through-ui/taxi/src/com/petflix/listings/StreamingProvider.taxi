@@ -1,0 +1,6 @@
+namespace com.petflix.listings {
+   model StreamingProvider {
+         name : String
+         pricePerMonth : Decimal
+      }
+}
