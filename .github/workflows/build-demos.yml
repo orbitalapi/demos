@@ -57,4 +57,4 @@ jobs:
         with:
            context: "{{defaultContext}}:importing-through-ui"
            push: true
-           tags: ${{ env.REGISTRY }}/orbitalapi/demos-films-ui-importing-listings-api:latest
+           tags: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
