@@ -26,8 +26,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+#      - name: Build with Maven
+#        run: mvn -B package --file pom.xml
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -35,15 +35,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
+      - name: Login to Github Container Registry
         uses: docker/login-action@v2
         with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_TOKEN }}
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push Pagila
         uses: docker/build-push-action@v4
         with:
            context: "{{defaultContext}}:importing-through-ui/docker/pagila-database"
            push: true
-           tags: orbitalapi/demos-films-ui-pagila:latest
+           tags: orbitalapi/demos-films-pagila:latest
+
+      - name: Build and push Listings Api for UI Demo
+        uses: docker/build-push-action@v4
+        with:
+           context: "{{defaultContext}}:importing-through-ui"
+           push: true
+           tags: orbitalapi/demos-films-ui-importing-listings-api:latest
