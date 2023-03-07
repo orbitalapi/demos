@@ -50,7 +50,7 @@ jobs:
            context: .
            file: ./importing-through-ui/docker/pagila-database/Dockerfile
            push: true
-           tags: orbitalapi/demos-films-pagila:latest
+           tags: ${{ env.REGISTRY }}/orbitalapi/demos-films-pagila:latest
 
       - name: Build and push Listings Api for UI Demo
         uses: docker/build-push-action@v4
