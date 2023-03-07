@@ -1,0 +1,33 @@
+import film.types.FilmId
+import film.types.Title
+import film.types.Description
+import film.types.ReleaseYear
+import language.types.LanguageId
+import film.types.RentalDuration
+import film.types.RentalRate
+import film.types.Length
+import film.types.ReplacementCost
+import film.types.Rating
+import film.types.LastUpdate
+import film.types.Fulltext
+import io.vyne.jdbc.Table
+import film.types.SpecialFeatures
+namespace film {
+   @io.vyne.jdbc.Table(table = "film" , schema = "public" , connection = "films-db")
+      model Film {
+         @Id film_id : film.types.FilmId
+         title : film.types.Title
+         description : film.types.Description?
+         release_year : film.types.ReleaseYear?
+         language_id : language.types.LanguageId
+         original_language_id : language.types.LanguageId?
+         rental_duration : film.types.RentalDuration
+         rental_rate : film.types.RentalRate
+         length : film.types.Length?
+         replacement_cost : film.types.ReplacementCost
+         rating : film.types.Rating?
+         last_update : film.types.LastUpdate
+         special_features : film.types.SpecialFeatures[]?
+         fulltext : film.types.Fulltext
+      }
+}

@@ -1,0 +1,15 @@
+import vyne.vyneQl.VyneQlQuery
+import film.Film
+namespace film {
+   @io.vyne.jdbc.DatabaseService(connection = "films-db")
+      service FilmService {
+         vyneQl query filmQuery(querySpec: vyne.vyneQl.VyneQlQuery):lang.taxi.Array<film.Film> with capabilities {
+            sum,
+            count,
+            avg,
+            min,
+            max,
+            filter(==,!=,in,like,>,<,>=,<=)
+         }
+      }
+}

@@ -71,7 +71,7 @@
                             <programs>
                                 <program>
                                     <mainClass>${app.main.class}</mainClass>
-                                    <id>films-api</id>
+                                    <id>online-listings-api</id>
                                 </program>
                             </programs>
                             <repositoryLayout>flat</repositoryLayout>
