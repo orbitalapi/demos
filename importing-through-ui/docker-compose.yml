@@ -1,71 +1,92 @@
 version: "3.3"
 
 services:
-  orbital:
-    image: ${ORBITAL_IMAGE:-orbitalhq/orbital}:${ORBITAL_VERSION:-latest}
-    environment:
-      JAVA_OPTS: >-
-        -Xms256m
-        -Xmx1024m
-      OPTIONS: >-
-        --vyne.services.config-file=/opt/service/config/services.conf
-    ports:
-      - "9022:9022"
-    expose:
-      - 9022
-    volumes:
-      - ~/.orbital/license/:/opt/var/vyne/license/
-      - ./orbital/config:/opt/service/config
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 2gb
+   orbital:
+      image: orbitalhq/orbital:${ORBITAL_VERSION:-latest}
+      environment:
+         JAVA_OPTS: >-
+            -Xms256m
+            -Xmx1024m
+         OPTIONS: >-
+            --vyne.services.config-file=/opt/service/config/services.conf
+      ports:
+         - "9022:9022"
+      expose:
+         - 9022
+      volumes:
+         - ~/.orbital/license/:/opt/var/vyne/license/
+         - ./orbital/config:/opt/service/config
+      deploy:
+         restart_policy:
+            condition: on-failure
+         resources:
+            limits:
+               memory: 2gb
 
-  postgres:
-    image: ghcr.io/orbitalapi/demos-films-pagila:latest
-    ports:
-      - "5432:5432"
+   schema-server:
+      image: orbitalhq/schema-server:${ORBITAL_VERSION:-latest}
+      volumes:
+         - ${SCHEMA_PATH:-./orbital/schema-server}:/var/lib/orbital/schema-server
+      environment:
+         JAVA_OPTS: >-
+            -Xms256m
+            -Xmx512m
+         OPTIONS: >-
+            --vyne.repositories.config-file=/var/lib/orbital/schema-server/schema-server.conf
+      deploy:
+         restart_policy:
+            condition: on-failure
+         resources:
+            limits:
+               memory: 1200mb
+      expose:
+         - 7655
+         - 9305
 
-  films-api:
-    image:  ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
-    expose:
-      - 80
-    ports:
-      - "9981:80"
-    environment:
-      OPTIONS: >-
-        --spring.kafka.bootstrap-servers=kafka:29092
-        --server.port=80
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 300mb
+   postgres:
+      image: ghcr.io/orbitalapi/demos-films-pagila:latest
+      expose:
+         - 5432
+      ports:
+         - "25432:5432"
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.1
-    platform: linux/x86_64
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "22181:2181"
+   films-api:
+      image: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
+      expose:
+         - 80
+      ports:
+         - "9981:80"
+      environment:
+         OPTIONS: >-
+            --spring.kafka.bootstrap-servers=kafka:29092
+      deploy:
+         restart_policy:
+            condition: on-failure
+         resources:
+            limits:
+               memory: 300mb
 
-  kafka:
-    image:  confluentinc/cp-kafka:7.3.1
-    platform: linux/x86_64
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: LISTENER_DOCKER_NETWORK://kafka:29092,LISTENER_DOCKER_TO_LOCAL://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_NETWORK://kafka:29092,LISTENER_DOCKER_TO_LOCAL://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_NETWORK:PLAINTEXT,LISTENER_DOCKER_TO_LOCAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_NETWORK
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+   zookeeper:
+      image: confluentinc/cp-zookeeper:7.3.1
+      platform: linux/x86_64
+      environment:
+         ZOOKEEPER_CLIENT_PORT: 2181
+         ZOOKEEPER_TICK_TIME: 2000
+      ports:
+         - "22181:2181"
+
+   kafka:
+      image: confluentinc/cp-kafka:7.3.1
+      platform: linux/x86_64
+      depends_on:
+         - zookeeper
+      ports:
+         - "9092:9092"
+      environment:
+         KAFKA_BROKER_ID: 1
+         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+         KAFKA_LISTENERS: LISTENER_DOCKER_NETWORK://kafka:29092,LISTENER_DOCKER_TO_LOCAL://0.0.0.0:9092
+         KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_NETWORK://kafka:29092,LISTENER_DOCKER_TO_LOCAL://localhost:9092
+         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_NETWORK:PLAINTEXT,LISTENER_DOCKER_TO_LOCAL:PLAINTEXT
+         KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_NETWORK
+         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
