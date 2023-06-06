@@ -1,0 +1,9 @@
+server.port: 9986
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    config:
+      enabled: false
+  application:
+    name: id-resolution-service

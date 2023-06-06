@@ -9,6 +9,8 @@ services:
             -Xmx1024m
          OPTIONS: >-
             --vyne.services.config-file=/opt/service/config/services.conf
+            --vyne.analytics.persistRemoteCallResponses=true
+            --vyne.analytics.persistResults=true
       ports:
          - "9022:9022"
       expose:

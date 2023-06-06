@@ -1,0 +1,23 @@
+namespace com.surely.quotes
+
+type NoClaimsDiscount inherits Decimal
+
+type CreditScore inherits Int
+type OccupationCode inherits String
+
+type QuoteId inherits String
+type AnnualPremium inherits Decimal
+
+enum RiskFactor {
+   HighRisk,
+   MediumRisk,
+   LowRisk
+}
+
+enum OccupationRatingFactor {
+   HighRisk,
+   MediumRisk,
+   LowRisk
+}
+
+

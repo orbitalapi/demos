@@ -1,0 +1,9 @@
+server.port: 9985
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    config:
+      enabled: false
+  application:
+    name: squashed-tomatoes

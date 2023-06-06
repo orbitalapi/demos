@@ -1,0 +1,7 @@
+namespace com.surely.addresses
+
+type HouseNumber inherits Int
+type StreetName inherits String
+type Town inherits String
+type PostCode inherits String
+type Country inherits String

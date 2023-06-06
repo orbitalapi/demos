@@ -1,0 +1,5 @@
+server:
+   port: 7020
+spring:
+   application:
+      name: quote-service

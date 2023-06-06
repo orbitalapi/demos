@@ -1,0 +1,31 @@
+namespace com.surely.quotes.vehicles
+
+type LicensePlate inherits String
+
+enum Manufacturer {
+   Volvo,
+   Audi,
+   BMW,
+   Nissan,
+   Toyota
+}
+
+type ModelName inherits String
+
+enum VehicleRiskFactor {
+   HighRisk,
+   MediumRisk,
+   LowRisk
+}
+
+enum OvernightParkingLocation {
+   Garage,
+   Street,
+   OffStreet
+}
+
+enum NightParkingPostCodeRiskFactor {
+   HighRisk,
+   MediumRisk,
+   LowRisk
+}

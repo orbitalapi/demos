@@ -17,16 +17,21 @@
 
     <packaging>pom</packaging>
     <modules>
-       <module>importing-through-ui</module>
+        <module>importing-through-ui</module>
+        <module>publishing-from-apps</module>
+        <module>publishing-from-apps/film-listing-api</module>
+        <module>spring-boot-voyager-diagram</module>
+        <module>insurance-quotes-spring-boot</module>
+       <module>insurance-quotes-spring-boot/enrichment-services</module>
     </modules>
 
     <properties>
         <kotlin.version>1.7.20</kotlin.version>
-        <taxi.version>1.35.0-SNAPSHOT</taxi.version>
+        <taxi.version>1.39.0-SNAPSHOT</taxi.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <orbital.version>0.22.0-SNAPSHOT</orbital.version>
+        <orbital.version>0.24.0-SNAPSHOT</orbital.version>
     </properties>
 
     <dependencies>
