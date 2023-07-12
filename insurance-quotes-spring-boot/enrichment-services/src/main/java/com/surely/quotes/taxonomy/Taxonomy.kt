@@ -27,6 +27,7 @@ typealias OccupationCode = String
 
 @DataType
 typealias ModelName = String
+
 @DataType
 typealias CarLicensePlate = String
 
