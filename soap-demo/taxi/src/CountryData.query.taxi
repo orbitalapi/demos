@@ -1,0 +1,16 @@
+import com.orbitalhq.CapitalCityName
+import com.orbitalhq.CurrencyName
+import com.orbitalhq.CountryFlagUrl
+import com.orbitalhq.CountryName
+import com.orbitalhq.IsoCountryCode
+
+@HttpOperation(url = '/api/q/countrydata/{countryCode}', method = 'GET')
+query countrydata(@PathVariable("countryCode") countryCode :  IsoCountryCode) {
+   given { countryCode }
+   find {
+       name : CountryName
+       flag: CountryFlagUrl
+       currency: CurrencyName
+       capital: CapitalCityName
+   }
+}

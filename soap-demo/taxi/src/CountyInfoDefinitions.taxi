@@ -1,0 +1,9 @@
+namespace com.orbitalhq {
+   type CurrencyIsoCode inherits String
+   type CurrencyName inherits String
+
+   type CountryName inherits String
+   type IsoCountryCode inherits String
+   type CapitalCityName inherits String
+   type CountryFlagUrl inherits String
+}
