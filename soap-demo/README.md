@@ -153,7 +153,7 @@ Taxi can be embedded directly into SOAP WSDLs, to declare the semantic meaning o
 
 For example:
 
-```taxi
+```xml
    <xs:complexType name="tCurrency">
       <xs:sequence>
          <xs:element name="sISOCode" type="xs:string" 
