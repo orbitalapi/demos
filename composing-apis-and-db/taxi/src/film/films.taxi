@@ -1,0 +1,21 @@
+namespace films
+
+[[ The name of a streaming service where people can watch a movie ]]
+type StreamingProviderName inherits String
+
+[[ The monthly subscription cost of a streaming service where people can watch movies ]]
+type StreamingProviderPrice inherits Decimal
+
+type FilmId inherits Int
+
+[[ The description of the film ]]
+type Description inherits String
+
+[[ The title of the film ]]
+type Title inherits String
+
+[[ The parental advisory rating for the film ]]
+type Rating inherits String
+
+[[ The year the film was released ]]
+type ReleaseYear inherits String

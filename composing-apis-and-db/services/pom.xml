@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>com.orbitalhq.demos</groupId>
+      <artifactId>composing-apis-and-db</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </parent>
+
+   <groupId>com.lendingcrowd</groupId>
+   <artifactId>services</artifactId>
+
+
+   <dependencies>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.petflix</groupId>
+         <artifactId>composing-apis-demo-taxonomy</artifactId>
+         <version>0.1.0</version>
+      </dependency>
+      <dependency>
+         <groupId>com.orbitalhq</groupId>
+         <artifactId>schema-rsocket-publisher</artifactId>
+         <version>0.25.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+         <groupId>org.taxilang</groupId>
+         <artifactId>java-spring-taxi</artifactId>
+         <version>${taxi.version}</version>
+      </dependency>
+   </dependencies>
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>kotlin-maven-plugin</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <version>${kotlin.version}</version>
+            <configuration>
+               <compilerPlugins>
+                  <!-- Or "spring" for the Spring support -->
+                  <plugin>spring</plugin>
+               </compilerPlugins>
+
+            </configuration>
+
+            <dependencies>
+               <dependency>
+                  <groupId>org.jetbrains.kotlin</groupId>
+                  <artifactId>kotlin-maven-allopen</artifactId>
+                  <version>${kotlin.version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.jetbrains.kotlin</groupId>
+                  <artifactId>kotlin-maven-noarg</artifactId>
+                  <version>${kotlin.version}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
+         <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+               <executable>true</executable>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>repackage</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+
+</project>

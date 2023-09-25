@@ -1,0 +1,5 @@
+# Only copy the dist folder
+src/
+.taxi/
+.vscode/
+orbital/
