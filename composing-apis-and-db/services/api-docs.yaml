@@ -1,0 +1,165 @@
+openapi: 3.0.1
+info:
+   title: OpenAPI definition
+   version: v0
+servers:
+   -  url: http://localhost:7033
+      description: Generated server url
+paths:
+   /reviews/{filmId}:
+      get:
+         tags:
+            - reviews-service
+         operationId: getReview
+         parameters:
+            -  name: filmId
+               in: path
+               required: true
+               schema:
+                  type: string
+                  x-taxi-type:
+                     name: films.reviews.SquashedTomatoesFilmId
+         responses:
+            "200":
+               description: OK
+               content:
+                  '*/*':
+                     schema:
+                        $ref: '#/components/schemas/FilmReview'
+#   /ids/squashed/{id}:
+#      get:
+#         tags:
+#            - id-lookup-service
+#         operationId: lookupFromSquashedTomatoesId
+#         parameters:
+#            -  name: id
+#               in: path
+#               required: true
+#               schema:
+#                  type: string
+#                  x-taxi-type:
+#                     name: films.reviews.SquashedTomatoesFilmId
+#         responses:
+#            "200":
+#               description: OK
+#               content:
+#                  '*/*':
+#                     schema:
+#                        $ref: '#/components/schemas/IdResolution'
+#   /ids/netflix/{id}:
+#      get:
+#         tags:
+#            - id-lookup-service
+#         operationId: lookupFromNetflixFilmId
+#         parameters:
+#            -  name: id
+#               in: path
+#               required: true
+#               schema:
+#                  type: integer
+#                  format: int32
+#         responses:
+#            "200":
+#               description: OK
+#               content:
+#                  '*/*':
+#                     schema:
+#                        $ref: '#/components/schemas/IdResolution'
+   /ids/internal/{id}:
+      get:
+         tags:
+            - id-lookup-service
+         operationId: lookupFromInternalFilmId
+         parameters:
+            -  name: id
+               in: path
+               required: true
+               schema:
+                  type: integer
+                  format: int32
+                  x-taxi-type:
+                     name: films.FilmId
+         responses:
+            "200":
+               description: OK
+               content:
+                  '*/*':
+                     schema:
+                        $ref: '#/components/schemas/IdResolution'
+#   /films/{filmId}/streamingProviders:
+#      get:
+#         tags:
+#            - where-can-i-watch-this-service
+#         operationId: getStreamingProvidersForFilm
+#         parameters:
+#            -  name: filmId
+#               in: path
+#               required: true
+#               schema:
+#                  type: integer
+#                  format: int32
+#                  x-taxi-type:
+#                     name: films.FilmId
+#         responses:
+#            "200":
+#               description: OK
+#               content:
+#                  '*/*':
+#                     schema:
+#                        $ref: '#/components/schemas/StreamingProvider'
+components:
+   schemas:
+      FilmReview:
+         required:
+            - filmId
+            - filmReview
+            - score
+         type: object
+         properties:
+            filmId:
+               type: string
+               x-taxi-type:
+                  name: films.reviews.SquashedTomatoesFilmId
+            score:
+               type: number
+               x-taxi-type:
+                  name: films.reviews.FilmReviewScore
+            filmReview:
+               type: string
+               x-taxi-type:
+                  name: films.reviews.ReviewText
+      IdResolution:
+         required:
+            - filmId
+#            - netflixId
+            - squashedTomatoesFilmId
+         type: object
+         properties:
+            filmId:
+               type: integer
+               format: int32
+               x-taxi-type:
+                  name: films.FilmId
+#            netflixId:
+#               type: integer
+#               format: int32
+#               x-taxi-type:
+#                  name: demo.netflix.NetflixFilmId
+            squashedTomatoesFilmId:
+               type: string
+               x-taxi-type:
+                  name: films.reviews.SquashedTomatoesFilmId
+#      StreamingProvider:
+#         required:
+#            - name
+#            - pricePerMonth
+#         type: object
+#         properties:
+#            name:
+#               type: string
+#               x-taxi-type:
+#                  name: films.StreamingProviderName
+#            pricePerMonth:
+#               type: number
+#               x-taxi-type:
+#                  name: films.StreamingProviderPrice

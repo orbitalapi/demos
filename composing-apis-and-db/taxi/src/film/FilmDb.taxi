@@ -1,0 +1,23 @@
+namespace films {
+   @com.orbitalhq.jdbc.DatabaseService(connection = "films")
+      service FilmDatabase {
+         table films : Film[]
+      }
+
+   @com.orbitalhq.jdbc.Table(table = "film" , schema = "public" , connection = "films")
+      model Film {
+         @Id film_id : films.FilmId
+
+         title : Title
+         description : Description
+         release_year : ReleaseYear
+
+         // To reduce boilerplate, this model declares some types inline.
+         // These are types that are "owned" by the Film model.
+         // As these become first-class types, they could be refactored out into their own
+         // taxi files.
+         length : Length inherits String
+
+         rating : Rating
+      }
+}

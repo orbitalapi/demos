@@ -1,0 +1,11 @@
+@HttpOperation(url = '/api/q/films-and-reviews', method = 'GET')
+query dd {
+   find { Film[] } as {
+       id : FilmId
+       title : Title
+       review: FilmReviewScore
+       reviewText: ReviewText
+       availableOn: StreamingProviderName
+       price: StreamingProviderPrice
+   }[]
+}
