@@ -1,0 +1,18 @@
+import films.StreamingProviderPrice
+import films.StreamingProviderName
+import films.reviews.ReviewText
+import films.reviews.FilmReviewScore
+import films.Title
+import films.FilmId
+import films.Film
+@HttpOperation(url = '/api/q/films-and-reviews', method = 'GET')
+query filmsAndReviews {
+   find { Film[] } as {
+       id : FilmId
+       title: Title
+       review: FilmReviewScore
+       text: ReviewText
+       availableOn: StreamingProviderName
+       price: StreamingProviderPrice
+   }[]
+}
