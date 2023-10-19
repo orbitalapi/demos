@@ -1,0 +1,17 @@
+import com.icycube.users.Username
+
+@Table(connection = "demoDb", schema = "public" , table = "users")
+parameter model UserRecord {
+    @Id id : UUID
+    firstName : FirstName
+    lastName : LastName
+    username :Username
+    picture: MediumPictureURL
+}
+
+/*
+@DatabaseService( connection = "demoDb" )
+service UsersDb {
+   table users : UserRecord[]
+}
+*/

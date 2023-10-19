@@ -1,0 +1,31 @@
+import com.icycube.users.UUID
+import lang.taxi.Stream
+
+namespace com.orbitalhq.films.announcements {
+
+   type UserStatus inherits String
+   type MessageId inherits Int
+
+   model UserStatusUpdateMessage {
+      @Id
+      messageId : MessageId
+      userUuid: UUID
+      status : UserStatus
+   }
+
+   type ViewCount inherits Int
+   model MessageAnalytics {
+      @Id id: MessageId
+      views : ViewCount
+   }
+
+
+   @com.orbitalhq.kafka.KafkaService(connectionName = "kafka")
+      service KafkaService {
+         @com.orbitalhq.kafka.KafkaOperation(topic = "UserUpdates" , offset = "latest")
+         stream posts : Stream<UserStatusUpdateMessage>
+
+         @com.orbitalhq.kafka.KafkaOperation(topic = "MessageAnalytics" , offset = "latest")
+         stream messageAnalytics : Stream<MessageAnalytics>
+      }
+}

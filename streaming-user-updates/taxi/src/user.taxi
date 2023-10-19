@@ -1,0 +1,103 @@
+namespace com.icycube.users
+
+[[ The gender of the user ]]
+type Gender inherits String
+
+[[ The title of the user's name (e.g., Mr., Mrs., Dr.) ]]
+type Title inherits String
+
+[[ A person's first name ]]
+type FirstName inherits String
+
+[[ A person's last name ]]
+type LastName inherits String
+
+[[ Name of the city ]]
+type City inherits String
+
+[[ Name of the state ]]
+type State inherits String
+
+[[ Name of the country ]]
+type Country inherits String
+
+[[ Postal code which could be a string or an integer depending on the country ]]
+type Postcode inherits String
+
+[[ Latitude coordinate as a string ]]
+type Latitude inherits String
+
+[[ Longitude coordinate as a string ]]
+type Longitude inherits String
+
+[[ Timezone offset from UTC ]]
+type Offset inherits String
+
+[[ Description of the timezone ]]
+type TimezoneDescription inherits String
+
+[[ UUID of the login ]]
+type UUID inherits String
+
+[[ Username for login ]]
+type Username inherits String
+
+[[ Password for login ]]
+type Password inherits String
+
+[[ Salt value for password encryption ]]
+type Salt inherits String
+
+[[ MD5 hash of the password ]]
+type MD5 inherits String
+
+[[ SHA-1 hash of the password ]]
+type SHA1 inherits String
+
+[[ SHA-256 hash of the password ]]
+type SHA256 inherits String
+
+[[ Date in string format ]]
+type DateString inherits String
+
+[[ Age in years ]]
+type Age inherits Int
+
+[[ Phone number as a string ]]
+type PhoneNumber inherits String
+
+[[ Cell phone number as a string ]]
+type CellNumber inherits String
+
+[[ Name of the ID ]]
+type IDName inherits String
+
+[[ Value of the ID ]]
+type IDValue inherits String
+
+[[ URL of the large picture ]]
+type LargePictureURL inherits String
+
+[[ URL of the medium picture ]]
+type MediumPictureURL inherits String
+
+[[ URL of the thumbnail picture ]]
+type ThumbnailPictureURL inherits String
+
+[[ Seed value for generating data ]]
+type Seed inherits String
+
+[[ Number of results generated ]]
+type Results inherits Int
+
+[[ Page number ]]
+type Page inherits Int
+
+[[ Version number of the page ]]
+type Version inherits String
+
+[[ Street number as an integer ]]
+type StreetNumber inherits Int
+
+[[ Street name ]]
+type StreetName inherits String
