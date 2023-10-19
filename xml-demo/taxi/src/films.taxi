@@ -1,0 +1,37 @@
+import com.orbitalhq.formats.Xml
+@Xml
+model FilmList {
+    item : Film[]
+}
+
+model Film {
+    id : FilmId inherits Int
+    title : FilmTitle inherits String
+    yearReleased : YearReleased inherits Int
+}
+
+service FilmsService {
+    @HttpOperation(url = "http://localhost:8044/films", method = "GET")
+    operation getAllFilms():FilmList
+
+    @HttpOperation(url = "http://localhost:8044/film/{filmId}/cast", method = "GET")
+    operation fetchCastForFilm(@PathVariable("filmId") filmId : FilmId):ActorList
+
+    @HttpOperation(url = "http://localhost:8044/film/{filmId}/awards", method = "GET")
+    operation fetchAwardsForFilm(@PathVariable("filmId") filmId : FilmId):Award[]
+}
+
+model Award {
+    title : AwardTitle inherits String
+    yearWon : YearWon inherits Int
+}
+
+@Xml
+model ActorList {
+    item : Actor[]
+}
+
+model Actor {
+    id : ActorId inherits Int
+    name : ActorName inherits String
+}

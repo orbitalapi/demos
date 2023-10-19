@@ -1,0 +1,14 @@
+import Award
+import Actor
+import FilmTitle
+import FilmId
+import FilmList
+@HttpOperation(url = '/api/q/filmsAndAwards', method = 'GET')
+query filmsAndAwards {
+   find { FilmList } as (Film[]) -> {
+       filmId : FilmId
+       nameOfFilm : FilmTitle
+       awards : Award[]
+           cast : Actor[]
+   }
+}
