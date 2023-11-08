@@ -70,7 +70,7 @@ import com.icycube.users.Username
 stream { UserStatusUpdateMessage | MessageAnalytics } as {
     id: MessageId
     message: UserStatus
-    views: ViewCount
+    views: coalesce(ViewCount,0) 
    
    username: Username
    name : FirstName + " " + LastName
