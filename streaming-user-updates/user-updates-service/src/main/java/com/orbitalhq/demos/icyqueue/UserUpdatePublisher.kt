@@ -31,32 +31,44 @@ class UserUpdatePublisher(private val userGenerator: UserGenerator,
    init {
       Flux.interval(Duration.ofMillis(750))
          .map {
-            StatusGenerator.generateRandomStatusUpdate(users)
-         }.subscribe { userStatusUpdateMessage ->
-            logger.info("New status: $userStatusUpdateMessage")
-            recentMessages.add(userStatusUpdateMessage)
-            val json = objectMapper.writeValueAsBytes(userStatusUpdateMessage)
-            kafkaTemplate.send("UserUpdates", json)
+            val count  = Random.nextInt(5,10)
+            (0..count).map {
+               StatusGenerator.generateRandomStatusUpdate(users)
+            }
+
+         }.subscribe { userStatusUpdateMessages ->
+
+            userStatusUpdateMessages.forEach {userStatusUpdateMessage ->
+               logger.info("New status: $userStatusUpdateMessage")
+               recentMessages.add(userStatusUpdateMessage)
+               val json = objectMapper.writeValueAsBytes(userStatusUpdateMessage)
+               kafkaTemplate.send("UserUpdates", json)
+            }
+
          }
 
 
       val f = Flux.interval(Duration.ofMillis(500))
          .mapNotNull {
-            recentMessages.randomOrNull()?.let { message ->
-               val lastAnalytics = analytics.get(message.messageId) {
-                  MessageAnalytics(message.messageId, 0)
+            (0..minOf(20, recentMessages.size - 1)).map {
+               recentMessages.randomOrNull()?.let { message ->
+                  val lastAnalytics = analytics.get(message.messageId) {
+                     MessageAnalytics(message.messageId, 0)
+                  }
+                  val increasedViewCount = Random.nextInt(50, 500)
+                  val updatedAnalytics = lastAnalytics.increaseViewCount(increasedViewCount)
+                  analytics.put(message.messageId, updatedAnalytics)
+                  updatedAnalytics
                }
-               val increasedViewCount = Random.nextInt(50, 5000)
-               val updatedAnalytics = lastAnalytics.increaseViewCount(increasedViewCount)
-               analytics.put(message.messageId, updatedAnalytics)
-               updatedAnalytics
             }
-         }
-         .subscribe { messageAnalytics ->
-            logger.info("Emitting updated analytics: $messageAnalytics")
-            val json = objectMapper.writeValueAsBytes(messageAnalytics)
-            kafkaTemplate.send("MessageAnalytics", json)
 
+         }
+         .subscribe { messageAnalyticsList ->
+            messageAnalyticsList.forEach { messageAnalytics ->
+               logger.info("Emitting updated analytics: $messageAnalytics")
+               val json = objectMapper.writeValueAsBytes(messageAnalytics)
+               kafkaTemplate.send("MessageAnalytics", json)
+            }
          }
    }
 }

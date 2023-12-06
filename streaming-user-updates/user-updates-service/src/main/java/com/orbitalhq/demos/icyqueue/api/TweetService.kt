@@ -20,10 +20,10 @@ typealias MessageId = Int
 class TweetService(private val updatePublisher: UserUpdatePublisher) {
 
 
-   @GetMapping("/messages/{messageId}")
-   fun getMessage(@PathVariable("messageId") messageId: MessageId):UserStatusUpdateMessage {
-      return updatePublisher.getPostById(messageId) ?: error("Not found")
-   }
+//   @GetMapping("/messages/{messageId}")
+//   fun getMessage(@PathVariable("messageId") messageId: MessageId):UserStatusUpdateMessage {
+//      return updatePublisher.getPostById(messageId) ?: error("Not found")
+//   }
 
 
 }

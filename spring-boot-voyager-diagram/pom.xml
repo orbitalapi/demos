@@ -30,7 +30,7 @@
       </dependency>
 
       <dependency>
-         <groupId>io.vyne</groupId>
+         <groupId>com.orbitalhq</groupId>
          <artifactId>schema-rsocket-publisher</artifactId>
          <version>${orbital.version}</version>
       </dependency>

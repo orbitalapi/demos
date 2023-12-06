@@ -11,6 +11,7 @@ services:
       environment:
          - MC_DEFAULT_CLUSTER=dev
          - MC_DEFAULT_CLUSTER_MEMBERS=hazelcast
+
    zookeeper:
       image: confluentinc/cp-zookeeper:latest
       platform: linux/x86_64
@@ -37,3 +38,16 @@ services:
          KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
          KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+
+   postgres:
+      image: postgres:15
+      expose:
+         - 5432
+      ports:
+         - "25432:5432"
+      environment:
+         POSTGRES_DB: icycube
+         POSTGRES_USER: admin
+         POSTGRES_PASSWORD: password
+#      volumes:
+#         - postgres_data:/var/lib/postgresql/data

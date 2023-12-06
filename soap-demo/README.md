@@ -28,7 +28,7 @@ docker compose up -d
 ```
 
 ## Things to try
-After 20 seconds or so, open https://localhost:9022, and you should see Orbital's UI.
+After 20 seconds or so, open http://localhost:9022, and you should see Orbital's UI.
 
 ### Combining SOAP requests - Querying in the UI
 Head to the [Query Editor](http://localhost:9022/query/editor) and paste the following query:
