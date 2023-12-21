@@ -1,0 +1,8 @@
+namespace com.orbital.hzdemo
+
+[[ A financial Instrument]]
+model Instrument {
+    instrumentId: Isin,
+    maturityDate: MaturityDate
+    issuerName: IssuerName
+   }

@@ -1,0 +1,10 @@
+namespace com.orbital.hzdemo
+
+model EsgRating {
+    isin: Isin
+    issuerName: IssuerName
+    environmentalPillarScore : EnvironmentalPillarScore by column('ENVIRONMENTAL_PILLAR_SCORE')
+    socialPillarScore : SocialPillarScore by column('SOCIAL_PILLAR_SCORE')
+    governancePillarScore : GovernancePillarScore by column('GOVERNANCE_PILLAR_SCORE')
+    carbonIntensityWeightedAverage : CarbonIntensityWeightedAverageByRevenue by column('WACI')
+}

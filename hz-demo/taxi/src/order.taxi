@@ -1,0 +1,27 @@
+namespace com.orbital.hzdemo
+
+   [[
+   A request sent to a broker or trading platform to make a trade on a financial instrument.
+   ]]
+   model Order {
+    id: OrderId
+    instrumentId: Isin
+    qtyRequested: QuantityRequested
+    qtyHit: QuantityHit
+    orderType: OrderType
+    OrderStatus: OrderStatus
+    tif: TimeInForce
+    traderId: TraderId
+    CounterpartyId: CounterpartyId
+   }
+
+
+  model LastTradeEvent {
+    instrumentId: Isin    
+    lastTradedPrice: LastTradedPrice
+    venue: Venue
+  }
+
+
+
+

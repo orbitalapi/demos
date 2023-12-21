@@ -1,0 +1,174 @@
+namespace com.orbital.hzdemo
+
+   [[
+      Standard conditions attaching to the order.
+   ]]
+    enum OrderType {
+      [[
+      A market order is an order to buy or sell a security immediately. This type of order guarantees that the order will be executed,
+      but does not guarantee the execution price. A market order generally will execute at or near the current bid (for a sell order)
+      or ask (for a buy order) price. However, it is important for investors to remember that the last-traded price is not necessarily
+      the price at which a market order will be executed.
+      Source: [SEC] (https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders)
+      ]]
+      Market,
+      
+      [[
+      A limit order is an order to buy or sell a security at a specific price or better.
+      A buy limit order can only be executed at the limit price or lower, and a sell limit order can only be executed at the limit price or higher
+      Source: [SEC] (https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders)
+      ]]
+      Limit,
+      
+      [[
+      A stop order, also referred to as a stop-loss order is an order to buy or sell a stock once the price of the stock reaches
+      the specified price, known as the stop price. When the stop price is reached, a stop order becomes a market order.
+      Source: [SEC] (https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders)
+      ]]
+      Stop,
+      
+      [[
+      A stop-limit order is an order to buy or sell a stock that combines the features of a stop order and a limit order.
+      Once the stop price is reached, a stop-limit order becomes a limit order that will be executed at a specified price (or better).
+      The benefit of a stop-limit order is that the investor can control the price at which the order can be executed.
+      Source: [SEC] (https://www.sec.gov/fast-answers/answersstoplimhtm.html)
+      ]]
+      StopLimit
+   }
+
+    enum OrderStatus {
+      
+      [[Outstanding order with no executions ]]
+      New,
+      [[Outstanding order with executions and remaining quantity ]]
+      PartiallyFilled,
+      [[Order completely filled, no remaining quantity ]]
+      Filled,
+      [[Canceled order with or without executions ]]
+      Canceled,
+      [[Order has been rejected by sell-side (broker, exchange, ECN). NOTE: An order can be rejected subsequent to order acknowledgment, i.e. an order can pass from New to Rejected status. ]]
+      Rejected
+   }
+
+    [[
+   Specifies how long the order remains in effect.
+   -Fix 4.4 Tag 59
+   ]]
+   enum TimeInForce {
+      //some values
+      [[
+      Good for Day
+      ]]
+      Day,
+      [[
+      Good till Cancel
+      ]]
+      GTC,
+      [[
+      Immediate or Cancel
+      ]]
+      IOC,
+      [[
+      Fill Or Kill
+      ]]
+      FOK
+   }
+
+  
+   [[
+   The Login Id of the Trader.
+   ]]
+   type TraderId inherits String
+
+    [[
+   The Name of the Trader.
+   ]]
+   type TraderName inherits String
+
+
+    [[
+   The Surname of the Trader.
+   ]]
+   type TraderLastName inherits String
+
+   [[
+     International Securities Identification Number (ISIN) is a 12-digit alphanumeric code that uniquely identifies a specific security.
+   ]]
+   type Isin inherits String
+
+   [[
+     Name of the Issuer for a given instrument.
+   ]]
+   type IssuerName inherits String
+
+   [[
+    Maturity Date of Traded Instrument
+   ]]
+   type MaturityDate inherits DateTime
+
+   [[
+    CounterParty for the Order (filled / partially filled)
+   ]]
+   type CounterpartyId inherits String
+
+   [[
+    Order Identifier
+   ]]
+
+   type OrderId inherits String
+
+   [[
+    Order Quantity
+   ]]
+   type Quantity inherits Decimal
+
+
+   [[
+    Requested Quantity
+   ]]
+   type QuantityRequested inherits Quantity
+
+   [[
+    Hit Quantity
+   ]]
+   type QuantityHit inherits Quantity
+
+   [[
+    Order Price
+   ]]
+   type OrderPrice inherits Price
+
+   [[
+    Last Traded Price for an instrument
+   ]]
+   type LastTradedPrice inherits Price
+   [[
+    Trade Venue
+   ]]
+   type Venue inherits String
+
+   [[
+    Trading Desk Name
+   ]]
+   type DeskName inherits String
+
+   [[
+    Trading Desk Identifier
+   ]]
+   type DeskId inherits String
+   [[
+    Esg Environment Pillar Score
+   ]]
+   type EnvironmentalPillarScore inherits Decimal
+   [[
+    Esg Social Pillar Score
+   ]]
+   type SocialPillarScore inherits Decimal
+   [[
+    Esg Governance Pillar Score
+   ]]
+   type GovernancePillarScore inherits Decimal
+   [[
+    Esg Carbon Intensity
+   ]]
+   type carbonIntensityWeightedAverage inherits Decimal
