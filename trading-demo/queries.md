@@ -30,7 +30,7 @@ stream {Order} as {
     qtyRequested: QuantityRequested
     orderType: OrderType
     traderFirstName: TraderFirstName
-    traderFirstName: TraderLastName
+    traderLastName: TraderLastName
     deskName: DeskName,
     isin: Isin
     issuerName: InstrumentName
