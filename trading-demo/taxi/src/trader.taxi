@@ -3,7 +3,7 @@ namespace com.lunarbank.demo
 @Table(connection = "referenceDataDb", schema = "public" , table = "traders")
 parameter model TraderRecord {
     @Id id : TraderId
-    name: TraderName
+    name: TraderFirstName
     lastName: TraderLastName
     deskId: DeskId
 }

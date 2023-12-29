@@ -18,7 +18,8 @@ stream { LastTradeEvent}
 
 
 ```orbital_query
-import com.lunarbank.demo.TraderName
+import com.lunarbank.demo.TraderFirstName
+import com.lunarbank.demo.TraderLastName
 import com.lunarbank.demo.OrderType
 import com.lunarbank.demo.QuantityRequested
 import com.lunarbank.demo.OrderId
@@ -28,7 +29,8 @@ stream {Order} as {
     id: OrderId
     qtyRequested: QuantityRequested
     orderType: OrderType
-    traderName: TraderName
+    traderFirstName: TraderFirstName
+    traderFirstName: TraderLastName
     deskName: DeskName,
     isin: Isin
     issuerName: InstrumentName

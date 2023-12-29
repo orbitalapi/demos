@@ -85,7 +85,7 @@ namespace com.lunarbank.demo
     [[
    The Name of the Trader.
    ]]
-   type TraderName inherits String
+   type TraderFirstName inherits String
 
 
     [[
