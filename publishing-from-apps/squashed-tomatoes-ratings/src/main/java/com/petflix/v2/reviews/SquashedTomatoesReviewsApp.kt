@@ -1,9 +1,9 @@
 package com.petflix.v2.reviews
 
-import io.vyne.PackageMetadata
-import io.vyne.schema.publisher.SchemaPublisherService
-import io.vyne.schema.publisher.rsocket.RSocketSchemaPublisherTransport
-import io.vyne.schema.rsocket.TcpAddress
+import com.orbitalhq.PackageMetadata
+import com.orbitalhq.schema.publisher.SchemaPublisherService
+import com.orbitalhq.schema.publisher.rsocket.RSocketSchemaPublisherTransport
+import com.orbitalhq.schema.rsocket.TcpAddress
 import lang.taxi.generators.java.TaxiGenerator
 import lang.taxi.generators.java.spring.SpringMvcExtension
 import org.springframework.beans.factory.annotation.Value
@@ -50,7 +50,7 @@ class RegisterSchemaTask(
          PackageMetadata.from("io.petflix.demos", "films-reviews"),
          TaxiGenerator()
             .forPackage(SquashedTomatoesReviewsApp::class.java)
-            .addExtension(SpringMvcExtension.forBaseUrl("http://localhost:${serverPort}"))
+            .addExtension(SpringMvcExtension("http://localhost:${serverPort}"))
             .generate(),
       ).subscribe()
    }

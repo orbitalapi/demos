@@ -1,0 +1,9 @@
+namespace com.lunarbank.demo
+
+model EsgRating {
+    isin: Isin
+    environmentalPillarScore : EnvironmentalPillarScore
+    socialPillarScore : SocialPillarScore
+    governancePillarScore : GovernancePillarScore
+    carbonIntensityWeightedAverage : CarbonIntensityWeightedAverage
+}

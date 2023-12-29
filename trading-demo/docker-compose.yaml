@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  postgres:
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+    ports:
+      - 25432:5432
+
+  hazelcast-enterprise:
+      image: hazelcast/hazelcast-enterprise:5.3.6
+      environment:
+         - JAVA_OPTS=-Dhazelcast.config=/opt/hazelcast/config_ext/hazelcast_no_auth.yaml
+      ports:
+         - "5701:5701"
+      volumes:
+         - ./docker/hazelcast/hazelcast_no_auth.yaml:/opt/hazelcast/config_ext/hazelcast_no_auth.yaml
+
+  management-center:
+     image: hazelcast/management-center:5.3.3
+     ports:
+        - "8080:8080"
+
+  zookeeper:
+      image: confluentinc/cp-zookeeper:latest
+      platform: linux/x86_64
+      environment:
+         ZOOKEEPER_CLIENT_PORT: 2181
+         ZOOKEEPER_TICK_TIME: 2000
+      ports:
+         - "22181:2181"
+      expose:
+         - "9093"
+
+  kafka:
+      image: confluentinc/cp-kafka:latest
+      platform: linux/x86_64
+      depends_on:
+         - zookeeper
+      ports:
+         - "9092:9092"
+      environment:
+         KAFKA_BROKER_ID: 1
+         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+         KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
+         KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+         KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE

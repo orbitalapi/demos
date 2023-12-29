@@ -1,0 +1,11 @@
+demo:
+   db:
+      host: demo-postgres.clskhywnwfkv.eu-west-1.rds.amazonaws.com
+      username: hazelcast_orbital
+      password: r`&!xgN$wvh3LdgwIq|H)Qi=][g.Zj]<33y+@IY0F\bni6
+      database: demo
+      port: 5432
+app:
+   publication:
+      order-publish-period: 3
+      lastTradePublishPeriod: 6

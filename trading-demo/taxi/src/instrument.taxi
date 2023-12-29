@@ -1,0 +1,15 @@
+namespace com.lunarbank.demo
+
+[[ A financial Instrument]]
+@Table(connection = "referenceDataDb", schema = "public" , table = "instruments")
+parameter model Instrument {
+    @Id id: Isin
+    name: InstrumentName
+    maturityDate: MaturityDate
+    issuerName: IssuerName
+   }
+
+@DatabaseService( connection = "referenceDataDb" )
+service InstrumentsDb {
+   table instruments : Instrument[]
+}

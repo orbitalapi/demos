@@ -1,0 +1,15 @@
+namespace com.lunarbank.demo
+
+@Table(connection = "referenceDataDb", schema = "public" , table = "traders")
+parameter model TraderRecord {
+    @Id id : TraderId
+    name: TraderName
+    lastName: TraderLastName
+    deskId: DeskId
+}
+
+
+@DatabaseService( connection = "referenceDataDb" )
+service TradersDb {
+   table trader : TraderRecord[]
+}

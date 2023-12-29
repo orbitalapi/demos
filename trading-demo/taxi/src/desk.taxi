@@ -1,0 +1,13 @@
+namespace com.lunarbank.demo
+
+@Table(connection = "referenceDataDb", schema = "public" , table = "desks")
+parameter model DeskRecord {
+    @Id id : DeskId
+    name : DeskName
+}
+
+
+@DatabaseService( connection = "referenceDataDb" )
+service DesksDb {
+   table desks : DeskRecord[]
+}

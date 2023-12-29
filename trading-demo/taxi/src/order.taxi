@@ -1,0 +1,36 @@
+namespace com.lunarbank.demo
+
+   [[
+   A request sent to a broker or trading platform to make a trade on a financial instrument.
+   ]]
+   model Order {
+    @Id id: OrderId
+    instrumentId: Isin
+    qtyRequested: QuantityRequested
+    qtyHit: QuantityHit
+    orderType: OrderType
+    orderStatus: OrderStatus
+    tif: TimeInForce
+    traderId: TraderId
+    counterpartyId: CounterpartyId
+   }
+
+
+  model LastTradeEvent {
+    @Id orderId: OrderId
+    instrumentId: Isin
+    lastTradedPrice: LastTradedPrice
+    venue: Venue
+  }
+
+@com.orbitalhq.kafka.KafkaService(connectionName = "myKafkaBroker")
+service TradeStreamService {
+   @com.orbitalhq.kafka.KafkaOperation(topic = "orders" , offset = "latest")
+   stream orders : Stream<Order>
+
+   @com.orbitalhq.kafka.KafkaOperation(topic = "trades" , offset = "latest")
+   stream trades : Stream<LastTradeEvent>
+}
+
+
+

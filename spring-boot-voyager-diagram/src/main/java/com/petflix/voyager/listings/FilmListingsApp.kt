@@ -1,9 +1,9 @@
 package com.petflix.voyager.listings
 
-import io.vyne.PackageMetadata
-import io.vyne.schema.publisher.SchemaPublisherService
-import io.vyne.schema.publisher.rsocket.RSocketSchemaPublisherTransport
-import io.vyne.schema.rsocket.TcpAddress
+import com.orbitalhq.PackageMetadata
+import com.orbitalhq.schema.publisher.SchemaPublisherService
+import com.orbitalhq.schema.publisher.rsocket.RSocketSchemaPublisherTransport
+import com.orbitalhq.schema.rsocket.TcpAddress
 import lang.taxi.generators.java.spring.SpringTaxiGenerator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

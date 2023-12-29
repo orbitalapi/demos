@@ -23,6 +23,7 @@
       <module>insurance-quotes-spring-boot</module>
       <module>streaming-user-updates</module>
       <module>xml-demo</module>
+      <module>trading-demo</module>
    </modules>
 
    <properties>

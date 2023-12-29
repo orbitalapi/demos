@@ -3,19 +3,22 @@ package com.icycube
 import kotlin.String
 
 object TypeNames {
+  const val UserRecord: String = "UserRecord"
+
   object com {
-    object orbitalhq {
-      object films {
-        object announcements {
-          const val UserStatusUpdateMessage: String =
-              "com.orbitalhq.films.announcements.UserStatusUpdateMessage"
-
-          const val UserStatus: String = "com.orbitalhq.films.announcements.UserStatus"
-        }
-      }
-    }
-
     object icycube {
+      object posts {
+        const val UserStatus: String = "com.icycube.posts.UserStatus"
+
+        const val MessageId: String = "com.icycube.posts.MessageId"
+
+        const val UserStatusUpdateMessage: String = "com.icycube.posts.UserStatusUpdateMessage"
+
+        const val ViewCount: String = "com.icycube.posts.ViewCount"
+
+        const val MessageAnalytics: String = "com.icycube.posts.MessageAnalytics"
+      }
+
       object users {
         const val Gender: String = "com.icycube.users.Gender"
 

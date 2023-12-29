@@ -1,0 +1,31 @@
+[
+   {
+      "isin": "CA62620DAL51",
+      "environmentalPillarScore": 9.0,
+      "socialPillarScore": 8.2,
+      "governancePillarScore": 9.5,
+      "carbonIntensityWeightedAverage": 20.2
+   },
+   {
+      "isin": "JP351265BE99",
+      "environmentalPillarScore": 9.1,
+      "socialPillarScore": 8.8,
+      "governancePillarScore": 9.6,
+      "carbonIntensityWeightedAverage": 24.55
+   },
+   {
+      "isin": "USU8810LAA18",
+      "environmentalPillarScore": 10.0,
+      "socialPillarScore": 8.0,
+      "governancePillarScore": 8.5,
+      "carbonIntensityWeightedAverage": 33.33
+   },
+   {
+      "isin": "US892331AN94",
+      "environmentalPillarScore": 8.7,
+      "socialPillarScore": 8.6,
+      "governancePillarScore": 8.4,
+      "carbonIntensityWeightedAverage": 37.76
+   }
+]
+

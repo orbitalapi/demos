@@ -1,0 +1,24 @@
+spring:
+   datasource:
+      url: jdbc:postgresql://${demo.db.host:localhost}:${demo.db.port:25432}/${demo.db.database:demoDb}
+      username: ${demo.db.username:admin}
+      password: ${demo.db.password:orbital}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+         minimum-idle: 0
+         maximum-pool-size: 5
+         connection-timeout: 10000 #10s
+         idle-timeout: 300000 #5m
+         max-lifetime: 600000 #10m
+         initialization-fail-timeout: -1
+         validation-timeout: 1000 #1s
+   kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+         key-serializer: org.apache.kafka.common.serialization.StringSerializer
+         value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+   sql:
+      init:
+         continue-on-error: true
+server:
+   port: 7089
