@@ -15,7 +15,7 @@ namespace com.lunarbank.demo
     counterpartyId: CounterpartyId
    }
 
-
+[[  a real time event that's emitted whenever a trade is executed ]]
   model LastTradeEvent {
     @Id orderId: OrderId
     instrumentId: Isin

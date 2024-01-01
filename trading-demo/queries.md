@@ -115,7 +115,16 @@ stream {Order | LastTradeEvent} as {
     instrumentId: Isin
     lastTradedPrice: LastTradedPrice
     venue: Venue
-    timeInForce: TimeInForce
+    
+    traderName : TraderFirstName + ' ' + TraderLastName
+    instrumentName
 
 }[]
 ```
+
+
+Build a live stream of orders. Include the Order Id, the ISIN, the name of the instrument, the traders full name, and the last executed price.
+
+
+
+Find all trades executed last September. Include the full name of the trader, the traded quantity, the name of the instrument, and the ESG rating (calculated as the average of all three ESG pillars)

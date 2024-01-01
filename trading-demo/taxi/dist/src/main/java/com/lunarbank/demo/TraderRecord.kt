@@ -9,7 +9,7 @@ import lang.taxi.annotations.DataType
 )
 open class TraderRecord(
   val id: TraderId,
-  val name: TraderName,
+  val name: TraderFirstName,
   val lastName: TraderLastName,
   val deskId: DeskId
 )
