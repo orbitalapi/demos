@@ -6,13 +6,15 @@ object TypeNames {
   object com {
     object lunarbank {
       object demo {
+        const val TraderRecord: String = "com.lunarbank.demo.TraderRecord"
+
+        const val DeskRecord: String = "com.lunarbank.demo.DeskRecord"
+
+        const val EsgRating: String = "com.lunarbank.demo.EsgRating"
+
         const val Order: String = "com.lunarbank.demo.Order"
 
         const val LastTradeEvent: String = "com.lunarbank.demo.LastTradeEvent"
-
-        const val Instrument: String = "com.lunarbank.demo.Instrument"
-
-        const val TraderRecord: String = "com.lunarbank.demo.TraderRecord"
 
         const val OrderType: String = "com.lunarbank.demo.OrderType"
 
@@ -24,7 +26,7 @@ object TypeNames {
 
         const val TraderId: String = "com.lunarbank.demo.TraderId"
 
-        const val TraderName: String = "com.lunarbank.demo.TraderName"
+        const val TraderFirstName: String = "com.lunarbank.demo.TraderFirstName"
 
         const val TraderLastName: String = "com.lunarbank.demo.TraderLastName"
 
@@ -65,9 +67,9 @@ object TypeNames {
 
         const val InstrumentName: String = "com.lunarbank.demo.InstrumentName"
 
-        const val EsgRating: String = "com.lunarbank.demo.EsgRating"
+        const val TradeExecutionTimestamp: String = "com.lunarbank.demo.TradeExecutionTimestamp"
 
-        const val DeskRecord: String = "com.lunarbank.demo.DeskRecord"
+        const val Instrument: String = "com.lunarbank.demo.Instrument"
       }
     }
   }

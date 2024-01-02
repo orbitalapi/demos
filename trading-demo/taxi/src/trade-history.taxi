@@ -1,0 +1,39 @@
+import com.lunarbank.demo.Quantity
+import com.lunarbank.demo.Quantity
+import com.lunarbank.demo.TraderId
+import com.lunarbank.demo.Isin
+import com.lunarbank.demo.OrderId
+import com.lunarbank.demo.TradeExecutionTimestamp
+namespace com.lunarbank.demo
+
+service TradeHistoryService {
+   @HttpOperation(method = "GET", url = "http://localhost:7089/trades/history?startDate={startDate}&endDate={endDate}")
+   operation getHistoricTrades(
+      @PathVariable("startDate") startDate : Date, @PathVariable("endDate") endDate : Date
+   ) : Trade[](TradeDate >= startDate && TradeDate <= endDate)
+
+   @HttpOperation(method = "GET", url = "http://localhost:7089/trades/history?startDate={startDate}&endDate={endDate}")
+   operation getHistoricTrades2(
+      @PathVariable("startDate") startDate : Date, @PathVariable("endDate") endDate : Date
+   ) : Trade[](TradeDate > startDate && TradeDate <= endDate)
+
+   @HttpOperation(method = "GET", url = "http://localhost:7089/trades/history?startDate={startDate}&endDate={endDate}")
+   operation getHistoricTrades3(
+      @PathVariable("startDate") startDate : Date, @PathVariable("endDate") endDate : Date
+   ) : Trade[](TradeDate >= startDate && TradeDate < endDate)
+
+   @HttpOperation(method = "GET", url = "http://localhost:7089/trades/history?startDate={startDate}&endDate={endDate}")
+   operation getHistoricTrades4(
+      @PathVariable("startDate") startDate : Date, @PathVariable("endDate") endDate : Date
+   ) : Trade[](TradeDate > startDate && TradeDate < endDate)
+}
+
+[[ The date that a trade was performed ]]
+type TradeDate inherits Date
+model Trade {
+   id : OrderId
+   executionDate : TradeExecutionTimestamp
+   isin: Isin
+   traderId: TraderId
+   quantity: Quantity
+}

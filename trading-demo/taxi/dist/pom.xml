@@ -9,7 +9,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <kotlin.version>1.8.10</kotlin.version>
     <maven.compiler.source>17</maven.compiler.source>
-    <taxi.version>1.44.3</taxi.version>
+    <taxi.version>1.43.0</taxi.version>
   </properties>
   <dependencies>
     <dependency>
