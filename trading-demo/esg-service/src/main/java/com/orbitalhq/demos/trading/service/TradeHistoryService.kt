@@ -9,11 +9,11 @@ import com.lunarbank.demo.TraderRecord
 import lang.taxi.annotations.ResponseConstraint
 import lang.taxi.annotations.ResponseContract
 import org.http4k.lens.QueryLens
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -23,14 +23,9 @@ import kotlin.random.Random
 @RestController
 class TradeHistoryService(
    private val referenceDataRepo: ReferenceDataRepo,
-) {
+): InitializingBean {
 
    private val trades = mutableListOf<Trade>()
-
-   init {
-       buildHistoricTrades()
-   }
-
    @GetMapping("/trades/history")
    fun listHistoricTrades(
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -44,6 +39,8 @@ class TradeHistoryService(
    }
 
    private fun buildHistoricTrades() {
+      val allIsins = referenceDataRepo.allIsins()
+      val allTraders = referenceDataRepo.allTraders()
       // Repeat for every day of the last year
       repeat(365) { daysOffset ->
          // Create a random number of trades per day
@@ -56,13 +53,17 @@ class TradeHistoryService(
             trades.add(Trade(
                UUID.randomUUID().toString(),
                executionTimestamp,
-               referenceDataRepo.allIsins().random(),
-               referenceDataRepo.allTraders().random(),
+               allIsins.random(),
+               allTraders.random(),
                Random.nextInt(100_000, 200_000_000).toBigDecimal()
             ))
          }
 
       }
+   }
+
+   override fun afterPropertiesSet() {
+      buildHistoricTrades()
    }
 }
 
