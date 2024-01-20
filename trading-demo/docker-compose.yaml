@@ -11,6 +11,7 @@ services:
   hazelcast-enterprise:
       image: hazelcast/hazelcast-enterprise:5.3.6
       environment:
+         - HZ_LICENSEKEY=${HZ_ENTERPRISE_LICENSE}
          - JAVA_OPTS=-Dhazelcast.config=/opt/hazelcast/config_ext/hazelcast_no_auth.yaml
       ports:
          - "5701:5701"
@@ -19,6 +20,9 @@ services:
 
   management-center:
      image: hazelcast/management-center:5.3.3
+     environment:
+        - MC_LICENSE=${HZ_ENTERPRISE_LICENSE}
+        - MC_REST_ENABLED=true
      ports:
         - "8080:8080"
 

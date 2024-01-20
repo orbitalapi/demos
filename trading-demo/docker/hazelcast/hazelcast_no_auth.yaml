@@ -1,6 +1,5 @@
 hazelcast:
   cluster-name: bridge
-  license-key: ENTERPRISE_2020#3Nodes#jUki6nGyY5dBuK9ESg8mQbWCwXA1lJTMND02qHfPZO31000111391120010020000000013110109104930101
   security:
     enabled: false
 
