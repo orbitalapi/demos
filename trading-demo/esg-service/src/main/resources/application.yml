@@ -13,12 +13,20 @@ spring:
          initialization-fail-timeout: -1
          validation-timeout: 1000 #1s
    kafka:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: ${app.kafka.servers}
       producer:
          key-serializer: org.apache.kafka.common.serialization.StringSerializer
          value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      properties:
+         security:
+            protocol: SASL_SSL
+         sasl:
+            mechanism: PLAIN
+            jaas:
+              config: org.apache.kafka.common.security.plain.PlainLoginModule required username='${app.kafka.user-name}' password='${app.kafka.password}';
    sql:
       init:
          continue-on-error: true
 server:
    port: 7089
+
