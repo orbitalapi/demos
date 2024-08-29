@@ -1,4 +1,4 @@
-# Orbital Petfilx Films Demo - Basic Services
+# Orbital Petflix Films Demo - Basic Services
 
 This repo contains services required for the Orbital [Hello World tutorial](https://orbitalhq.com/docs/guides/first-integration).
 
