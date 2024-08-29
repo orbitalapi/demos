@@ -18,13 +18,13 @@ services:
             --vyne.db.username=orbital
             --vyne.db.password=changeme
             --vyne.db.host=postgres
-            --vyne.workspace.project-file=/opt/service/workspace/taxi.conf
+            --vyne.workspace.config-file=/opt/service/workspace/workspace.conf
       ports:
          - "9022:9022" # http
          - "7655:7655" # rsocket
       volumes:
          - ~/.orbital/license/:/opt/var/vyne/license/
-         - ./taxi:/opt/service/workspace
+         - ./workspace:/opt/service/workspace
       depends_on:
          - postgres
       deploy:

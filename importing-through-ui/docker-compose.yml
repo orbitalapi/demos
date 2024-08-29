@@ -6,18 +6,20 @@ services:
       environment:
          JAVA_OPTS: >-
             -Xms256m
-            -Xmx1024m
+            -Xmx2048m
          OPTIONS: >-
-            --vyne.services.config-file=/opt/service/config/services.conf
             --vyne.analytics.persistRemoteCallResponses=true
             --vyne.analytics.persistResults=true
+            --vyne.workspace.config-file=/opt/service/workspace/workspace.conf
+            --vyne.db.username=orbital
+            --vyne.db.password=changeme
+            --vyne.db.host=postgres
       ports:
          - "9022:9022"
       expose:
          - 9022
       volumes:
-         - ~/.orbital/license/:/opt/var/vyne/license/
-         - ./orbital/config:/opt/service/config
+         - .:/opt/service/workspace
       deploy:
          restart_policy:
             condition: on-failure
@@ -25,32 +27,23 @@ services:
             limits:
                memory: 2gb
 
-   schema-server:
-      image: orbitalhq/schema-server:${ORBITAL_VERSION:-latest}
-      volumes:
-         - ${SCHEMA_PATH:-./orbital/schema-server}:/var/lib/orbital/schema-server
-      environment:
-         JAVA_OPTS: >-
-            -Xms256m
-            -Xmx512m
-         OPTIONS: >-
-            --vyne.repositories.config-file=/var/lib/orbital/schema-server/schema-server.conf
-      deploy:
-         restart_policy:
-            condition: on-failure
-         resources:
-            limits:
-               memory: 1200mb
-      expose:
-         - 7655
-         - 9305
-
    postgres:
-      image: ghcr.io/orbitalapi/demos-films-pagila:latest
+      image: postgres:15
       expose:
          - 5432
       ports:
          - "25432:5432"
+      environment:
+         POSTGRES_DB: orbital
+         POSTGRES_USER: orbital
+         POSTGRES_PASSWORD: changeme
+
+   postgres-pagila:
+      image: ghcr.io/orbitalapi/demos-films-pagila:latest
+      expose:
+         - 5432
+      ports:
+         - "35432:5432"
 
    films-api:
       image: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
