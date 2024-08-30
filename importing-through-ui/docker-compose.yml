@@ -20,6 +20,8 @@ services:
          - 9022
       volumes:
          - .:/opt/service/workspace
+      depends_on:
+         - postgres
       deploy:
          restart_policy:
             condition: on-failure
@@ -27,23 +29,21 @@ services:
             limits:
                memory: 2gb
 
-   postgres:
-      image: postgres:15
-      expose:
-         - 5432
-      ports:
-         - "25432:5432"
-      environment:
-         POSTGRES_DB: orbital
-         POSTGRES_USER: orbital
-         POSTGRES_PASSWORD: changeme
-
-   postgres-pagila:
+   pg-pagila:
+      # Docker image contains the pagila demo db built in
       image: ghcr.io/orbitalapi/demos-films-pagila:latest
       expose:
          - 5432
       ports:
          - "35432:5432"
+      environment:
+         POSTGRES_DB: pagila
+         POSTGRES_USER: root
+         POSTGRES_PASSWORD: admin
+      volumes:
+         - postgres_data:/var/lib/postgresql/data
+         ## Mount the db, to initalize the demo script and create the orbital user
+         - ./db:/docker-entrypoint-initdb.d
 
    films-api:
       image: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
@@ -85,3 +85,6 @@ services:
          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_NETWORK:PLAINTEXT,LISTENER_DOCKER_TO_LOCAL:PLAINTEXT
          KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_NETWORK
          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes:
+   postgres_data:
