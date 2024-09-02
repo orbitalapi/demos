@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
    orbital:
-      image: orbitalhq/orbital:${ORBITAL_VERSION:-latest}
+      image: orbitalhq/orbital:${ORBITAL_VERSION:-next}
       environment:
          JAVA_OPTS: >-
             -Xms256m
@@ -13,7 +13,7 @@ services:
             --vyne.workspace.config-file=/opt/service/workspace/workspace.conf
             --vyne.db.username=orbital
             --vyne.db.password=changeme
-            --vyne.db.host=postgres
+            --vyne.db.host=pg-pagila
       ports:
          - "9022:9022"
       expose:
@@ -21,7 +21,7 @@ services:
       volumes:
          - .:/opt/service/workspace
       depends_on:
-         - postgres
+         - pg-pagila
       deploy:
          restart_policy:
             condition: on-failure
@@ -30,7 +30,8 @@ services:
                memory: 2gb
 
    pg-pagila:
-      # Docker image contains the pagila demo db built in
+      # Docker image contains the pagila demo db built in,
+      # plus doubles as the orbital db
       image: ghcr.io/orbitalapi/demos-films-pagila:latest
       expose:
          - 5432
@@ -40,10 +41,6 @@ services:
          POSTGRES_DB: pagila
          POSTGRES_USER: root
          POSTGRES_PASSWORD: admin
-      volumes:
-         - postgres_data:/var/lib/postgresql/data
-         ## Mount the db, to initalize the demo script and create the orbital user
-         - ./db:/docker-entrypoint-initdb.d
 
    films-api:
       image: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
