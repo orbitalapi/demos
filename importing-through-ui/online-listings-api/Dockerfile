@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17
+FROM eclipse-temurin:17-jammy
 
 RUN addgroup --system worker --gid 1000 && \
     adduser --system worker --ingroup worker --uid 1001
