@@ -23,7 +23,6 @@ services:
          - "9022:9022" # http
          - "7655:7655" # rsocket
       volumes:
-         - ~/.orbital/license/:/opt/var/vyne/license/
          - ./workspace:/opt/service/workspace
       depends_on:
          - postgres
@@ -43,6 +42,7 @@ services:
          POSTGRES_PASSWORD: admin
       volumes:
          - postgres_data:/var/lib/postgresql/data
+         ## Mount the db, to initalize the demo script and create the orbital user
          - ./db:/docker-entrypoint-initdb.d
 
 volumes:
