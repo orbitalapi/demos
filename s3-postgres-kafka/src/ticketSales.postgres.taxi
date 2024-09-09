@@ -1,0 +1,27 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.UpsertOperation
+
+type RecordId inherits Int
+
+@Table(connection = "my-postgres-db", schema = "public" , table = "ticketSales" )
+closed parameter model VenueTicketSalesRecord {
+   @Id @GeneratedId
+   recordId : RecordId?
+   title : Title
+   filmId: FilmId
+   screeningDate : ScreeningDate
+   cinemaName: CinemaName
+   cinemaId: CinemaId
+   tickets: TicketsSold
+   ticketPrice: Price
+   revenue: TicketRevenue
+}
+
+
+@DatabaseService(connection = "my-postgres-db")
+service MyPostgresService {
+   table ticketSales : VenueTicketSalesRecord[]
+   @UpsertOperation
+   write operation saveTicketSalesRecord(VenueTicketSalesRecord):VenueTicketSalesRecord
+}

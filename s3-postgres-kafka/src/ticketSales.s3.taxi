@@ -1,0 +1,28 @@
+import com.petflix.types.TicketRevenue
+import com.petflix.types.TicketsSold
+import com.petflix.types.CinemaId
+import com.petflix.types.CinemaName
+import com.petflix.types.ScreeningDate
+import com.petflix.types.FilmId
+
+import com.orbitalhq.aws.s3.S3Service
+import com.orbitalhq.aws.s3.S3Operation
+import com.orbitalhq.aws.s3.FilenamePattern
+import com.orbitalhq.formats.Csv
+
+@Csv
+closed model VenueTicketSales {
+   title : Title by column("Title")
+   filmId: FilmId by column("FilmId")
+   screeningDate : ScreeningDate by column("Date")
+   cinemaName: CinemaName by column("Cinema name")
+   cinemaId: CinemaId by column("Cinema Id")
+   tickets: TicketsSold by column("Tickets sold")
+   revnue: TicketRevenue by column("Revenue")
+}
+
+@S3Service(connectionName = "my-aws-account")
+service TicketsS3Bucket {
+   @S3Operation(bucket = "cinema-ticket-sales")
+   operation readBucket(filename: FilenamePattern = "ticket-sales.csv"):VenueTicketSales[]
+}

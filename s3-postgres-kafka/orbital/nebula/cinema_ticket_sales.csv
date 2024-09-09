@@ -1,0 +1,251 @@
+Title,FilmId,Date,Cinema name,Cinema Id,Tickets sold,Revenue
+A New Hope,XHXCO,2024-09-03,Wandsworth Cineworld,0EM3,249,2822.4
+A New Hope,XHXCO,2024-09-02,Wandsworth Cineworld,0EM3,191,2047.56
+A New Hope,XHXCO,2024-09-01,Wandsworth Cineworld,0EM3,299,3325.25
+A New Hope,XHXCO,2024-08-31,Wandsworth Cineworld,0EM3,191,2207.15
+A New Hope,XHXCO,2024-08-30,Wandsworth Cineworld,0EM3,243,2607.21
+A New Hope,XHXCO,2024-09-03,Hammersmith Vue,DI3O,247,2729.08
+A New Hope,XHXCO,2024-09-02,Hammersmith Vue,DI3O,236,2263.53
+A New Hope,XHXCO,2024-09-01,Hammersmith Vue,DI3O,78,845.59
+A New Hope,XHXCO,2024-08-31,Hammersmith Vue,DI3O,154,1720.36
+A New Hope,XHXCO,2024-08-30,Hammersmith Vue,DI3O,96,873.78
+A New Hope,XHXCO,2024-09-03,Regent Cinema Levin,MF4P,153,1231.67
+A New Hope,XHXCO,2024-09-02,Regent Cinema Levin,MF4P,260,2387.67
+A New Hope,XHXCO,2024-09-01,Regent Cinema Levin,MF4P,159,1421.27
+A New Hope,XHXCO,2024-08-31,Regent Cinema Levin,MF4P,66,719.89
+A New Hope,XHXCO,2024-08-30,Regent Cinema Levin,MF4P,249,2427.09
+A New Hope,XHXCO,2024-09-03,Readings Cinemas Wellington,TDGM,178,1491.73
+A New Hope,XHXCO,2024-09-02,Readings Cinemas Wellington,TDGM,204,2049.14
+A New Hope,XHXCO,2024-09-01,Readings Cinemas Wellington,TDGM,188,2253.95
+A New Hope,XHXCO,2024-08-31,Readings Cinemas Wellington,TDGM,154,1846.44
+A New Hope,XHXCO,2024-08-30,Readings Cinemas Wellington,TDGM,115,1278.69
+A New Hope,XHXCO,2024-09-03,Johns Livning Room,43A1,153,1820.61
+A New Hope,XHXCO,2024-09-02,Johns Livning Room,43A1,222,1827.27
+A New Hope,XHXCO,2024-09-01,Johns Livning Room,43A1,185,1900.99
+A New Hope,XHXCO,2024-08-31,Johns Livning Room,43A1,216,2127.67
+A New Hope,XHXCO,2024-08-30,Johns Livning Room,43A1,272,2698.33
+Back to the Future,CONHL,2024-09-03,Wandsworth Cineworld,47G3,180,1949.21
+Back to the Future,CONHL,2024-09-02,Wandsworth Cineworld,47G3,172,1664.5
+Back to the Future,CONHL,2024-09-01,Wandsworth Cineworld,47G3,122,1447.9
+Back to the Future,CONHL,2024-08-31,Wandsworth Cineworld,47G3,291,3393.49
+Back to the Future,CONHL,2024-08-30,Wandsworth Cineworld,47G3,250,2918.15
+Back to the Future,CONHL,2024-09-03,Hammersmith Vue,DTE9,135,1091.53
+Back to the Future,CONHL,2024-09-02,Hammersmith Vue,DTE9,234,1873.75
+Back to the Future,CONHL,2024-09-01,Hammersmith Vue,DTE9,110,1107.95
+Back to the Future,CONHL,2024-08-31,Hammersmith Vue,DTE9,57,510.34
+Back to the Future,CONHL,2024-08-30,Hammersmith Vue,DTE9,126,1507.21
+Back to the Future,CONHL,2024-09-03,Regent Cinema Levin,R3M8,121,1016.74
+Back to the Future,CONHL,2024-09-02,Regent Cinema Levin,R3M8,277,2673.57
+Back to the Future,CONHL,2024-09-01,Regent Cinema Levin,R3M8,54,614.2
+Back to the Future,CONHL,2024-08-31,Regent Cinema Levin,R3M8,98,916.35
+Back to the Future,CONHL,2024-08-30,Regent Cinema Levin,R3M8,133,1207.31
+Back to the Future,CONHL,2024-09-03,Readings Cinemas Wellington,R7SH,219,2565.11
+Back to the Future,CONHL,2024-09-02,Readings Cinemas Wellington,R7SH,199,1886.5
+Back to the Future,CONHL,2024-09-01,Readings Cinemas Wellington,R7SH,199,2292.58
+Back to the Future,CONHL,2024-08-31,Readings Cinemas Wellington,R7SH,258,2792.29
+Back to the Future,CONHL,2024-08-30,Readings Cinemas Wellington,R7SH,92,984.37
+Back to the Future,CONHL,2024-09-03,Johns Livning Room,W0AX,276,2797.52
+Back to the Future,CONHL,2024-09-02,Johns Livning Room,W0AX,156,1434.78
+Back to the Future,CONHL,2024-09-01,Johns Livning Room,W0AX,119,1301.22
+Back to the Future,CONHL,2024-08-31,Johns Livning Room,W0AX,91,1089.71
+Back to the Future,CONHL,2024-08-30,Johns Livning Room,W0AX,263,2400.43
+Empire Strikes Back,LXILO,2024-09-03,Wandsworth Cineworld,XK64,121,1444.7
+Empire Strikes Back,LXILO,2024-09-02,Wandsworth Cineworld,XK64,96,818.49
+Empire Strikes Back,LXILO,2024-09-01,Wandsworth Cineworld,XK64,277,3154.61
+Empire Strikes Back,LXILO,2024-08-31,Wandsworth Cineworld,XK64,174,1503.96
+Empire Strikes Back,LXILO,2024-08-30,Wandsworth Cineworld,XK64,140,1569.73
+Empire Strikes Back,LXILO,2024-09-03,Hammersmith Vue,TM71,279,2614.74
+Empire Strikes Back,LXILO,2024-09-02,Hammersmith Vue,TM71,266,2534.67
+Empire Strikes Back,LXILO,2024-09-01,Hammersmith Vue,TM71,247,2217.21
+Empire Strikes Back,LXILO,2024-08-31,Hammersmith Vue,TM71,82,830.54
+Empire Strikes Back,LXILO,2024-08-30,Hammersmith Vue,TM71,131,1191.65
+Empire Strikes Back,LXILO,2024-09-03,Regent Cinema Levin,70OS,234,1958.03
+Empire Strikes Back,LXILO,2024-09-02,Regent Cinema Levin,70OS,89,1032.88
+Empire Strikes Back,LXILO,2024-09-01,Regent Cinema Levin,70OS,174,1568.57
+Empire Strikes Back,LXILO,2024-08-31,Regent Cinema Levin,70OS,128,1166.11
+Empire Strikes Back,LXILO,2024-08-30,Regent Cinema Levin,70OS,97,1098.7
+Empire Strikes Back,LXILO,2024-09-03,Readings Cinemas Wellington,A2PH,149,1627.36
+Empire Strikes Back,LXILO,2024-09-02,Readings Cinemas Wellington,A2PH,258,2069.09
+Empire Strikes Back,LXILO,2024-09-01,Readings Cinemas Wellington,A2PH,282,2583.16
+Empire Strikes Back,LXILO,2024-08-31,Readings Cinemas Wellington,A2PH,261,2349.56
+Empire Strikes Back,LXILO,2024-08-30,Readings Cinemas Wellington,A2PH,279,2450.17
+Empire Strikes Back,LXILO,2024-09-03,Johns Livning Room,WHSG,198,1856.81
+Empire Strikes Back,LXILO,2024-09-02,Johns Livning Room,WHSG,163,1702.83
+Empire Strikes Back,LXILO,2024-09-01,Johns Livning Room,WHSG,182,1647.65
+Empire Strikes Back,LXILO,2024-08-31,Johns Livning Room,WHSG,225,2135.14
+Empire Strikes Back,LXILO,2024-08-30,Johns Livning Room,WHSG,182,2144.29
+Return of the Jedi,TIIPV,2024-09-03,Wandsworth Cineworld,07JS,163,1588.92
+Return of the Jedi,TIIPV,2024-09-02,Wandsworth Cineworld,07JS,261,2849.12
+Return of the Jedi,TIIPV,2024-09-01,Wandsworth Cineworld,07JS,175,1542.88
+Return of the Jedi,TIIPV,2024-08-31,Wandsworth Cineworld,07JS,64,730.04
+Return of the Jedi,TIIPV,2024-08-30,Wandsworth Cineworld,07JS,168,1957.7
+Return of the Jedi,TIIPV,2024-09-03,Hammersmith Vue,3JK5,130,1331.34
+Return of the Jedi,TIIPV,2024-09-02,Hammersmith Vue,3JK5,96,1071.69
+Return of the Jedi,TIIPV,2024-09-01,Hammersmith Vue,3JK5,183,2115.08
+Return of the Jedi,TIIPV,2024-08-31,Hammersmith Vue,3JK5,264,2405.36
+Return of the Jedi,TIIPV,2024-08-30,Hammersmith Vue,3JK5,283,2283.23
+Return of the Jedi,TIIPV,2024-09-03,Regent Cinema Levin,WRW5,75,665.43
+Return of the Jedi,TIIPV,2024-09-02,Regent Cinema Levin,WRW5,56,543.77
+Return of the Jedi,TIIPV,2024-09-01,Regent Cinema Levin,WRW5,51,602.71
+Return of the Jedi,TIIPV,2024-08-31,Regent Cinema Levin,WRW5,51,522.55
+Return of the Jedi,TIIPV,2024-08-30,Regent Cinema Levin,WRW5,229,2098.91
+Return of the Jedi,TIIPV,2024-09-03,Readings Cinemas Wellington,U8JJ,178,2011.81
+Return of the Jedi,TIIPV,2024-09-02,Readings Cinemas Wellington,U8JJ,202,2152.21
+Return of the Jedi,TIIPV,2024-09-01,Readings Cinemas Wellington,U8JJ,244,2124.67
+Return of the Jedi,TIIPV,2024-08-31,Readings Cinemas Wellington,U8JJ,231,2062.51
+Return of the Jedi,TIIPV,2024-08-30,Readings Cinemas Wellington,U8JJ,244,2767.5
+Return of the Jedi,TIIPV,2024-09-03,Johns Livning Room,JDED,207,1657.7
+Return of the Jedi,TIIPV,2024-09-02,Johns Livning Room,JDED,97,967.68
+Return of the Jedi,TIIPV,2024-09-01,Johns Livning Room,JDED,127,1239.29
+Return of the Jedi,TIIPV,2024-08-31,Johns Livning Room,JDED,97,892.08
+Return of the Jedi,TIIPV,2024-08-30,Johns Livning Room,JDED,228,2484.37
+Gladiator,RMCJU,2024-09-03,Wandsworth Cineworld,Q9OU,163,1381.27
+Gladiator,RMCJU,2024-09-02,Wandsworth Cineworld,Q9OU,209,1690.81
+Gladiator,RMCJU,2024-09-01,Wandsworth Cineworld,Q9OU,247,1982.2
+Gladiator,RMCJU,2024-08-31,Wandsworth Cineworld,Q9OU,141,1481.4
+Gladiator,RMCJU,2024-08-30,Wandsworth Cineworld,Q9OU,107,1226.11
+Gladiator,RMCJU,2024-09-03,Hammersmith Vue,DLEY,182,1686.72
+Gladiator,RMCJU,2024-09-02,Hammersmith Vue,DLEY,271,3008.77
+Gladiator,RMCJU,2024-09-01,Hammersmith Vue,DLEY,264,2382.52
+Gladiator,RMCJU,2024-08-31,Hammersmith Vue,DLEY,225,2458.8
+Gladiator,RMCJU,2024-08-30,Hammersmith Vue,DLEY,124,1245.64
+Gladiator,RMCJU,2024-09-03,Regent Cinema Levin,F0DP,76,904.65
+Gladiator,RMCJU,2024-09-02,Regent Cinema Levin,F0DP,54,524.74
+Gladiator,RMCJU,2024-09-01,Regent Cinema Levin,F0DP,190,2182.06
+Gladiator,RMCJU,2024-08-31,Regent Cinema Levin,F0DP,185,2113.48
+Gladiator,RMCJU,2024-08-30,Regent Cinema Levin,F0DP,157,1695.77
+Gladiator,RMCJU,2024-09-03,Readings Cinemas Wellington,2YKK,115,1269.93
+Gladiator,RMCJU,2024-09-02,Readings Cinemas Wellington,2YKK,248,2701.68
+Gladiator,RMCJU,2024-09-01,Readings Cinemas Wellington,2YKK,175,2057.79
+Gladiator,RMCJU,2024-08-31,Readings Cinemas Wellington,2YKK,259,3053.84
+Gladiator,RMCJU,2024-08-30,Readings Cinemas Wellington,2YKK,183,1724.85
+Gladiator,RMCJU,2024-09-03,Johns Livning Room,VDPK,127,1374.06
+Gladiator,RMCJU,2024-09-02,Johns Livning Room,VDPK,223,1796.6
+Gladiator,RMCJU,2024-09-01,Johns Livning Room,VDPK,261,2318.52
+Gladiator,RMCJU,2024-08-31,Johns Livning Room,VDPK,250,2744.97
+Gladiator,RMCJU,2024-08-30,Johns Livning Room,VDPK,80,786.65
+Nightmare Before Christmas,IFKBP,2024-09-03,Wandsworth Cineworld,2Y1S,259,2123.91
+Nightmare Before Christmas,IFKBP,2024-09-02,Wandsworth Cineworld,2Y1S,211,2460.4
+Nightmare Before Christmas,IFKBP,2024-09-01,Wandsworth Cineworld,2Y1S,237,2617.46
+Nightmare Before Christmas,IFKBP,2024-08-31,Wandsworth Cineworld,2Y1S,165,1942.04
+Nightmare Before Christmas,IFKBP,2024-08-30,Wandsworth Cineworld,2Y1S,190,1858.54
+Nightmare Before Christmas,IFKBP,2024-09-03,Hammersmith Vue,LTAW,60,697.51
+Nightmare Before Christmas,IFKBP,2024-09-02,Hammersmith Vue,LTAW,254,2830.21
+Nightmare Before Christmas,IFKBP,2024-09-01,Hammersmith Vue,LTAW,144,1477.92
+Nightmare Before Christmas,IFKBP,2024-08-31,Hammersmith Vue,LTAW,53,543.83
+Nightmare Before Christmas,IFKBP,2024-08-30,Hammersmith Vue,LTAW,74,618.4
+Nightmare Before Christmas,IFKBP,2024-09-03,Regent Cinema Levin,44BA,160,1493.98
+Nightmare Before Christmas,IFKBP,2024-09-02,Regent Cinema Levin,44BA,220,1995.48
+Nightmare Before Christmas,IFKBP,2024-09-01,Regent Cinema Levin,44BA,111,1043.05
+Nightmare Before Christmas,IFKBP,2024-08-31,Regent Cinema Levin,44BA,167,1943.69
+Nightmare Before Christmas,IFKBP,2024-08-30,Regent Cinema Levin,44BA,199,1799.25
+Nightmare Before Christmas,IFKBP,2024-09-03,Readings Cinemas Wellington,OSF7,100,966.64
+Nightmare Before Christmas,IFKBP,2024-09-02,Readings Cinemas Wellington,OSF7,185,1967.06
+Nightmare Before Christmas,IFKBP,2024-09-01,Readings Cinemas Wellington,OSF7,77,674.33
+Nightmare Before Christmas,IFKBP,2024-08-31,Readings Cinemas Wellington,OSF7,178,2051.34
+Nightmare Before Christmas,IFKBP,2024-08-30,Readings Cinemas Wellington,OSF7,96,1074.23
+Nightmare Before Christmas,IFKBP,2024-09-03,Johns Livning Room,D9PQ,159,1696.22
+Nightmare Before Christmas,IFKBP,2024-09-02,Johns Livning Room,D9PQ,197,1782.8
+Nightmare Before Christmas,IFKBP,2024-09-01,Johns Livning Room,D9PQ,222,2598.8
+Nightmare Before Christmas,IFKBP,2024-08-31,Johns Livning Room,D9PQ,52,580.64
+Nightmare Before Christmas,IFKBP,2024-08-30,Johns Livning Room,D9PQ,147,1694.97
+Princess Bride,ITYVN,2024-09-03,Wandsworth Cineworld,RQ7E,66,618.09
+Princess Bride,ITYVN,2024-09-02,Wandsworth Cineworld,RQ7E,242,2205.01
+Princess Bride,ITYVN,2024-09-01,Wandsworth Cineworld,RQ7E,171,1794.65
+Princess Bride,ITYVN,2024-08-31,Wandsworth Cineworld,RQ7E,52,436.16
+Princess Bride,ITYVN,2024-08-30,Wandsworth Cineworld,RQ7E,199,2066.22
+Princess Bride,ITYVN,2024-09-03,Hammersmith Vue,4BJ4,100,875.25
+Princess Bride,ITYVN,2024-09-02,Hammersmith Vue,4BJ4,300,2758.88
+Princess Bride,ITYVN,2024-09-01,Hammersmith Vue,4BJ4,257,2404.79
+Princess Bride,ITYVN,2024-08-31,Hammersmith Vue,4BJ4,101,942.69
+Princess Bride,ITYVN,2024-08-30,Hammersmith Vue,4BJ4,168,1841.38
+Princess Bride,ITYVN,2024-09-03,Regent Cinema Levin,869B,250,2054.13
+Princess Bride,ITYVN,2024-09-02,Regent Cinema Levin,869B,146,1229.73
+Princess Bride,ITYVN,2024-09-01,Regent Cinema Levin,869B,143,1620.71
+Princess Bride,ITYVN,2024-08-31,Regent Cinema Levin,869B,165,1353.08
+Princess Bride,ITYVN,2024-08-30,Regent Cinema Levin,869B,59,656.63
+Princess Bride,ITYVN,2024-09-03,Readings Cinemas Wellington,5YUZ,239,2469.43
+Princess Bride,ITYVN,2024-09-02,Readings Cinemas Wellington,5YUZ,174,1716.73
+Princess Bride,ITYVN,2024-09-01,Readings Cinemas Wellington,5YUZ,210,2190.13
+Princess Bride,ITYVN,2024-08-31,Readings Cinemas Wellington,5YUZ,232,2632.94
+Princess Bride,ITYVN,2024-08-30,Readings Cinemas Wellington,5YUZ,177,1565.26
+Princess Bride,ITYVN,2024-09-03,Johns Livning Room,LCTG,200,1762.95
+Princess Bride,ITYVN,2024-09-02,Johns Livning Room,LCTG,213,2007.92
+Princess Bride,ITYVN,2024-09-01,Johns Livning Room,LCTG,231,1859.59
+Princess Bride,ITYVN,2024-08-31,Johns Livning Room,LCTG,131,1143.46
+Princess Bride,ITYVN,2024-08-30,Johns Livning Room,LCTG,59,666
+Prince of Theives,TVAFH,2024-09-03,Wandsworth Cineworld,2ZKC,284,3185.42
+Prince of Theives,TVAFH,2024-09-02,Wandsworth Cineworld,2ZKC,220,2007.4
+Prince of Theives,TVAFH,2024-09-01,Wandsworth Cineworld,2ZKC,190,1964.25
+Prince of Theives,TVAFH,2024-08-31,Wandsworth Cineworld,2ZKC,221,2483.06
+Prince of Theives,TVAFH,2024-08-30,Wandsworth Cineworld,2ZKC,293,2772.04
+Prince of Theives,TVAFH,2024-09-03,Hammersmith Vue,WLEV,127,1179.37
+Prince of Theives,TVAFH,2024-09-02,Hammersmith Vue,WLEV,122,1396.75
+Prince of Theives,TVAFH,2024-09-01,Hammersmith Vue,WLEV,249,2792.23
+Prince of Theives,TVAFH,2024-08-31,Hammersmith Vue,WLEV,91,924.4
+Prince of Theives,TVAFH,2024-08-30,Hammersmith Vue,WLEV,172,1404.28
+Prince of Theives,TVAFH,2024-09-03,Regent Cinema Levin,LD6U,254,2598.61
+Prince of Theives,TVAFH,2024-09-02,Regent Cinema Levin,LD6U,197,2148.65
+Prince of Theives,TVAFH,2024-09-01,Regent Cinema Levin,LD6U,263,2947.33
+Prince of Theives,TVAFH,2024-08-31,Regent Cinema Levin,LD6U,273,2281.89
+Prince of Theives,TVAFH,2024-08-30,Regent Cinema Levin,LD6U,199,2014.28
+Prince of Theives,TVAFH,2024-09-03,Readings Cinemas Wellington,5LSU,197,2283.5
+Prince of Theives,TVAFH,2024-09-02,Readings Cinemas Wellington,5LSU,260,2241.22
+Prince of Theives,TVAFH,2024-09-01,Readings Cinemas Wellington,5LSU,272,2978.22
+Prince of Theives,TVAFH,2024-08-31,Readings Cinemas Wellington,5LSU,225,2082.5
+Prince of Theives,TVAFH,2024-08-30,Readings Cinemas Wellington,5LSU,115,925.07
+Prince of Theives,TVAFH,2024-09-03,Johns Livning Room,0TPA,110,1142.18
+Prince of Theives,TVAFH,2024-09-02,Johns Livning Room,0TPA,250,2964.56
+Prince of Theives,TVAFH,2024-09-01,Johns Livning Room,0TPA,105,1049.37
+Prince of Theives,TVAFH,2024-08-31,Johns Livning Room,0TPA,266,2728.12
+Prince of Theives,TVAFH,2024-08-30,Johns Livning Room,0TPA,211,2499.94
+Academy Dinosaur,EYJEN,2024-09-03,Wandsworth Cineworld,OMI3,151,1778.71
+Academy Dinosaur,EYJEN,2024-09-02,Wandsworth Cineworld,OMI3,233,2657.21
+Academy Dinosaur,EYJEN,2024-09-01,Wandsworth Cineworld,OMI3,153,1693.24
+Academy Dinosaur,EYJEN,2024-08-31,Wandsworth Cineworld,OMI3,212,2422.72
+Academy Dinosaur,EYJEN,2024-08-30,Wandsworth Cineworld,OMI3,180,2003.53
+Academy Dinosaur,EYJEN,2024-09-03,Hammersmith Vue,XY5G,62,501.7
+Academy Dinosaur,EYJEN,2024-09-02,Hammersmith Vue,XY5G,192,1691.72
+Academy Dinosaur,EYJEN,2024-09-01,Hammersmith Vue,XY5G,275,2399.8
+Academy Dinosaur,EYJEN,2024-08-31,Hammersmith Vue,XY5G,73,760.54
+Academy Dinosaur,EYJEN,2024-08-30,Hammersmith Vue,XY5G,241,2766.51
+Academy Dinosaur,EYJEN,2024-09-03,Regent Cinema Levin,LFKH,275,2477.59
+Academy Dinosaur,EYJEN,2024-09-02,Regent Cinema Levin,LFKH,75,811.96
+Academy Dinosaur,EYJEN,2024-09-01,Regent Cinema Levin,LFKH,95,1045.3
+Academy Dinosaur,EYJEN,2024-08-31,Regent Cinema Levin,LFKH,198,1690.09
+Academy Dinosaur,EYJEN,2024-08-30,Regent Cinema Levin,LFKH,219,2103.8
+Academy Dinosaur,EYJEN,2024-09-03,Readings Cinemas Wellington,31VR,268,2557.97
+Academy Dinosaur,EYJEN,2024-09-02,Readings Cinemas Wellington,31VR,140,1273.57
+Academy Dinosaur,EYJEN,2024-09-01,Readings Cinemas Wellington,31VR,132,1466.19
+Academy Dinosaur,EYJEN,2024-08-31,Readings Cinemas Wellington,31VR,189,1535.2
+Academy Dinosaur,EYJEN,2024-08-30,Readings Cinemas Wellington,31VR,172,1856.48
+Academy Dinosaur,EYJEN,2024-09-03,Johns Livning Room,IEAJ,92,794.06
+Academy Dinosaur,EYJEN,2024-09-02,Johns Livning Room,IEAJ,197,1712.98
+Academy Dinosaur,EYJEN,2024-09-01,Johns Livning Room,IEAJ,234,2437.14
+Academy Dinosaur,EYJEN,2024-08-31,Johns Livning Room,IEAJ,270,2819.52
+Academy Dinosaur,EYJEN,2024-08-30,Johns Livning Room,IEAJ,134,1492.37
+Hamilton,BONTN,2024-09-03,Wandsworth Cineworld,2Z4X,76,652.91
+Hamilton,BONTN,2024-09-02,Wandsworth Cineworld,2Z4X,254,2289.88
+Hamilton,BONTN,2024-09-01,Wandsworth Cineworld,2Z4X,190,1818.61
+Hamilton,BONTN,2024-08-31,Wandsworth Cineworld,2Z4X,194,1807.84
+Hamilton,BONTN,2024-08-30,Wandsworth Cineworld,2Z4X,289,3193.13
+Hamilton,BONTN,2024-09-03,Hammersmith Vue,0Q1X,150,1515.87
+Hamilton,BONTN,2024-09-02,Hammersmith Vue,0Q1X,50,482.37
+Hamilton,BONTN,2024-09-01,Hammersmith Vue,0Q1X,178,2020.02
+Hamilton,BONTN,2024-08-31,Hammersmith Vue,0Q1X,265,2394.97
+Hamilton,BONTN,2024-08-30,Hammersmith Vue,0Q1X,250,2747.98
+Hamilton,BONTN,2024-09-03,Regent Cinema Levin,XUAR,257,2839.48
+Hamilton,BONTN,2024-09-02,Regent Cinema Levin,XUAR,70,798.84
+Hamilton,BONTN,2024-09-01,Regent Cinema Levin,XUAR,170,1854.78
+Hamilton,BONTN,2024-08-31,Regent Cinema Levin,XUAR,153,1780.84
+Hamilton,BONTN,2024-08-30,Regent Cinema Levin,XUAR,132,1337.39
+Hamilton,BONTN,2024-09-03,Readings Cinemas Wellington,5S5H,294,3291.47
+Hamilton,BONTN,2024-09-02,Readings Cinemas Wellington,5S5H,221,2108.63
+Hamilton,BONTN,2024-09-01,Readings Cinemas Wellington,5S5H,216,2372.05
+Hamilton,BONTN,2024-08-31,Readings Cinemas Wellington,5S5H,171,1922.99
+Hamilton,BONTN,2024-08-30,Readings Cinemas Wellington,5S5H,218,2058.8
+Hamilton,BONTN,2024-09-03,Johns Livning Room,E81Q,284,2285.18
+Hamilton,BONTN,2024-09-02,Johns Livning Room,E81Q,102,1031.75
+Hamilton,BONTN,2024-09-01,Johns Livning Room,E81Q,103,1090.24
+Hamilton,BONTN,2024-08-31,Johns Livning Room,E81Q,119,1058.86
+Hamilton,BONTN,2024-08-30,Johns Livning Room,E81Q,295,2827.72

@@ -1,0 +1,9 @@
+
+closed model TicketPrice {
+   price : Price inherits Decimal
+}
+
+service TicketPricesApi {
+   @HttpOperation(url = "http://ticketsApi/ticketPrices/{cinemaId}", method = "GET")
+   operation getTicketPrices(@PathVariable("cinemaId") cinemaId: CinemaId):TicketPrice
+}

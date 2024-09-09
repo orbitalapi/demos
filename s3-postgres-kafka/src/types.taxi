@@ -1,0 +1,11 @@
+namespace com.petflix.types
+
+type Title inherits String
+type FilmId inherits String
+
+
+type ScreeningDate inherits Date
+type CinemaName inherits String
+type CinemaId inherits String
+type TicketsSold inherits Int
+type TicketRevenue inherits Decimal
