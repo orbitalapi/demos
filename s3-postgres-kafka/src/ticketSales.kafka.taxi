@@ -1,0 +1,22 @@
+import com.orbitalhq.kafka.KafkaService
+import com.orbitalhq.kafka.KafkaOperation
+
+@KafkaService(connectionName = "my-kafka-connection")
+service MyKafkaConnectionService {
+   @KafkaOperation(topic = "ticket-sales" , offset = "earliest")
+   stream venueTicketSales : Stream<VenueTicketSalesMessage>
+
+   @KafkaOperation( topic = "ticket-sales", offset = "earliest" )
+   write operation publishTicketSalesMessage(VenueTicketSalesMessage):VenueTicketSalesMessage
+}
+
+closed parameter model VenueTicketSalesMessage {
+   title : Title
+   filmId: FilmId
+   screeningDate : ScreeningDate
+   cinemaName: CinemaName
+   cinemaId: CinemaId
+   tickets: TicketsSold
+   ticketPrice: Price
+   revenue: TicketRevenue
+}

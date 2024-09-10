@@ -269,4 +269,8 @@ Hamilton,BONTN,2024-08-30,Johns Livning Room,E81Q,295,2827.72
          call.respondText("""{ "price" : $price }""", ContentType.parse("application/json"))
       }
    }
+
+   kafka {
+
+   }
 }
