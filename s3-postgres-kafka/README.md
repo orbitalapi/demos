@@ -17,7 +17,8 @@ This demo project has a number of stub services deployed.
 
 You can see the details by viewing [stack.nebula.kts](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
 
-These services should start automatically. However, if not, check the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs)
+> [!NOTE]
+> The stub services should start automatically. However, if not, check the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs)
 
 ## Reading ticket sales from S3
 Ticket sales are returned from an S3 bucket
