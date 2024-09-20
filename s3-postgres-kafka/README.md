@@ -15,7 +15,8 @@ We use some fictitious cinema ticket sale information for our demo.
 ## Stub services
 This demo project has a number of stub services deployed.
 
-You can see the details by viewing [stack.nebula.kts](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
+You can see the details of the stubbed services in the [stubs panel](/stubs). The source file that drives this is 
+part of this project - see [orbital/nebula/stack.nebula.kts](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
 
 > [!NOTE]
 > The stub services should start automatically. However, if not, check the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs)
