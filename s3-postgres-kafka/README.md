@@ -12,6 +12,21 @@ In this demo, we'll cover:
 
 We use some fictitious cinema ticket sale information for our demo.
 
+## Importing this project into Orbital
+
+> [!NOTE]
+> If you're reading this within Orbital, you can skip this section - you've already done it :)
+ * Open Orbital, and head to Projects -> Add New Project -> Git Repository
+ * Fill in the form:
+ * * **Repository URL:** `https://github.com/orbitalapi/demos`
+   * Click Test Connection to populate the defaults.
+   * **Path to taxi project** `demos/s3-postgres/kafka`
+* Click Create
+
+
+> [!NOTE]
+> The rest of this README is intended to be read from within Orbital - Links are relative within Orbital, and interactive architecture charts only render within Orbital
+
 ## Stub services
 This demo project has a number of stub services deployed.
 
