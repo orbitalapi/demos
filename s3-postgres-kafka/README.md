@@ -23,7 +23,6 @@ We use some fictitious cinema ticket sale information for our demo.
    * **Path to taxi project** `demos/s3-postgres-kafka`
 * Click Create
 
-
 > [!NOTE]
 > The rest of this README is intended to be read from within Orbital - Links are relative within Orbital, and interactive architecture charts only render within Orbital
 
