@@ -182,3 +182,5 @@ namespace com.lunarbank.demo
 
 [[ The date and time that a trade was executed ]]
    type TradeExecutionTimestamp inherits Instant
+
+type TestString inherits String
