@@ -1,5 +1,4 @@
 # S3 / Postgres / Kafka
-
 This project shows integration between S3, Postgres and Kafka.
 
 In this demo, we'll cover:
