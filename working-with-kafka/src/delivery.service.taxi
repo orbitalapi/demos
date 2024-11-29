@@ -1,0 +1,37 @@
+import com.orbitalhq.kafka.KafkaService
+import com.orbitalhq.kafka.KafkaOperation
+
+namespace com.orbitEats.delivery
+
+closed model Driver {
+    @Id
+    id: DriverId
+    name: DriverName inherits String
+    capacity: DriverCapacity inherits Int
+    currentOrders: DriverOrderCount inherits Int
+}
+
+closed model DeliveryUpdate {
+    @Id
+    deliveryId: DeliveryId
+    orderId: OrderId
+    driverId: DriverId
+    status: DeliveryStatus
+    timestamp: DeliveryStatusTimestamp inherits Instant
+    currentLocation: {
+        latitude: Latitude
+        longitude: Longitude
+    }
+}
+
+
+@KafkaService( connectionName = "orbit-eats-kafka" )
+service DeliveryService {
+   @KafkaOperation( topic = "deliveries", offset = "earliest" )
+    stream deliveryUpdates: Stream<DeliveryUpdate>
+    operation getDelivery(DeliveryId): DeliveryUpdate
+}
+
+service DriverService {
+   operation findDriver(DriverId): Driver
+}
