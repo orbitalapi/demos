@@ -1,0 +1,17 @@
+namespace com.orbitEats.customer
+
+
+closed model Customer {
+    @Id
+    id: CustomerId
+    name: String
+    loyaltyStatus: LoyaltyStatus
+    address: {
+        latitude: Latitude
+        longitude: Longitude
+    }
+}
+
+service CustomerService {
+    operation findCustomer(CustomerId): Customer
+}

@@ -1,0 +1,16 @@
+namespace com.orbitEats
+
+// Core semantic types
+type OrderId inherits String
+type RestaurantId inherits String
+type CustomerId inherits String
+type DeliveryId inherits String
+type DriverId inherits String
+type Amount inherits Decimal
+type Latitude inherits Decimal
+type Longitude inherits Decimal
+type CuisineType inherits String
+type LoyaltyStatus inherits String
+type DeliveryStatus inherits String
+
+
