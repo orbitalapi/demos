@@ -19,7 +19,7 @@ We use some fictitious cinema ticket sale information for our demo.
  * Fill in the form:
  * * **Repository URL:** `https://github.com/orbitalapi/demos`
    * Click Test Connection to populate the defaults.
-   * **Path to taxi project** `demos/s3-postgres-kafka`
+   * **Path to taxi project** `/s3-postgres-kafka`
 * Click Create
 
 > [!NOTE]
