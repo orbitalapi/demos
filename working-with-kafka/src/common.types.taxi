@@ -10,7 +10,10 @@ type Amount inherits Decimal
 type Latitude inherits Decimal
 type Longitude inherits Decimal
 type CuisineType inherits String
-type LoyaltyStatus inherits String
+
 type DeliveryStatus inherits String
 
+enum LoyaltyStatus {
+   Gold, Silver, Bronze
+}
 
