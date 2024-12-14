@@ -7,7 +7,8 @@ closed model Customer {
    @Id
    id: CustomerId
    name: CustomerName inherits String
-   loyaltyStatus: LoyaltyStatus
+   email: CustomerEmail inherits String
+   rewardsStatus: LoyaltyStatus
 }
 
 service CustomerService {

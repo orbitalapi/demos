@@ -83,12 +83,12 @@ stack {
          "${firstName.substring(0..0).lowercase()}.${lastName.lowercase()}@example.com",
          RewardsStatus.entries.random()
       )
-   }
+   }.associateBy { it.id }
 
    http {
       val mapper = jacksonObjectMapper()
       get("/customers/{id}") { call ->
-         val id = call.parameters["id"]!!.toInt()
+         val id = call.parameters["id"]!!
 
          call.respondText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(customers[id]!!))
       }

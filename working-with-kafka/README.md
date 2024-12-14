@@ -15,3 +15,17 @@ Our main two components are our Kafka topics, `OrderPlaced` events and `Delivery
    }
 }
 ```
+
+## Joining streams
+We have two separate streams of events.
+
+```taxiql
+stream { OrderPlaced & DeliveryUpdate } as {
+    orderId,
+    items,
+    status,
+    timestamp,
+    currentLocation,
+    customerName: CustomerName
+}[]
+```
