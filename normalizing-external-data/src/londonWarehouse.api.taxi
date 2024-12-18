@@ -1,0 +1,21 @@
+namespace com.orbitz.stock.warehouse.london
+
+@Csv
+closed model LondonWarehouseStockReport {
+    SKU : SKU
+    Stock_Level : StockLevel
+    Unit_Price : Price
+    Bin_Location: BinLocation
+    Reorder_Level : ReorderLevel
+    Min_Order_Qty : MinimumOrderQuantity
+    @Format("dd/MM/yyyy HH:mm:ss")  // British-style date with 24hr time
+    Last_Updated : WarehouseReportLastUpdated
+    @Format("dd/MM/yyyy")
+    Last_Received : LastReceivedDate
+}
+
+@S3Service(connectionName = "my-aws-account")
+service LondonWarehouseS3Bucket {
+   @S3Operation(bucket = "london-warehouse")
+   operation readBucket(filename: FilenamePattern = "london-warehouse.csv"):LondonWarehouseStockReport[]
+}

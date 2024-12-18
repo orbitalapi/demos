@@ -1,0 +1,12 @@
+[[ Complete details about a product in our catalog ]]
+closed model ProductDetails {
+  sku: SKU
+  productName: ProductName
+  category: ProductCategory
+  manufacturer: Manufacturer
+}
+
+service ProductDetailsService {
+  @HttpOperation(method = "GET", url = "http://productService/products/{sku}")
+  operation getProductDetails(@PathVariable("sku") sku: SKU): ProductDetails
+}

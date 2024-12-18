@@ -1,0 +1,36 @@
+import taxi.http.PathVariable
+import taxi.http.HttpService
+import taxi.http.HttpOperation
+namespace com.orbitz.stock.warehouse.sydney
+
+@Csv
+closed model SydneyWarehouseStockReport {
+   itemId: SydneyItemId inherits Int
+   count : StockLevel
+   price : Price
+   location: BinLocation
+   reorderPoint : ReorderLevel
+   minOrder : MinimumOrderQuantity
+   @Format("MM-dd-yyyy hh:mm:ss a")  // US-style date with 12hr time and AM/PM
+   timestamp : WarehouseReportLastUpdated
+   @Format("MM-dd-yyyy")
+   lastDelivery : LastReceivedDate
+}
+
+closed model SydneyItemSkuMapping {
+   itemId : SydneyItemId
+   sku : SKU
+}
+
+@S3Service(connectionName = "my-aws-account")
+service SydneyWarehouseS3Bucket {
+   @S3Operation(bucket = "sydney-warehouse")
+   operation readBucket(filename: FilenamePattern = "sydney-warehouse.csv"):SydneyWarehouseStockReport[]
+}
+
+
+
+service SkuMappingService {
+   @HttpOperation(method =  "GET",url = "http://sydneyWarehouse/skuLookup/{itemId}" )
+   operation lookupSku(@PathVariable("itemId") itemId: SydneyItemId):SydneyItemSkuMapping
+}

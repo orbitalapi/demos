@@ -1,0 +1,53 @@
+namespace com.orbitz.stock
+
+[[ The name of the warehouse ]]
+type WarehouseLocation inherits String
+
+[[ The retail or wholesale price of a product ]]
+type Price inherits Decimal
+
+[[ Current quantity of a product available in a warehouse ]]
+type StockLevel inherits Int
+
+[[ Human-readable product name/description ]]
+type ProductName inherits String
+
+[[ Total monetary value, typically calculated as Price * StockLevel ]]
+type TotalValue inherits Decimal
+
+[[ Stock Keeping Unit - unique identifier for a product in our catalog ]]
+type SKU inherits String
+
+[[ Timestamp indicating when a warehouse report was last updated ]]
+type WarehouseReportLastUpdated inherits Instant
+
+[[ Physical storage location identifier within a warehouse, typically combining
+   aisle, rack and bin position ]]
+type BinLocation inherits String
+
+[[ The stock level at which a reorder should be triggered ]]
+type ReorderLevel inherits Int
+
+[[ The minimum quantity that must be ordered when placing a new order.
+   Often determined by supplier requirements or economic order quantities ]]
+type MinimumOrderQuantity inherits Int
+
+[[ The date when stock was last received into the warehouse ]]
+type LastReceivedDate inherits Date
+
+[[ Categories of spaceship parts and equipment ]]
+enum ProductCategory {
+   Propulsion,      // Engine and thrust related components
+   Defense,         // Protective and defensive systems
+   Navigation,      // Guidance and positioning systems
+   Power,          // Energy generation and storage
+   Sensors,        // Detection and monitoring equipment
+   Infrastructure, // Structural and docking components
+   Communications, // Signal and data transmission
+   LifeSupport,    // Environmental and biological systems
+   Maintenance,    // Tools and repair equipment
+   Safety          // Emergency and backup systems
+}
+
+[[ Name of the manufacturer/supplier of the product ]]
+type Manufacturer inherits String

@@ -180,4 +180,7 @@ stack {
          }
       }
    }
+
+
+   hazelcast {  }
 }
