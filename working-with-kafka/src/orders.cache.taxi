@@ -1,0 +1,35 @@
+import com.orbitalhq.hazelcast.UpsertOperation
+import com.orbitalhq.hazelcast.CompactObject
+import com.orbitalhq.hazelcast.HazelcastMap
+import com.orbitalhq.hazelcast.HazelcastService
+import com.orbitEats.customer.CustomerName
+import com.orbitEats.delivery.DeliveryStatusTimestamp
+import com.orbitEats.DeliveryStatus
+import com.orbitEats.CustomerId
+import com.orbitEats.orders.OrderTime
+import com.orbitEats.orders.OrderItem
+import com.orbitEats.OrderId
+
+@CompactObject
+@HazelcastMap(name = "orderDeliveryStatus")
+parameter model OrderDeliveryStatus {
+   @Id
+   orderId: OrderId
+   items: OrderItem[]
+   customerId : CustomerId
+   deliveryStatus : DeliveryStatus
+   // timestamp: DeliveryStatusTimestamp
+   customerName: CustomerName
+}
+
+
+@HazelcastService(connectionName = "orbit-eats-hazelcast")
+service HazelcastService {
+
+   // Expose a write operation, and annotate it
+   // with UpsertOperation, to define the writing behaviour
+   @UpsertOperation
+   write operation upsert(OrderDeliveryStatus):OrderDeliveryStatus
+
+   table orderStatus:OrderDeliveryStatus[]
+}

@@ -1,0 +1,19 @@
+import com.lunarbank.common.Balance
+import com.lunarbank.account.Account
+import com.lunarbank.common.AccountId
+import com.lunarbank.transactions.Transaction
+import taxi.http.HttpOperation
+
+[[ This is the same query as the PortalQuery, but it has a cache enabled.
+Operation calls are automatically cached in a Hazelcast cache, defined in connections ]]
+@HttpOperation(method = "GET", url = "/api/q/spendingInsightsCache/{accountId}")
+@Cache(connection = "myHazelcast")
+query CachingPortalQuery(@PathVariable("accountId") accountId: AccountId) {
+   // accountId is a parameter passed into the query from a PathVariable
+   find { Account(AccountId == accountId) } as {
+       accountId: AccountId
+       balance: Balance
+       transactions: Transaction[]
+       insights: SpendingInsights
+   }
+}

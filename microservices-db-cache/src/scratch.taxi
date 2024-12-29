@@ -1,0 +1,58 @@
+// namespace banking.models {
+
+//     // Base models
+
+
+
+//     // Aggregated view models
+//     closed model AccountDashboard {
+//         account: Account
+//         recentTransactions: Transaction[]
+//         insights: SpendingInsights
+//     }
+
+
+
+//     // Write operation models
+//     parameter model UpdateAccountPreferences {
+//         dailyLimit: DailyLimit?
+//         contactEmail: EmailAddress?
+//         contactPhone: PhoneNumber?
+//     }
+
+//     parameter model CreateTransaction {
+//         accountId: AccountId
+//         amount: Amount
+//         description: Description
+//         category: Category?
+//     }
+// }
+
+// namespace banking.services {
+
+//     @HttpService(baseUrl = "http://account-service")
+//     service AccountService {
+//         @HttpOperation(method = "GET", url = "/accounts/{id}")
+//         operation getAccount(@PathVariable(name = "id") accountId: AccountId): Account
+
+//         @HttpOperation(method = "GET", url = "/accounts/customer/{id}")
+//         operation getCustomerAccounts(@PathVariable(name = "id") customerId: CustomerId): Account[]
+
+//         @HttpOperation(method = "PATCH", url = "/accounts/{id}/preferences")
+//         operation updatePreferences(
+//             @PathVariable(name = "id") accountId: AccountId,
+//             @HttpRequestBody preferences: UpdateAccountPreferences
+//         ): Account
+//     }
+
+
+
+//     @HttpService(baseUrl = "http://insights-service")
+//     service InsightsService {
+//         @HttpOperation(method = "GET", url = "/insights/account/{id}")
+//         operation getAccountDashboard(@PathVariable(name = "id") accountId: AccountId): AccountDashboard
+
+//         @HttpOperation(method = "GET", url = "/insights/spending/{id}")
+//         operation getSpendingInsights(@PathVariable(name = "id") accountId: AccountId): SpendingInsights
+//     }
+// }
