@@ -1,0 +1,18 @@
+import com.lunarbank.common.TransactionCategory
+namespace com.lunarbank.insights
+
+closed model SpendingInsights {
+   monthlySpending: CategorySpending[]
+   topTransactions: Transaction[]
+}
+
+closed model CategorySpending {
+   category: TransactionCategory
+   totalSpent: Amount
+}
+
+@HttpService(baseUrl = "http://insights-service")
+service InsightsService {
+   @HttpOperation(method = "GET", url = "/insights/spending/{id}")
+   operation getSpendingInsights(@PathVariable("id") id: AccountId): SpendingInsights(...)
+}

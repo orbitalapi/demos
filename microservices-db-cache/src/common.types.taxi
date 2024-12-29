@@ -1,0 +1,27 @@
+namespace com.lunarbank.common
+
+type AccountId inherits String
+type CustomerId inherits String
+type TransactionId inherits String
+type TransactionTimestamp inherits Instant
+type AccountNumber inherits String
+type Balance inherits Decimal
+type Currency inherits String
+type Amount inherits Decimal
+type Description inherits String
+enum TransactionCategory {
+   FOOD_AND_DINING,
+   TRANSPORTATION,
+   RETAIL,
+   ENTERTAINMENT,
+   UTILITIES,
+   HEALTH
+}
+
+type DailyLimit inherits Decimal
+type EmailAddress inherits String
+type PhoneNumber inherits String
+
+type FirstName inherits String
+type LastName inherits String
+type DateOfBirth inherits Date

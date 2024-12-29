@@ -1,0 +1,29 @@
+import com.lunarbank.common.DailyLimit
+import com.lunarbank.common.Balance
+import com.lunarbank.common.AccountId
+namespace com.lunarbank.transactions
+
+closed model Transaction {
+   @Id
+   transactionId: TransactionId
+   accountId: AccountId
+   timestamp: TransactionTimestamp
+   amount: Amount
+   description: Description
+}
+
+closed model AccountBalance {
+   accountId: AccountId
+   balance: Balance
+   limit: DailyLimit
+}
+
+@HttpService(baseUrl = "http://transaction-service")
+service TransactionService {
+   @HttpOperation(method = "GET", url = "/transactions/account/{id}")
+   operation getAccountTransactions(@PathVariable("id") id: AccountId): Transaction[](...)
+
+   @HttpOperation(method = "GET", url = "/transactions/account/{id}/balance")
+   operation getAccountBalance(@PathVariable("id") id: AccountId): AccountBalance(...)
+
+}

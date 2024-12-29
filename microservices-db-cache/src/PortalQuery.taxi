@@ -1,0 +1,15 @@
+import com.lunarbank.common.Balance
+import com.lunarbank.account.Account
+import com.lunarbank.common.AccountId
+import com.lunarbank.transactions.Transaction
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/spendingInsights/{accountId}")
+query PortalQuery(@PathVariable("accountId") accountId: AccountId) {
+   find { Account(AccountId == accountId) } as {
+       accountId: AccountId
+       balance: Balance
+       transactions: Transaction[]
+       insights: SpendingInsights
+   }
+}

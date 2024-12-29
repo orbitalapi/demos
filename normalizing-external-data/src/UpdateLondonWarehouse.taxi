@@ -1,0 +1,9 @@
+
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "POST", url = "/api/q/updateLondonWarehouse")
+query UpdateLondonWarehouse {
+   given { WarehouseLocation = 'London'}
+   find { LondonWarehouseStockReport[] } 
+   call MyPostgresService::saveWarehouseReport
+}

@@ -1,0 +1,7 @@
+import DbStandardWarehouseReport
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/warehouseReport")
+query GetWarehouseReport {
+   find { DbStandardWarehouseReport[] }
+}

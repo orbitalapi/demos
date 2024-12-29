@@ -1,0 +1,50 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.UpsertOperation
+import com.orbitz.stock.WarehouseLocation
+// Define a common calculation to use in our queries
+type RemainingBeforeReorder = StockLevel - ReorderLevel
+
+parameter model StandardWarehouseReport {
+    location: WarehouseLocation
+    sku: SKU
+    stockLevel: StockLevel
+    reorderLevel: ReorderLevel
+    price: Price
+    lastUpdated: WarehouseReportLastUpdated
+    productName: ProductName
+    stockValue : StockLevel * Price
+    reorderStatus: String = when {
+        RemainingBeforeReorder < 10 && RemainingBeforeReorder > 0 -> "Reorder soon"
+        RemainingBeforeReorder < 0 -> "Time to reorder"
+        else -> "Sufficient Stock"
+    }
+}
+
+type RecordId inherits Int
+
+@Table(connection = "my-postgres-db", schema = "public" , table = "warehouseReport" )
+closed parameter model DbStandardWarehouseReport {
+   @Id @GeneratedId
+   recordId : RecordId?
+   location: WarehouseLocation
+    sku: SKU
+    stockLevel: StockLevel
+    reorderLevel: ReorderLevel
+    price: Price
+    lastUpdated: WarehouseReportLastUpdated
+    productName: ProductName
+    stockValue : StockLevel * Price
+    reorderStatus: String = when {
+        RemainingBeforeReorder < 10 && RemainingBeforeReorder > 0 -> "Reorder soon"
+        RemainingBeforeReorder < 0 -> "Time to reorder"
+        else -> "Sufficient Stock"
+    }
+}
+
+
+@DatabaseService(connection = "my-postgres-db")
+service MyPostgresService {
+   table warehouseReport : DbStandardWarehouseReport[]
+   @UpsertOperation
+   write operation saveWarehouseReport(DbStandardWarehouseReport):DbStandardWarehouseReport
+}

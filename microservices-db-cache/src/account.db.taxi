@@ -1,0 +1,37 @@
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.Table
+import com.lunarbank.common.DateOfBirth
+import com.lunarbank.common.LastName
+import com.lunarbank.common.FirstName
+namespace com.lunarbank.account
+
+[[ An account is a customers physical bank account with us ]]
+@Table(connection = "my-postgres-db", schema = "public" , table = "accounts" )
+closed model Account {
+   @Id
+   account_id: AccountId
+   customer_id: CustomerId
+   account_number: AccountNumber
+   daily_limit: DailyLimit
+}
+
+@Table(connection = "my-postgres-db", schema = "public" , table = "customers" )
+closed model Customer {
+   @Id
+   customer_id: CustomerId
+   first_name : FirstName
+   last_name : LastName
+   date_of_birth: DateOfBirth
+}
+
+
+@DatabaseService(connection = "my-postgres-db")
+service AccountService {
+   // TODO : Accounts are read from the db
+   table accounts: Account[]
+}
+
+@DatabaseService(connection = "my-postgres-db")
+service CustomerService {
+   table customers : Customer[]
+}
