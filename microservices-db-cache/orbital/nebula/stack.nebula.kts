@@ -20,7 +20,7 @@ enum class TransactionCategory {
 
 stack {
 
-   postgres {
+   postgres(componentName = "demo-postgres") {
       table(
          "accounts", """
          CREATE TABLE accounts (
