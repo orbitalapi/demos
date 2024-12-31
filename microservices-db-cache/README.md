@@ -7,6 +7,8 @@ In this demo, we'll cover:
  * Deploying our query as an HTTP endpoint
  * Parameterizing that HTTP endpoint with customer details
 
+## Youtube walkthrough
+[![Youtube walkthrough](https://img.youtube.com/vi/URrOQZ6MVpg/0.jpg)](https://www.youtube.com/watch?v=URrOQZ6MVpg)
 
 > [!NOTE]
 > This demo deploys docker containers with a Postgres db, a Hazelcast cache, and an HTTP server.
