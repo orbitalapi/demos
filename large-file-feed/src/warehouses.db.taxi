@@ -1,0 +1,23 @@
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.Table
+import com.warehouse.CountryCode
+import com.warehouse.ChannelId
+import com.warehouse.DigitalWarehouseId
+import com.warehouse.PhysicalWarehouseId
+
+
+@Table(table = "digital_warehouse", schema = "public", connection = "warehouses-db")
+closed model DigitalWarehouse {
+   @Id
+   physical_id: PhysicalWarehouseId
+   digital_id: DigitalWarehouseId
+   channel_id: ChannelId
+   country_code: CountryCode
+}
+
+@DatabaseService(connection = "warehouses-db")
+service WarehouseDb {
+   table warehouses: DigitalWarehouse[]
+}
+
+

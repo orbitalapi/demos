@@ -1,0 +1,47 @@
+import com.warehouse.VirtualWarehouseId
+import com.orbitalhq.kafka.KafkaOperation
+import com.orbitalhq.kafka.KafkaService
+
+
+closed parameter model WarehouseInventoryKafkaRecord {
+   itemId : ItemId
+   sku : Sku
+   timestamp : RecordTimeStamp inherits DateTime
+   warehouseId : VirtualWarehouseId
+   zoneId : ZoneId
+   rackId : RackId
+   binId : BinId
+   productName : ProductName
+   brandName : BrandName
+   category : Category
+   subcategory : SubCategory
+   supplierId : SupplierId
+   supplierName : SupplierName
+   condition : Condition
+   quantityAvailable : AvailableQuantity inherits Quantity
+   quantityReserved : ReservedQuantity inherits Quantity
+   quantityDamaged : DamagedQuantity inherits Quantity
+   reorderPoint : ReorderPoint inherits Quantity
+   restockLevel : RestockLevel inherits Quantity
+   unitCost : UnitCost inherits Price
+   retailPrice : RetailPrice inherits Price
+   currency : Currency
+   weightKg : Weight
+   lengthCm : Length inherits SizeInCm
+   widthCm : Width inherits SizeInCm
+   heightCm : Height inherits SizeInCm
+   lastInventoryCheck : LastChecked inherits DateTime
+   nextInventoryCheck : NextScheduledCheck inherits DateTime
+   shippingMethod : ShippingMethod
+   handlingInstructions : HandlingInstructions
+}
+
+@KafkaService(connectionName =  "my-kafka-connection" )
+service WarehouseKafkaFeed {
+   @KafkaOperation( topic = "warehouse-stock-report", offset = "latest" )
+   write operation publishStockLevels(WarehouseInventoryKafkaRecord):WarehouseInventoryKafkaRecord
+
+   @KafkaOperation( topic = "warehouse-stock-report", offset = "earliest" )
+   stream stockLevelRecords : Stream<WarehouseInventoryKafkaRecord>
+
+}

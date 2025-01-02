@@ -1,0 +1,48 @@
+namespace com.warehouse
+
+type ItemId inherits String
+type Sku inherits String
+
+type VirtualWarehouseId inherits Int
+type PhysicalWarehouseId inherits Int
+type DigitalWarehouseId inherits String
+
+type FulfillmentCenter inherits String
+type WarehouseAcceptsReturns inherits Boolean
+
+type ChannelId inherits Int
+type CountryCode inherits String
+
+type StockValue inherits Decimal
+
+type ZoneId inherits String
+type RackId inherits String
+type BinId inherits String
+type ProductName inherits String
+type BrandName inherits String
+type Category inherits String
+type SubCategory inherits String
+type SupplierId inherits String
+type SupplierName inherits String
+
+enum Condition {
+   NEW,
+   LIKE_NEW,
+   GOOD,
+   FAIR
+}
+
+type Quantity inherits Int
+type Price inherits Decimal
+type Currency inherits String
+type Weight inherits Decimal
+type SizeInCm inherits Decimal
+
+enum ShippingMethod {
+   STANDARD,
+   EXPRESS,
+   NEXT_DAY,
+   SAME_DAY
+}
+
+type HandlingInstructions inherits String
