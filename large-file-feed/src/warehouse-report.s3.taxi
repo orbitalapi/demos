@@ -1,0 +1,44 @@
+import com.warehouse.VirtualWarehouseId
+import com.orbitalhq.aws.s3.FilenamePattern
+import com.orbitalhq.aws.s3.S3Operation
+import com.orbitalhq.aws.s3.S3Service
+
+@Csv
+closed model WarehouseInventoryRecord {
+   item_id : ItemId
+   sku : Sku
+   timestamp : RecordTimeStamp inherits DateTime
+   warehouse_id : VirtualWarehouseId
+   zone_id : ZoneId
+   rack_id : RackId
+   bin_id : BinId
+   product_name : ProductName
+   brand_name : BrandName
+   category : Category
+   subcategory : SubCategory
+   supplier_id : SupplierId
+   supplier_name : SupplierName
+   condition : Condition
+   quantity_available : AvailableQuantity inherits Quantity
+   quantity_reserved : ReservedQuantity inherits Quantity
+   quantity_damaged : DamagedQuantity inherits Quantity
+   reorder_point : ReorderPoint inherits Quantity
+   restock_level : RestockLevel inherits Quantity
+   unit_cost : UnitCost inherits Price
+   retail_price : RetailPrice inherits Price
+   currency : Currency
+   weight_kg : Weight
+   length_cm : Length inherits SizeInCm
+   width_cm : Width inherits SizeInCm
+   height_cm : Height inherits SizeInCm
+   last_inventory_check : LastChecked inherits DateTime
+   next_inventory_check : NextScheduledCheck inherits DateTime
+   shipping_method : ShippingMethod
+   handling_instructions : HandlingInstructions
+}
+
+@S3Service(connectionName =  "my-aws-account" )
+service S3WarehouseService {
+   @S3Operation(bucket = "warehouse-reports")
+   operation getReports(filename:FilenamePattern = "*.csv"):WarehouseInventoryRecord[]
+}

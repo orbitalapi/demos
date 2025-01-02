@@ -1,0 +1,19 @@
+import taxi.http.PathVariable
+import taxi.http.HttpOperation
+import com.warehouse.WarehouseAcceptsReturns
+import com.warehouse.FulfillmentCenter
+import com.warehouse.PhysicalWarehouseId
+import com.warehouse.VirtualWarehouseId
+
+closed model WarehouseApiResponse {
+   virtualId: VirtualWarehouseId
+   physicalId: PhysicalWarehouseId
+   fulfillmentCenter: FulfillmentCenter
+   acceptsReturns: WarehouseAcceptsReturns
+}
+
+@HttpService(baseUrl = "http://warehouse-service")
+service WarehouseApiService {
+   @HttpOperation(url = "/warehouses/{virtualWarehouseId}", method = "GET")
+   operation getWarehouseData(@PathVariable("virtualWarehouseId") virtualWarehouseId: VirtualWarehouseId): WarehouseApiResponse
+}

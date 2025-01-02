@@ -1,0 +1,41 @@
+import com.orbitalhq.mongo.Collection
+import com.orbitalhq.mongo.UpsertOperation
+import com.orbitalhq.mongo.MongoService
+import com.orbitalhq.mongo.SetOnInsert
+import com.warehouse.StockValue
+import AvailableQuantity
+import UnitCost
+import com.warehouse.BrandName
+import com.warehouse.Sku
+import com.warehouse.DigitalWarehouseId
+import DigitalWarehouse
+import com.warehouse.PhysicalWarehouseId
+import com.warehouse.VirtualWarehouseId
+
+@Collection(connection = "warehouseMongo", collection = "inventoryReports")
+closed parameter model WarehouseInventoryDocument {
+   entryId : EntryId inherits String
+   timestamp : RecordTimeStamp
+   virtualId: VirtualWarehouseId
+   physicalId: PhysicalWarehouseId
+   digitalId: DigitalWarehouseId
+
+   sku: Sku
+   brandName: BrandName
+   unitCost: UnitCost
+   available: AvailableQuantity
+   stockValue: StockValue
+
+   @SetOnInsert
+   insertedAt: InsertedAt inherits Instant = now()
+   updatedAt: UpdateAt inherits Instant = now()
+}
+
+@MongoService(connection =  "warehouseMongo")
+service MongoWarehouseService {
+   table warehouseInventory : WarehouseInventoryDocument[]
+
+   // Batch in 1000 items or 10 seconds
+   @UpsertOperation(batchSize = 1000, batchDuration = 10000)
+   write operation upsertWarehouseInventory(WarehouseInventoryDocument):WarehouseInventoryDocument
+}
