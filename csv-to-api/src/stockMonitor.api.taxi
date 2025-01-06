@@ -1,0 +1,21 @@
+import taxi.http.RequestBody
+import taxi.http.HttpOperation
+import LastUpdated
+import Quantity
+import PartId
+
+
+parameter model StockLevelReport {
+   id: PartId
+   stockLevel: Quantity
+   timestamp: LastUpdated
+}
+
+model StockUpdate {
+   message: StockUpdateMessage inherits String
+}
+
+service StockMonitorApi {
+   @HttpOperation(method = "POST", url = "http://stockMonitor/report")
+   write operation submitStockLevels(@RequestBody report: StockLevelReport[]):StockUpdate
+}

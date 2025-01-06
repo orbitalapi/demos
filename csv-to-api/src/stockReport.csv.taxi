@@ -1,0 +1,11 @@
+import com.orbitalhq.formats.Csv
+type PartId inherits String
+type Quantity inherits Int
+type LastUpdated inherits Date
+
+@Csv
+model StockReportCsv {
+   part: PartId
+   quantity: Quantity
+   lastUpdated: LastUpdated
+}

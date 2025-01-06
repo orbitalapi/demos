@@ -1,0 +1,8 @@
+import taxi.http.RequestBody
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "POST", url = "/api/q/submit")
+query submitCsv(@RequestBody body: StockReportCsv[]) {
+   given { body }
+   call StockMonitorApi::submitStockLevels
+}
