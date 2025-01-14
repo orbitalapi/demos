@@ -40,5 +40,6 @@ closed model WarehouseInventoryRecord {
 @S3Service(connectionName =  "my-aws-account" )
 service S3WarehouseService {
    @S3Operation(bucket = "warehouse-reports")
+   @com.orbitalhq.caching.Cache(mode = 'Disabled')
    operation getReports(filename:FilenamePattern = "*.csv"):WarehouseInventoryRecord[]
 }

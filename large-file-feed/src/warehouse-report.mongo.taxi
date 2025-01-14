@@ -14,7 +14,6 @@ import com.warehouse.VirtualWarehouseId
 
 @Collection(connection = "warehouseMongo", collection = "inventoryReports")
 closed parameter model WarehouseInventoryDocument {
-   entryId : EntryId inherits String
    timestamp : RecordTimeStamp
    virtualId: VirtualWarehouseId
    physicalId: PhysicalWarehouseId
@@ -29,6 +28,20 @@ closed parameter model WarehouseInventoryDocument {
    @SetOnInsert
    insertedAt: InsertedAt inherits Instant = now()
    updatedAt: UpdateAt inherits Instant = now()
+}
+
+
+model WarehouseEnrichedRow {
+   timestamp : RecordTimeStamp
+   virtualId: VirtualWarehouseId
+   physicalId: PhysicalWarehouseId
+   digitalId: DigitalWarehouseId
+
+   sku: Sku
+   brandName: BrandName
+   unitCost: UnitCost
+   available: AvailableQuantity
+   stockValue: StockValue = UnitCost * AvailableQuantity
 }
 
 @MongoService(connection =  "warehouseMongo")
