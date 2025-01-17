@@ -28,10 +28,6 @@ closed model DeliveryUpdate {
 @KafkaService( connectionName = "orbit-eats-kafka" )
 service DeliveryService {
    @KafkaOperation( topic = "deliveries", offset = "earliest" )
-    stream deliveryUpdates: Stream<DeliveryUpdate>
-    operation getDelivery(DeliveryId): DeliveryUpdate
+   stream deliveryUpdates: Stream<DeliveryUpdate>
 }
 
-service DriverService {
-   operation findDriver(DriverId): Driver
-}

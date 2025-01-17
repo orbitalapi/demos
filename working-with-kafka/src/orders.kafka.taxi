@@ -13,15 +13,17 @@ model OrderPlaced {
     orderTime: OrderTime inherits Instant
 }
 
-@KafkaService( connectionName = "orbit-eats-kafka" )
-service OrderService {
-    @KafkaOperation( topic = "orders", offset = "earliest" )
-    stream orderEvents: Stream<OrderPlaced>
-    operation getOrder(OrderId): OrderPlaced
-}
-
 model OrderItem {
     name: ProductName inherits String
     quantity: Quantity inherits Int
     price: Amount
 }
+
+
+@KafkaService( connectionName = "orbit-eats-kafka" )
+service OrderService {
+    @KafkaOperation( topic = "orders", offset = "earliest" )
+    stream orderEvents: Stream<OrderPlaced>
+}
+
+

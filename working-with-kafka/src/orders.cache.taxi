@@ -10,15 +10,15 @@ import com.orbitEats.orders.OrderTime
 import com.orbitEats.orders.OrderItem
 import com.orbitEats.OrderId
 
+// Define a schema for the object we're writing to Hazelcast
 @CompactObject
 @HazelcastMap(name = "orderDeliveryStatus")
 parameter model OrderDeliveryStatus {
-   @Id
+   @Id // We'll be applying updates, so need a key.
    orderId: OrderId
    items: OrderItem[]
    customerId : CustomerId
    deliveryStatus : DeliveryStatus
-   // timestamp: DeliveryStatusTimestamp
    customerName: CustomerName
 }
 
@@ -31,5 +31,6 @@ service HazelcastService {
    @UpsertOperation
    write operation upsert(OrderDeliveryStatus):OrderDeliveryStatus
 
+   // Exposes the cache as a queryable data source
    table orderStatus:OrderDeliveryStatus[]
 }

@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.orbitalhq.nebula.utils.duration
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -10,6 +11,7 @@ import kotlin.random.Random
 enum class RewardsStatus {
    Gold, Silver, Bronze
 }
+
 
 // Data class for Customer
 data class Customer(val id: String, val name: String, val email: String, val rewardsStatus: RewardsStatus)
@@ -85,6 +87,7 @@ stack {
       )
    }.associateBy { it.id }
 
+
    http {
       val mapper = jacksonObjectMapper()
       get("/customers/{id}") { call ->
@@ -123,11 +126,13 @@ stack {
                   "name" to "Main Dish",
                   "quantity" to Random.nextInt(1, 3),
                   "price" to Random.nextDouble(10.0, 30.0).toBigDecimal()
+                     .setScale(2, RoundingMode.HALF_UP)
                ),
                mapOf(
                   "name" to "Side Dish",
                   "quantity" to Random.nextInt(1, 2),
                   "price" to Random.nextDouble(5.0, 15.0).toBigDecimal()
+                     .setScale(2, RoundingMode.HALF_UP)
                )
             )
 
@@ -137,7 +142,7 @@ stack {
                "customerId" to "CUST-${Random.nextInt(1, 50)}",
                "items" to items,
                "totalAmount" to items.sumOf {
-                  (it["price"] as BigDecimal) * (it["quantity"] as Int).toBigDecimal()
+                  ((it["price"] as BigDecimal) * (it["quantity"] as Int).toBigDecimal()).setScale(2, RoundingMode.HALF_UP)
                },
                "orderTime" to Instant.now().toString()
             )
