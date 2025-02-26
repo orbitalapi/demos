@@ -1,0 +1,13 @@
+import com.orbitEats.delivery.DeliveryUpdate
+
+@HttpOperation(method = "GET", url = "/api/q/orders")
+query orderStream {
+   stream { OrderPlaced & DeliveryUpdate } as {
+    orderId,
+    items,
+    status,
+    timestamp,
+    currentLocation,
+    customerName: CustomerName
+}[]
+}

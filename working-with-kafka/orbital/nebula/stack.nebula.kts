@@ -114,7 +114,6 @@ stack {
 
       val activeDeliveries = ConcurrentHashMap<String, DeliveryState>()
 
-
       // Generate new orders
       producer("2000ms".duration(), "orders") {
          jsonMessage {
