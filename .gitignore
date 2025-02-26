@@ -166,12 +166,7 @@ bower_components
 .DS_Store
 
 # Vyne specific
-auth.conf
-connections.conf
-roles.conf
 license.json
-services.conf
-./config/
 gitWorkingDir/
 
 /search/
