@@ -10,7 +10,7 @@
    <parent>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-parent</artifactId>
-      <version>2.7.9</version>
+      <version>3.3.10</version>
       <relativePath/>
    </parent>
 
@@ -18,15 +18,18 @@
    <packaging>pom</packaging>
    <modules>
       <module>importing-through-ui</module>
-      <module>publishing-from-apps</module>
-      <module>spring-boot-voyager-diagram</module>
-      <module>insurance-quotes-spring-boot</module>
+     <!-- <module>publishing-from-apps</module> -->
+     <!-- <module>spring-boot-voyager-diagram</module> -->
+     <!-- <module>insurance-quotes-spring-boot</module> -->
       <module>streaming-user-updates</module>
       <module>xml-demo</module>
+      <module>films-api-client-crendentials</module>
+      <module>films-api-client-crendentials/films-api-authorisation-server</module>
+      <module>films-api-client-crendentials/films-api-resource-server</module>
    </modules>
 
    <properties>
-      <kotlin.version>1.7.20</kotlin.version>
+      <kotlin.version>1.9.24</kotlin.version>
       <taxi.version>1.45.0-SNAPSHOT</taxi.version>
       <maven.compiler.source>17</maven.compiler.source>
       <maven.compiler.target>17</maven.compiler.target>

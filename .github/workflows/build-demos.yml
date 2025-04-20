@@ -11,7 +11,7 @@ name: Build demos
 on:
    push:
       branches:
-         - 'main'
+         - 'oauth2-films-demo'
 
 jobs:
    build:
@@ -22,10 +22,10 @@ jobs:
 
       steps:
          -  uses: actions/checkout@v3
-         -  name: Set up JDK 17
+         -  name: Set up JDK 21
             uses: actions/setup-java@v3
             with:
-               java-version: '17'
+               java-version: '21'
                distribution: 'temurin'
                cache: maven
          -  name: Build with Maven
@@ -44,18 +44,26 @@ jobs:
                username: ${{ github.actor }}
                password: ${{ secrets.GITHUB_TOKEN }}
 
-         -  name: Build and push Pagila
+         -  name: Build and push Films API Authorisation Server.
             uses: docker/build-push-action@v4
             with:
-               context: ./importing-through-ui/docker/pagila-database
-               file: ./importing-through-ui/docker/pagila-database/Dockerfile
+               context: ./films-api-client-crendentials/films-api-authorisation-server
+               file: ./films-api-client-crendentials/films-api-authorisation-server/Dockerfile
                push: true
-               tags: ghcr.io/orbitalapi/demos-films-pagila:latest
+               tags: ghcr.io/orbitalapi/demos-films-authorisation-server:latest
 
-         -  name: Build and push Listings Api for UI Demo
+         -  name: Build and push Films API Resource Server
             uses: docker/build-push-action@v4
             with:
-               context: ./importing-through-ui/online-listings-api
-               file: ./importing-through-ui/online-listings-api/Dockerfile
+               context: ./films-api-client-crendentials/films-api-resource-server
+               file: ./films-api-client-crendentials/films-api-resource-server
                push: true
-               tags: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
+               tags: ghcr.io/orbitalapi/demos-films-api-resource-server:latest
+
+         - name: Build and push Films Data API
+           uses: docker/build-push-action@v4
+           with:
+              context: ./films-api-client-crendentials/films-data-api-public
+              file: ./films-api-client-crendentials/films-data-api-public
+              push: true
+              tags: ghcr.io/orbitalapi/demos-films-data-api-public:latest

@@ -196,3 +196,5 @@ build-version.txt
 ### Terraform config ###
 **/.terraform
 **/.terraform.lock.hcl
+/orbital-csv-http-end-point/
+/trading-demo/
