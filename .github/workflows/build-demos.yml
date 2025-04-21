@@ -56,7 +56,7 @@ jobs:
             uses: docker/build-push-action@v4
             with:
                context: ./films-api-client-crendentials/films-api-resource-server
-               file: ./films-api-client-crendentials/films-api-resource-server
+               file: ./films-api-client-crendentials/films-api-resource-server/Dockerfile
                push: true
                tags: ghcr.io/orbitalapi/demos-films-api-resource-server:latest
 
@@ -64,6 +64,6 @@ jobs:
            uses: docker/build-push-action@v4
            with:
               context: ./films-api-client-crendentials/films-data-api-public
-              file: ./films-api-client-crendentials/films-data-api-public
+              file: ./films-api-client-crendentials/films-data-api-public/Dockerfile
               push: true
               tags: ghcr.io/orbitalapi/demos-films-data-api-public:latest
