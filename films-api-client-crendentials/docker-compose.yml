@@ -1,0 +1,17 @@
+services:
+  authorisation-server:
+    image: ghcr.io/orbitalapi/demos-films-authorisation-server
+    ports:
+      - "9000:9000"
+  client-crdentials-api:
+    image: ghcr.io/orbitalapi/demos-films-api-resource-server
+    ports:
+      - "8080:8080"
+    environment:
+      OPTIONS: >-
+        --spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authorisation-server/oauth2/jwks
+
+  public-api:
+    image: ghcr.io/orbitalapi/demos-films-data-api-public
+    ports:
+      - "8081:8081"

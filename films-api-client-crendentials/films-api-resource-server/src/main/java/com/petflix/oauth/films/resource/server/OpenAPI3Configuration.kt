@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
-    servers = [Server(url = "https://localhost:8081")], info = Info(
+    servers = [Server(url = "http://localhost:8080")], info = Info(
         title = "Film Service APIs",
         description = "This lists all Films Service API Calls. The Calls are OAuth2 secured, "
                 + "so please use your client ID and Secret to test them out.",
