@@ -1,5 +1,8 @@
 package com.petflix.oauth.films.resource.server
 
+import io.swagger.v3.oas.annotations.extensions.Extension
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import org.apache.commons.csv.CSVRecord
 import java.math.BigDecimal
 
