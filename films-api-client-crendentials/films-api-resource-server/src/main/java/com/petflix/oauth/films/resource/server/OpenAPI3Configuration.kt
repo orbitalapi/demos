@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @OpenAPIDefinition(
-    servers = [Server(url = "http://localhost:8080")], info = Info(
+    servers = [Server(url = "\${app.baseUrl:http://localhost:8080}")], info = Info(
         title = "Film Service APIs",
         description = "This lists all Films Service API Calls. The Calls are OAuth2 secured, "
                 + "so please use your client ID and Secret to test them out.",
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration
     type = SecuritySchemeType.OAUTH2,
     flows = OAuthFlows(
         clientCredentials = OAuthFlow(
-            tokenUrl = "\${petflix.authroisationServer.tokenUrl:http://localhost:9000/oauth2/token}"
+            tokenUrl = "\${petflix.authorisationServer.tokenUrl:http://localhost:9000/oauth2/token}"
         )
     )
 )

@@ -1,8 +1,19 @@
 package com.petflix.oauth.films.data
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition
+import io.swagger.v3.oas.annotations.info.Info
+import io.swagger.v3.oas.annotations.servers.Server
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+
+@OpenAPIDefinition(
+    servers = [Server(url = "\${app.baseUrl:http://localhost:8081}")], info = Info(
+        title = "Film Service Data APIs",
+        description = "A Public API to provide daa about directors, writers and cast members of films.",
+        version = "v1.0"
+    )
+)
 
 @Configuration
 open class OpenApiConfiguration {
