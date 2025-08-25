@@ -1,0 +1,12 @@
+import EventId
+namespace com.foo.test
+
+type HelloMessage inherits String
+model Hello {
+   hello: HelloMessage
+}
+
+service TestApi {
+   @HttpOperation(url = "http://hello", method = "GET")
+   operation getHello(EventId):Hello
+}

@@ -1,0 +1,10 @@
+import com.orbitEats.CustomerId
+import com.orbitEats.customer.CustomerName
+
+query customersAndNames {
+   stream { OrderPlaced } as {
+      id : OrderId
+      cust: CustomerId
+      name : CustomerName
+   }[]
+}

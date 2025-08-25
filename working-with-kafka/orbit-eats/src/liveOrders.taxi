@@ -1,0 +1,22 @@
+import com.orbitEats.customer.CustomerName
+import com.orbitEats.CustomerId
+import com.orbitEats.DeliveryId
+import com.orbitEats.OrderId
+import com.orbitEats.DeliveryStatus
+import com.orbitEats.RewardsPointsBalance
+import com.orbitEats.LoyaltyStatus
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/liveOrders")
+query liveOrders {
+   stream { OrderPlaced & DeliveryUpdate } as {
+       orderId: OrderId
+       customerId: CustomerId
+       customerName: CustomerName
+       deliveryStatus: DeliveryStatus
+       rewardsPointsBalance: RewardsPointsBalance
+       loyaltyStatus: LoyaltyStatus
+   }[]
+}

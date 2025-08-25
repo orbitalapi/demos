@@ -1,0 +1,50 @@
+import taxi.http.RequestBody
+import ProductName
+import ProductId
+import OrderedQuantity
+import OrderId
+import DeliveryRef
+import taxi.http.PathVariable
+import taxi.http.HttpOperation
+
+closed model Order {
+   orderId : OrderId inherits String
+   orderedQuantity: OrderedQuantity inherits Int
+}
+
+closed model DeliveryDetails {
+   orderId: OrderId
+}
+
+service OrdersApi {
+   @HttpOperation(method =  "GET", url = "http://productsApi/orders/{id}" )
+   operation getOrder(@PathVariable("id") id:OrderId):Order(...)
+
+   @HttpOperation(method =  "GET", url = "http://productsApi/deliveries/{deliveryId}/order" )
+   operation getOrderDetails(@PathVariable("deliveryId") deliveryId:DeliveryRef):DeliveryDetails(...)
+}
+
+parameter model UpdateStockLevelsRequest {
+   productId: ProductId
+   productName: ProductName
+   receivedQuantity: DeliveredQuantity
+}
+closed model UpdateStockLevelsResponse {
+   productId: ProductId
+   productName: ProductName
+   receivedQuantity: DeliveredQuantity
+   updatedQuantity: CurrentStockQuantity
+}
+service DeliveriesApi {
+   @HttpOperation(method =  "POST", url = "http://productsApi/deliveries" )
+   write operation updateStockLevels(@RequestBody UpdateStockLevelsRequest):UpdateStockLevelsResponse
+}
+
+type OrderDiscrepancy inherits String = when {
+   DeliveredQuantity > OrderedQuantity -> "Excess stock delivered"
+   DeliveredQuantity < OrderedQuantity -> "Insufficient stock delivered"
+   else -> "Correct quantity"
+}
+
+type OrderOverUnder inherits Int = OrderedQuantity - DeliveredQuantity
+

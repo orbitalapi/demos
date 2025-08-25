@@ -1,0 +1,12 @@
+type DeliveryRef inherits String
+type SupplierId inherits String
+type DeliveredQuantity inherits Int
+type CurrentStockQuantity inherits Int
+type DeliveryDate inherits Instant
+type OrderId inherits String
+
+type ProductSku inherits String
+type ProductId inherits String
+type ProductName inherits String
+type ProductCategory inherits String
+type StorageLocation inherits String

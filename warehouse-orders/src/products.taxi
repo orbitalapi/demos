@@ -1,0 +1,24 @@
+import taxi.http.PathVariable
+import taxi.http.HttpOperation
+import ProductSku
+
+closed model ProductDetails {
+  productId: ProductId
+  sku: ProductSku
+  productName: ProductName
+  category: ProductCategory
+  storageLocation: StorageLocation
+}
+
+closed model ProductIdLookup {
+  productId: ProductId
+  sku: ProductSku
+}
+
+service ProductsApi {
+   @HttpOperation(url="http://productsApi/products/lookup/sku/{sku}", method = "GET")
+   operation getProductId(@PathVariable("sku") sku:ProductSku):ProductIdLookup(...)
+
+   @HttpOperation(url="http://productsApi/products/{productId}", method = "GET")
+   operation getProduct(@PathVarialbe("productId") productId: ProductId):ProductDetails(...)
+}

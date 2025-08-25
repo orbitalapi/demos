@@ -1,0 +1,33 @@
+import com.orbitalhq.azure.servicebus.TopicName
+import com.orbitalhq.kafka.KafkaOperation
+import com.orbitalhq.kafka.KafkaService
+
+model FastShipDeliveryEvent {
+  sku: ProductSku
+  quantity: DeliveredQuantity
+  deliveryRef: DeliveryRef
+  supplierId: SupplierId
+  dateDelivered : DeliveryDate
+}
+
+
+model SurePostDeliveryEvent {
+  productId: ProductId
+  qtyDelivered: DeliveredQuantity
+  orderId: OrderId
+  supplierId: SupplierId
+  @Format("d-MMM-yyyy HH:mm:ss")
+  timestamp: DeliveryDate
+}
+
+@KafkaService(connectionName = "my-kafka-connection")
+service FastShipKafkaService {
+   @KafkaOperation(topic = "fastship-deliveries", offset = "latest")
+   stream fastShipDeliveryEvents : Stream<FastShipDeliveryEvent>
+}
+
+@KafkaService(connectionName = "my-kafka-connection")
+service SurePostKafkaService {
+   @KafkaOperation(topic = "surepost-deliveries", offset = "latest")
+   stream surePostDeliveryEvents : Stream<SurePostDeliveryEvent>
+}

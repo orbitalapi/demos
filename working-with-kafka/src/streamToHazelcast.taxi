@@ -1,7 +1,0 @@
-import com.orbitEats.delivery.DeliveryUpdate
-import com.orbitEats.CustomerId
-
-query streamToHazelcast {
-   stream { OrderPlaced & DeliveryUpdate }
-   call HazelcastService::upsert
-}
