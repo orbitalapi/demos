@@ -1,0 +1,49 @@
+import com.foo.test.HelloMessage
+import CategoryDescription
+import CategoryId
+import com.orbitalhq.mongo.Collection
+import com.orbitalhq.mongo.UpsertOperation
+import com.orbitalhq.mongo.MongoService
+import com.orbitalhq.kafka.KafkaOperation
+import com.orbitalhq.kafka.KafkaService
+import com.orbitalhq.mongo.UniqueIndex
+
+model CustomerEvent {
+   eventId : EventId inherits String
+   name : CustomerName inherits String
+   categoryId : CategoryId inherits String
+}
+
+@Collection(connection = "mongo-connection", collection = "customer")
+closed parameter model Customer {
+   name : CustomerName
+   categoryId : CategoryId
+   category : CategoryDescription
+   message: HelloMessage
+}
+
+@Collection(connection = "mongo-connection", collection = "category")
+closed model Category {
+   @Id
+   _id : CategoryId
+   description : CategoryDescription inherits String
+}
+
+@KafkaService(connectionName =  "kafka-connection" )
+service CustomerEventsKafka {
+   @KafkaOperation( topic = "customer-events", offset = "latest" )
+   stream customerEvents : Stream<CustomerEvent>
+}
+
+@MongoService(connection =  "mongo-connection")
+service MyMongoService {
+   table category : Category[]
+
+   table customer : Customer[]
+
+   @UpsertOperation
+   write operation upsertCustomer(Customer):Customer
+}
+
+type IsPriority inherits Boolean = (CategoryId) -> false
+

@@ -1,0 +1,29 @@
+import com.orbitalhq.kafka.KafkaService
+import com.orbitalhq.kafka.KafkaOperation
+
+namespace com.orbitEats.orders
+
+model OrderPlaced {
+    @Id
+    orderId: OrderId
+    restaurantId: RestaurantId
+    customerId: CustomerId
+    items: OrderItem[]
+    totalAmount: Amount
+    orderTime: OrderTime inherits Instant
+}
+
+model OrderItem {
+    name: ProductName inherits String
+    quantity: Quantity inherits Int
+    price: Amount
+}
+
+
+@KafkaService( connectionName = "orbit-eats-kafka" )
+service OrderService {
+    @KafkaOperation( topic = "orders", offset = "earliest" )
+    stream orderEvents: Stream<OrderPlaced>
+}
+
+

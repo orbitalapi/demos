@@ -1,0 +1,16 @@
+import com.orbitEats.DeliveryStatus
+import OrderDeliveryStatus
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/currentOrders")
+query AllCurrentOrders {
+   find { OrderDeliveryStatus[](DeliveryStatus != 'DELIVERED') }
+}
+
+
+@HttpOperation(method = "GET", url = "/api/q/currentOrders/{customerId}")
+query CurrentOrdersForCustomer(
+   @PathVariable("customerId") customerId: CustomerId
+) {
+   find { OrderDeliveryStatus[](CustomerId == customerId)  }
+}

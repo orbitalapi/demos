@@ -1,0 +1,4 @@
+query streamToMongo {
+   stream { CustomerEvent }
+   call MyMongoService::upsertCustomer
+}

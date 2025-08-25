@@ -1,0 +1,19 @@
+import com.orbitEats.CountryCode
+import taxi.http.PathVariable
+import taxi.http.HttpOperation
+namespace com.orbitEats.customer
+
+type CustomerName inherits String
+
+closed model Customer {
+   @Id
+   id: CustomerId
+   name: CustomerName
+   email: CustomerEmail inherits String
+   country: CountryCode
+}
+
+service CustomerService {
+   @HttpOperation(url="http://customerApi/customers/{customerId}", method = "GET")
+   operation findCustomer(@PathVariable("customerId") customerId: CustomerId): Customer(...)
+}

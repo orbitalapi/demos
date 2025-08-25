@@ -1,0 +1,7 @@
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.CustomerId
+
+query streamToMongo {
+   stream { OrderPlaced & DeliveryUpdate }
+   call OrderDeliveryMongoService::upsert
+}

@@ -1,0 +1,6 @@
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.CustomerId
+
+query justStream {
+   stream { OrderPlaced }
+}

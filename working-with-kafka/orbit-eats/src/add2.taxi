@@ -1,0 +1,7 @@
+
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/add2")
+query add2 {
+   find { 1 + 1}
+}

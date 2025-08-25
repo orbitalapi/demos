@@ -1,0 +1,36 @@
+import com.orbitalhq.mongo.UpsertOperation
+import com.orbitalhq.mongo.MongoService
+import com.orbitalhq.mongo.Collection
+import com.orbitEats.customer.CustomerName
+import com.orbitEats.delivery.DeliveryStatusTimestamp
+import com.orbitEats.DeliveryStatus
+import com.orbitEats.CustomerId
+import com.orbitEats.orders.OrderTime
+import com.orbitEats.orders.OrderItem
+import com.orbitEats.OrderId
+import com.orbitalhq.mongo.UniqueIndex
+
+// Define a schema for the object we're writing to Hazelcast
+@Collection(connection = "orbit-eats-mongo", collection = "order-updates")
+parameter model OrderDeliveryStatusMongoRecord {
+   @UniqueIndex
+   orderId: OrderId
+   items: OrderItem[]
+   customerId : CustomerId
+   deliveryStatus : DeliveryStatus
+   customerName: CustomerName
+}
+
+
+@MongoService(connection = "orbit-eats-mongo")
+service OrderDeliveryMongoService {
+
+
+   // Expose a write operation, and annotate it
+   // with UpsertOperation, to define the writing behaviour
+   @UpsertOperation(batchSize = 2000, batchDuration = 10000)
+   write operation upsert(OrderDeliveryStatusMongoRecord):OrderDeliveryStatusMongoRecord
+
+   // Exposes the cache as a queryable data source
+   table orderStatus:OrderDeliveryStatusMongoRecord[]
+}
