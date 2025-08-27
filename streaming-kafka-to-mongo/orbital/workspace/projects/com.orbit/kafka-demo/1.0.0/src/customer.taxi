@@ -19,7 +19,8 @@ closed parameter model Customer {
    name : CustomerName
    categoryId : CategoryId
    category : CategoryDescription
-   message: HelloMessage
+   eventId : EventId
+ //  message: HelloMessage
 }
 
 @Collection(connection = "mongo-connection", collection = "category")
@@ -41,7 +42,7 @@ service MyMongoService {
 
    table customer : Customer[]
 
-   @UpsertOperation
+   @UpsertOperation(batchSize = 50, batchDuration = 5000)
    write operation upsertCustomer(Customer):Customer
 }
 

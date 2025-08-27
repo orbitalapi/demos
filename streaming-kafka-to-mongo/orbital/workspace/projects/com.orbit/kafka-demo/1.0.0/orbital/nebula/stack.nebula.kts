@@ -16,7 +16,7 @@ stack {
       }
    }
    kafka {
-      producer(10.milliseconds, "customer-events") {
+      producer(100.milliseconds, "customer-events") {
          var counter = 0
          jsonMessage {
             // Ocacsionally emit a bad item (platinum doesn't exist)
