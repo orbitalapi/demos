@@ -20,14 +20,10 @@ import uk.gov.fsa.homepurchasestructure.PropertyValue
 import uk.gov.fsa.homepurchasestructure.HPPAmountGranted
 import uk.gov.fsa.homepurchasestructure.HPPTerm
 import uk.gov.fsa.homepurchasestructure.TypeHomeBuyer
-// import uk.gov.fsa.homepurchasestructure.HPPCharsList
 import uk.gov.fsa.homepurchasestructure.TypeRentRate
 import uk.gov.fsa.homepurchasestructure.AdvisedSale
 import uk.gov.fsa.homepurchasestructure.HPPAcctOpenDate
 import uk.gov.fsa.homepurchasestructure.PrincipalOrNetworkFSARef
-// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.Cancellation
-// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.TransRef
-// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.FirmFSARef
 
 @com.orbitalhq.formats.Csv
 model CsvReportRow {
@@ -64,15 +60,10 @@ model CsvReportRow {
 }
 
 
-
 @HttpOperation(url = "/api/q/csvToXml", method = "POST")
 query CsvToXml(
    @taxi.http.RequestBody reportRows:CsvReportRow[]
 ) {
-   given {
-     // defaults we're not providing
-     hppCharList: HPPChar = "O"
-   }
    find {
    (FSAHSFFeedHP) {
            FSAFeedHeader: {
