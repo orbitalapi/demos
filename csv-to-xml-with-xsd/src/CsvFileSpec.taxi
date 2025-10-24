@@ -1,0 +1,92 @@
+import uk.gov.fsa.homepurchasestructure.HPProtectionPlanInc
+import uk.gov.fsa.homepurchasestructure.GarageInc
+import uk.gov.fsa.homepurchasestructure.NewDwelling
+import uk.gov.fsa.homepurchasestructure.NumBedrooms
+import uk.gov.fsa.homepurchasestructure.NumHabitableRooms
+import uk.gov.fsa.homepurchasestructure.TypeDwelling
+import uk.gov.fsa.homepurchasestructure.PurchasePrice
+import uk.gov.fsa.homepurchasestructure.DateIncentiveRateEnds
+import uk.gov.fsa.homepurchasestructure.InitialGrossRentRate
+import uk.gov.fsa.homepurchasestructure.SecondHomeBuyerImpCredHistList
+import uk.gov.fsa.homepurchasestructure.MainHomeBuyerImpCredHistList
+import uk.gov.fsa.homepurchasestructure.SecondHomeBuyerCCJValue
+import uk.gov.fsa.homepurchasestructure.MainHomeBuyerCCJValue
+import uk.gov.fsa.homepurchasestructure.IncomeVerification
+import uk.gov.fsa.homepurchasestructure.GrossIncome
+import uk.gov.fsa.homepurchasestructure.MainEmpStatus
+import uk.gov.fsa.homepurchasestructure.MainDOB
+import uk.gov.fsa.homepurchasestructure.IncomeBasis
+import uk.gov.fsa.homepurchasestructure.PropertyValue
+import uk.gov.fsa.homepurchasestructure.HPPAmountGranted
+import uk.gov.fsa.homepurchasestructure.HPPTerm
+import uk.gov.fsa.homepurchasestructure.TypeHomeBuyer
+// import uk.gov.fsa.homepurchasestructure.HPPCharsList
+import uk.gov.fsa.homepurchasestructure.TypeRentRate
+import uk.gov.fsa.homepurchasestructure.AdvisedSale
+import uk.gov.fsa.homepurchasestructure.HPPAcctOpenDate
+import uk.gov.fsa.homepurchasestructure.PrincipalOrNetworkFSARef
+// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.Cancellation
+// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.TransRef
+// import uk.gov.fsa.fsahsffeedhp.fsahsffeedhpmsg.coreitems.FirmFSARef
+
+@com.orbitalhq.formats.Csv
+model CsvReportRow {
+   firmFSARef : FirmFSARef
+   transRef: TransRef
+    cancellation: Cancellation
+    principalOrNetworkFSARef:PrincipalOrNetworkFSARef
+    hPPAcctOpenDate: HPPAcctOpenDate
+    advisedSale: AdvisedSale
+    typeRentRate: TypeRentRate
+    hPPChars: HPPChar
+    typeHomeBuyer: TypeHomeBuyer
+    hPPTerm: HPPTerm
+    hPPAmountGranted: HPPAmountGranted
+    propertyValue: PropertyValue
+    incomeBasis: IncomeBasis
+    mainDOB: MainDOB
+    mainEmpStatus: MainEmpStatus
+    grossIncome: GrossIncome
+    incomeVerification: IncomeVerification
+    mainHomeBuyerCCJValue: MainHomeBuyerCCJValue
+    secondHomeBuyerCCJValue: SecondHomeBuyerCCJValue
+    //mainHomeBuyerImpCredHistList: MainHomeBuyerImpCredHistList
+    //secondHomeBuyerImpCredHistList: SecondHomeBuyerImpCredHistList
+    initialGrossRentRate: InitialGrossRentRate
+    dateIncentiveRateEnds: DateIncentiveRateEnds
+    purchasePrice: PurchasePrice
+    typeDwelling: TypeDwelling
+    numHabitableRooms: NumHabitableRooms
+    numBedrooms: NumBedrooms
+    newDwelling: NewDwelling
+    garageInc: GarageInc
+    hPProtectionPlanInc: HPProtectionPlanInc
+}
+
+
+
+@HttpOperation(url = "/api/q/csvToXml", method = "POST")
+query CsvToXml(
+   @taxi.http.RequestBody reportRows:CsvReportRow[]
+) {
+   given {
+     // defaults we're not providing
+     hppCharList: HPPChar = "O"
+   }
+   find {
+   (FSAHSFFeedHP) {
+           FSAFeedHeader: {
+               FeedTargetSchemaVersion: '',
+               Submitter: {
+                   SubmittingFirm: "1000",
+                   SubmittingDept: "SubmittingDept0"
+               },
+               ReportDetails: {
+                   ReportCreationDate: currentDate(),
+                   ReportIdentifier: "ReportIdentifier0"
+               }
+           },
+           FSAHSFFeedHPMsg: reportRows.map((reportRow: CsvReportRow) -> FSAHSFFeedHPMsg)
+       }
+   }
+}
