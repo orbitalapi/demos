@@ -50,6 +50,8 @@ We can use a TaxiQL query for this - here it is for Sydney:
 
 ```taxiql
 // Define a common calculation to use in our queries
+// (This type is already defined in the schema, shown here for completeness)
+// type RemainingBeforeReorder = StockLevel - ReorderLevel
 type RemainingBeforeReorder = StockLevel - ReorderLevel
 find { SydneyWarehouseStockReport[] } as {
     sku: SKU
@@ -73,7 +75,8 @@ The same query, just with a different `find { }` clause also works for London:
 
 ```taxiql
 // Define a common calculation to use in our queries
-type RemainingBeforeReorder = StockLevel - ReorderLevel
+// (This type is already defined in the schema, shown here for completeness)
+// type RemainingBeforeReorder = StockLevel - ReorderLevel
 find { LondonWarehouseStockReport[] } as {
     sku: SKU
     stockLevel: StockLevel
