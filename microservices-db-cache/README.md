@@ -1,23 +1,10 @@
 ## Overview
-This demo stack showcases a series of read queries joining data from microservices, and a database. 
 
-In this demo, we'll cover:
- * Reading and joining data
- * Enabling a cache (Hazelcast)
- * Deploying our query as an HTTP endpoint
- * Parameterizing that HTTP endpoint with customer details
+This demo shows how Orbital joins data across multiple microservices and a database using [TaxiQL](https://orbitalhq.com/docs/querying/writing-queries) — without writing any glue code or maintaining resolvers.
 
-## Youtube walkthrough
-[![Youtube walkthrough](https://img.youtube.com/vi/URrOQZ6MVpg/0.jpg)](https://www.youtube.com/watch?v=URrOQZ6MVpg)
+The core idea: each field in your query is a [semantic type](https://taxilang.org/docs/language/semantic-types). Orbital understands which services expose and consume those types, and automatically orchestrates the calls needed to satisfy your query. Adding a field to a query is all it takes to pull in data from another service.
 
-> [!NOTE]
-> This demo deploys docker containers with a Postgres db, a Hazelcast cache, and an HTTP server.
-> 
-> This is powered by our test framework, [Nebula](https://nebula.orbitalhq.com), which needs to be enabled. Check out the [stubs](/stubs) page to ensure
-> that everything is running properly. (If you're using our official [Docker Compose](https://start.orbitalhq.com), then you should be fine).
-> 
-> For more information, see our docs on [enabling Nebula](https://orbitalhq.com/docs/testing/stubbing-services), and to see the actual stubs configured
-> for this project, check the source in [`stack.nebula.kts`](/projects/com.lunarbank:insights-portal:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts)
+By the end of this demo, you'll have a live HTTP endpoint that returns account details, balances, transactions, and spending insights in a single call — assembled from four different data sources.
 
 ## Key Services
 
@@ -32,52 +19,70 @@ In this demo, we'll cover:
 }
 ```
 
-Our demo consists of:
-* A database with tables for [Customer](/catalog/com.lunarbank.account.Customer) and [Account](/catalog/com.lunarbank.account.Account)
-* A [Transactions REST API](/services/com.lunarbank.transactions.TransactionService), with endpoints for fetching [a list of transactions](/catalog/com.lunarbank.transactions.Transaction), and [account balances](/services/com.lunarbank.transactions.TransactionService/getAccountBalance)
-* There's also an [Insights API](/services/com.lunarbank.insights.InsightsService) which provides richer information about customer spending
+The demo uses:
+* A database with [Customer](/catalog/com.lunarbank.account.Customer) and [Account](/catalog/com.lunarbank.account.Account) tables
+* A [Transactions REST API](/services/com.lunarbank.transactions.TransactionService) — for fetching [transactions](/catalog/com.lunarbank.transactions.Transaction) and [account balances](/services/com.lunarbank.transactions.TransactionService/getAccountBalance)
+* An [Insights API](/services/com.lunarbank.insights.InsightsService) — for richer customer spending data
 
 > [!NOTE]
-> The above links will take you to the relevant pages in Orbital's catalog.
-> Take a moment to look around and explore how everything hangs together.
+> This demo deploys Docker containers with a Postgres database, a Hazelcast cache, and an HTTP server,
+> powered by [Nebula](https://nebula.orbitalhq.com). Check the [stubs](/stubs) page to confirm everything
+> is running. For setup help, see the [Nebula docs](https://orbitalhq.com/docs/testing/stubbing-services)
+> or the [`stack.nebula.kts`](/projects/com.lunarbank:insights-portal:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts) source.
 
-We'll be linking data from these data services together, to build out an API for powering a UI.
+## Building the query
 
-## Key queries:
+The steps below build up progressively.
 
-**Fetch accounts (db query):**
+> [!NOTE]
+> **As you run each query, open the Profiler tab in the results panel** — it shows exactly which services were called, in what order, and why. This is the best way to see Orbital's query planning in action.
 
-This query simply reads all accounts from the DB -- nothing fancy here.
+---
+
+**1. Fetch all accounts**
+
+A simple database read to start:
+
 ```taxiql
 find { Account[] }
 ```
 
+---
 
-**Fetch a single account:**
-Similary, this query fetches a single account, using the `AccountId`. Note how criteria are passed into
-Taxi queries - using constraints on types. There's more examples showing querying with constraints in the [Taxi Playground](https://playground.taxilang.org/examples/querying-with-criteria)
+**2. Fetch a single account**
+
+Criteria are expressed as type constraints rather than query parameters. Orbital resolves which service or table exposes `Account` and applies the filter accordingly — there's no need to know the underlying endpoint.
+
+For more on querying with constraints, see the [Taxi Playground](https://playground.taxilang.org/examples/querying-with-criteria).
 
 ```taxiql
 find { Account(AccountId == 'ACC-1') }
 ```
 
-**Fetch accounts, combined with customer details:**
-This time, we'll start combining data from multiple sources.
+---
+
+**3. Add customer details**
+
+This is where Orbital's type-driven resolution starts to shine. By adding `CustomerId`, `FirstName`, and `LastName` to the output shape, Orbital sees that those types aren't available on `Account` directly — and automatically looks up which service can provide them, calling it with the `AccountId` it already has.
+
+You don't configure this join anywhere. Orbital infers it from the type signatures in your schema.
 
 ```taxiql
 find { Account(AccountId == 'ACC-1') } as {
     accountId : AccountId
-    // We're choosing to nest customer details in a JSON object.
-    // You can rework this query to flatted the id and name as top level fields, if you wish
     customer: {
         id: CustomerId
-        // An expression, combining the first and last names
+        // An expression combining first and last name
         name : FirstName + ' ' + LastName
     }
 }
 ```
 
-Add account balances:
+---
+
+**4. Add account balance**
+
+Adding `AccountBalance` to the query causes Orbital to call the [Transactions API](/services/com.lunarbank.transactions.TransactionService/getAccountBalance), passing the `AccountId` it already resolved. The nested `as { ... }` block selects just the fields we want from the response.
 
 ```taxiql
 find { Account(AccountId == 'ACC-1') } as {
@@ -87,23 +92,17 @@ find { Account(AccountId == 'ACC-1') } as {
         name : FirstName + ' ' + LastName
     }
     balance: AccountBalance as {
-        // This is using a shorthand, to select the fields from AccountBalance 
-        // that we're interested in.
         balance,
         limit
     }
 }
 ```
 
-> [!NOTE]  
-> As you're running these queries, be sure to check out the Profiler tab of the query results panel,
-> to see what's actually going on.
->
-> The profiler tab gives you a high level overview of the query plan,
-> along with detailed tracing of the individual requests that were performed
+---
 
+**5. Add transactions**
 
-Finally, add transcations:
+Adding `Transaction[]` triggers a call to the transactions list endpoint, again using the `AccountId` already in scope. Orbital handles the sequencing — it knows this call depends on data from a previous step.
 
 ```taxiql
 find { Account(AccountId == 'ACC-1') } as {
@@ -120,30 +119,38 @@ find { Account(AccountId == 'ACC-1') } as {
 }
 ```
 
-Let's reshape the response, and add in spending insights:
+---
+
+**6. Add spending insights and reshape the response**
+
+Finally, adding `SpendingInsights` triggers a call to the [Insights API](/services/com.lunarbank.insights.InsightsService). The full query now joins data from four sources — two REST APIs, one database, and one insights service — with Orbital handling all the orchestration.
+
+The `Transaction[] as { ... }[]` syntax reshapes each transaction in the list, keeping only the fields we need.
 
 ```taxiql
 find { Account(AccountId == 'ACC-1') } as {
-       accountId: AccountId
-       customerName: FirstName + ' ' + LastName
-       customerId : CustomerId
-       balance: Balance
-       transactions: Transaction[] as {
-          amount: Amount
-          description: Description
-          timestamp: TransactionTimestamp
-       }[]
-       insights: SpendingInsights
-   }
+    accountId: AccountId
+    customerName: FirstName + ' ' + LastName
+    customerId : CustomerId
+    balance: Balance
+    transactions: Transaction[] as {
+        amount: Amount
+        description: Description
+        timestamp: TransactionTimestamp
+    }[]
+    insights: SpendingInsights
+}
 ```
 
-At this point, the query is joining data from multiple API calls and database queries.
-Be sure to check out the Profiler tab in the query response panel to see what's going on.
+Check the Profiler tab here — you'll see the full call graph, including which calls could be parallelised and which had to be sequenced.
 
-## Query as an endpoint
+---
 
-The below query has already been saved to the schema - check it out in the [endpoints](/endpoints/PortalQuery). It publishes
-our query as an HTTP endpoint, where the account id is parameterized. It's published at `/api/q/spendingInsights/{accountId}`.
+## Publishing as an HTTP endpoint
+
+Rather than running this query ad-hoc, we can save it as a named, parameterised HTTP endpoint. The `accountId` path variable is typed as `AccountId`, so Orbital knows how to thread it through the query plan.
+
+The endpoint below is already saved to the schema — view it on the [endpoints page](/endpoints/PortalQuery).
 
 ```taxi
 @HttpOperation(method = "GET", url = "/api/q/spendingInsights/{accountId}")
@@ -157,22 +164,20 @@ query PortalQuery(@PathVariable("accountId") accountId: AccountId) {
 }
 ```
 
-You can invoke this query by running:
-
 ```bash
-curl -X GET "http://localhost:9022/api/q/spendingInsightsCache/ACC-2" | jq
+curl -X GET "http://localhost:9022/api/q/spendingInsights/ACC-2" | jq
 ```
 
-## Querying with a cache
-An alternative version of the query is available which makes heavy use of caching - you can monitor it's usage in it's dedicated [endpoints page](/endpoints/CachingPortalQuery)
+## Adding a cache
+
+The same query is available with Hazelcast caching enabled. The `@Cache` annotation is all that's needed — Orbital automatically caches the results of individual operation calls, not just the final response. This means cache hits are applied at the service-call level, even when queries are composed differently.
+
+Monitor cache behaviour from the [CachingPortalQuery endpoint page](/endpoints/CachingPortalQuery).
 
 ```taxi
-[[ This is the same query as the PortalQuery, but it has a cache enabled.
-Operation calls are automatically cached in a Hazelcast cache, defined in connections ]]
 @HttpOperation(method = "GET", url = "/api/q/spendingInsightsCache/{accountId}")
 @Cache(connection = "myHazelcast")
 query CachingPortalQuery(@PathVariable("accountId") accountId: AccountId) {
-   // accountId is a parameter passed into the query from a PathVariable
    find { Account(AccountId == accountId) } as {
        accountId: AccountId
        balance: Balance
@@ -180,5 +185,14 @@ query CachingPortalQuery(@PathVariable("accountId") accountId: AccountId) {
        insights: SpendingInsights
    }
 }
-
 ```
+
+```bash
+curl -X GET "http://localhost:9022/api/q/spendingInsightsCache/ACC-2" | jq
+```
+
+## Video walkthrough
+
+For a guided tour of this demo:
+
+[![Youtube walkthrough](https://img.youtube.com/vi/URrOQZ6MVpg/0.jpg)](https://www.youtube.com/watch?v=URrOQZ6MVpg)
