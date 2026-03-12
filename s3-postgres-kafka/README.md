@@ -1,76 +1,63 @@
-# S3 / Postgres / Kafka
-This project shows integration between S3, Postgres and Kafka.
+## Overview
 
-In this demo, we'll cover:
+This demo shows how Orbital connects S3, a REST API, a Postgres database, and Kafka — using a single query model to read, enrich, and route data across all four, without writing any transformation or integration code.
 
- * Reading from S3
- * Enriching S3 data against an API
- * Writing enriched data into a database
- * Writing enriched data out onto Kafka
- * Reading enriched data from Kafka
+We'll use fictitious cinema ticket sales data to walk through:
 
-We use some fictitious cinema ticket sale information for our demo.
+* Reading CSV data from an S3 bucket
+* Enriching it with ticket prices from a REST API
+* Writing the enriched data to Postgres
+* Publishing the same data onto a Kafka topic
+* Reading it back off Kafka as a stream
 
-## Importing this project into Orbital
-
-> [!NOTE]
-> If you're reading this within Orbital, you can skip this section - you've already done it :)
- * Open Orbital, and head to Projects -> Add New Project -> Git Repository
- * Fill in the form:
- * * **Repository URL:** `https://github.com/orbitalapi/demos`
-   * Click Test Connection to populate the defaults.
-   * **Path to taxi project** `/s3-postgres-kafka`
-* Click Create
+At each step, Orbital detects what transformation is needed between source and target types, and handles it automatically.
 
 > [!NOTE]
-> The rest of this README is intended to be read from within Orbital - Links are relative within Orbital, and interactive architecture charts only render within Orbital
+> This demo runs stub services via [Nebula](https://nebula.orbitalhq.com). Check the [stubs panel](/stubs) to confirm everything is running. If stubs haven't started automatically, see the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs). The stub configuration lives in [`stack.nebula.kts`](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
 
-## Stub services
-This demo project has a number of stub services deployed.
-
-You can see the details of the stubbed services in the [stubs panel](/stubs). The source file that drives this is 
-part of this project - see [orbital/nebula/stack.nebula.kts](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
-
-> [!NOTE]
-> The stub services should start automatically. However, if not, check the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs)
-
-## Reading ticket sales from S3
-Ticket sales are returned from an S3 bucket
-
-You can read them with this query:
-
-```taxiql
-find { VenueTicketSales[] }
-```
-
-### How this works
- * The [TicketsS3Bucket](/services/TicketsS3Bucket) ([source](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=ticketSales.s3.taxi)) is defined returning a CSV containing [VenueTicketSales](/catalog/VenueTicketSales):
- * The `connections.conf` ([source](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf)) defines how to connect to AWS
-
-```taxi
-@S3Service(connectionName = "my-aws-account")
-service TicketsS3Bucket {
-   @S3Operation(bucket = "cinema-ticket-sales")
-   operation readBucket(filename: FilenamePattern = "ticket-sales.csv"):VenueTicketSales[]
-}
-```
-
-## Enrich ticket sales with venue data
-The [TicketPricesApi](/services/TicketPricesApi) is a REST API that returns ticket prices for each cinema.
-
-This diagram shows the relationships between the two sevices:
+## Key services
 
 ```components
 {
    "members" : {
       "TicketsS3Bucket" : {},
-      "VenueTicketSales" : {},
-      "TicketPricesApi" : {}
+      "TicketPricesApi" : {},
+      "MyPostgresService" : {},
+      "MyKafkaConnectionService" : {}
    }
 }
 ```
 
-We can enrich our existing query to add this data:
+* [TicketsS3Bucket](/services/TicketsS3Bucket) — reads a CSV of ticket sales from an S3 bucket
+* [TicketPricesApi](/services/TicketPricesApi) — a REST API returning ticket prices per cinema
+* [MyPostgresService](/services/MyPostgresService) — a Postgres-backed table for persisting enriched records
+* [MyKafkaConnectionService](/services/MyKafkaConnectionService) — a Kafka topic for streaming ticket sales messages
+
+Connection details for all four are defined in [`connections.conf`](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf).
+
+## Reading ticket sales from S3
+
+The [TicketsS3Bucket](/services/TicketsS3Bucket) is declared in the schema as returning `VenueTicketSales[]` from a CSV file:
+
+```taxi
+@S3Service(connectionName = "my-aws-account")
+service TicketsS3Bucket {
+   @S3Operation(bucket = "cinema-ticket-sales")
+   operation readBucket(filename: FilenamePattern = "ticket-sales.csv"): VenueTicketSales[]
+}
+```
+
+To read from it:
+
+```taxiql
+find { VenueTicketSales[] }
+```
+
+Orbital resolves `VenueTicketSales` to the S3 bucket, connects using the credentials in `connections.conf`, and parses the CSV automatically.
+
+## Enriching with ticket prices
+
+The [TicketPricesApi](/services/TicketPricesApi) exposes ticket prices per cinema. Because `Price` is a semantic type that the API is known to provide, adding it to the output shape is enough to trigger the call — Orbital figures out which service to call and what to pass it:
 
 ```taxiql
 find { VenueTicketSales[] } as {
@@ -79,124 +66,92 @@ find { VenueTicketSales[] } as {
 }[]
 ```
 
-Orbital calls the REST API to fetch the Ticket Price for each cinema, and include it in our response.
+Orbital calls the REST API once per record, using the cinema identifier already in scope, and merges the result into the response. Check the **Profiler tab** to see this call in the query plan.
 
-## Ingesting Ticket sales to a database
-Our project has a Postgres database - [MyPostgresService](/services/MyPostgresService), which exposes a table for
-reading [VenueTicketSalesRecord](/catalog/VenueTicketSalesRecord)'s - the model of our database.
+## Writing enriched data to Postgres
 
-> [!NOTE]
-> In this example, we're not using an existing schema, so Orbital will create the database table
-> the first time for us. 
-> 
-> More commonly, you'd be using an existing database schema. We cover how to work with
-> database schemas in our [docs](https://orbitalhq.com/docs/describing-data-sources/databases#describing-tables-in-taxi)
-
+The [MyPostgresService](/services/MyPostgresService) is declared with an upsert write operation:
 
 ```taxi
 @DatabaseService(connection = "my-postgres-db")
 service MyPostgresService {
-
-   // table declares read operations, such as querying
    table ticketSales : VenueTicketSalesRecord[]
-   
-   // An upsert operation, for performing upsert queries
+
    @UpsertOperation
-   write operation saveTicketSalesRecord(VenueTicketSalesRecord):VenueTicketSalesRecord
+   write operation saveTicketSalesRecord(VenueTicketSalesRecord): VenueTicketSalesRecord
 }
 ```
 
-We can update our query to write to our database:
+To ingest ticket sales into the database:
 
 ```taxiql
 find { VenueTicketSales[] }
 call MyPostgresService::saveTicketSalesRecord
 ```
 
-### Automatic transformation (CSV -> Database record)
-The [VenueTicketSales csv format](/catalog/VenueTicketSales) read from the S3 bucket isn't the same format
-as the [VenueTicketSalesRecord database record](/catalog/VenueTicketSalesRecord):
+`VenueTicketSales` (the S3 CSV format) and `VenueTicketSalesRecord` (the database model) are different types — the database record includes a generated primary key and the `Price` field from the REST API, which isn't in the CSV:
 
 ```taxi
-@Table(connection = "my-postgres-db", schema = "public" , table = "ticketSales" )
+@Table(connection = "my-postgres-db", schema = "public", table = "ticketSales")
 closed parameter model VenueTicketSalesRecord {
    @Id @GeneratedId
-   recordId : RecordId? // <-- added a primary key record
-   title : Title
+   recordId: RecordId?       // generated primary key
+   title: Title
    filmId: FilmId
-   screeningDate : ScreeningDate
+   screeningDate: ScreeningDate
    cinemaName: CinemaName
    cinemaId: CinemaId
    tickets: TicketsSold
-   ticketPrice: Price // <-- added the price, coming from a REST API
-   revenue: TicketRevenue 
+   ticketPrice: Price        // enriched from the REST API
+   revenue: TicketRevenue
 }
 ```
 
-Orbital detects that the S3 bucket's type of `VenueTicketSales` doesn't match the required data of `VenueTicketSalesRecord`, 
-so automatically transforms the data.
+Orbital detects the type mismatch between source and target, automatically enriches the data by calling the `TicketPricesApi`, and transforms the result into the `VenueTicketSalesRecord` shape before writing. No mapping code required.
 
-As we need to load some data from a REST API (the [TicketPricesApi](/services/TicketPricesApi)), Orbital automatically invokes
-the REST API as before, enriching the data prior to persisting.
+> [!NOTE]
+> This demo doesn't use a pre-existing database schema, so Orbital creates the table on first run. If you're working with an existing schema, see the [database docs](https://orbitalhq.com/docs/describing-data-sources/databases#describing-tables-in-taxi).
 
-### How this works
+## Publishing to Kafka
 
-* The `connections.conf` ([source](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf)) defines how to connect to Postgres (`my-postgres-db`)
-
-
-## Writing to Kafka
-We can also write the messages from our S3 files to Kafka.
-
-Our schema contains a Kafka service declared named [MyKafkaConnectionService](/services/MyKafkaConnectionService) ([source](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=ticketSales.kafka.taxi))
-which publishes a stream of `VenueTicketSalesMessage`:
+The [MyKafkaConnectionService](/services/MyKafkaConnectionService) declares both a readable stream and a write operation on the `ticket-sales` topic:
 
 ```taxi
 @KafkaService(connectionName = "my-kafka-connection")
 service MyKafkaConnectionService {
+   @KafkaOperation(topic = "ticket-sales", offset = "earliest")
+   stream venueTicketSales: Stream<VenueTicketSalesMessage>
 
-   // A stream of messages, we can read from
-   @KafkaOperation(topic = "ticket-sales" , offset = "earliest")
-   stream venueTicketSales : Stream<VenueTicketSalesMessage>
-
-   // A publishing operation, allowing us to write messages to the topic
-   @KafkaOperation( topic = "ticket-sales", offset = "earliest" )
-   write operation publishTicketSalesMessage(VenueTicketSalesMessage):VenueTicketSalesMessage
+   @KafkaOperation(topic = "ticket-sales", offset = "earliest")
+   write operation publishTicketSalesMessage(VenueTicketSalesMessage): VenueTicketSalesMessage
 }
 ```
 
-We can issue a query to read data from our S3 bucket, and write to Kafka - again, enriching the data using our REST API
-to add cinema ticket prices.
+To publish the S3 data onto Kafka:
 
 ```taxiql
-import MyKafkaConnectionService
-find { VenueTicketSales[] } 
+find { VenueTicketSales[] }
 call MyKafkaConnectionService::publishTicketSalesMessage
 ```
 
-### How this works:
- * The `connections.conf` file ([source](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf)) defines how to connect to Kafka
- * Orbital connects to S3 (as discussed above), and reads the data from the CSV file
- * Orbital detects that the S3 bucket's type of `VenueTicketSales` doesn't match the required data of `VenueTicketSalesMessage`, so automatically transforms the data, enriching the message by calling our REST API.
- * Orbital writes each message onto Kafka.
-   * Note:  `VenueTicketSalesMessage` doesn't declare a message format (unlike `VenueTicketSales` - which is annotated with `@Csv`). Therefore, it's assumed to be JSON
-   * Orbital supports writing to Kafka in multiple different formats, like Avro, Protobuf, and more. 
+As with the database write, Orbital detects that `VenueTicketSales` doesn't match `VenueTicketSalesMessage`, automatically enriches each record via the REST API, and transforms into the target type before publishing. `VenueTicketSalesMessage` doesn't declare a format annotation, so Orbital writes it as JSON by default. Avro, Protobuf, and other formats are also supported.
 
-## Reading back off from Kafka
-To read the messages back off of Kafka, we can issue another query:
+## Reading back from Kafka
+
+To consume the messages back off the topic as a stream:
 
 ```taxiql
-import VenueTicketSalesMessage
 stream { VenueTicketSalesMessage }
 ```
 
-This streams data directly from Kafka.
+Orbital connects to the `ticket-sales` topic and streams messages as they arrive, deserialising from JSON into `VenueTicketSalesMessage` automatically.
 
 ## What's next
-That's all for this tutorial.
 
-Other things we didn't explore are:
- * [Publishing our data as an API](https://orbitalhq.com/docs/querying/queries-as-endpoints)
- * [Creating a streaming pipeline of data](https://orbitalhq.com/docs/querying/streaming-data)
- * [Adding security policies](https://orbitalhq.com/docs/data-policies/data-policies)
+Other areas worth exploring from here:
 
-To find out more, reach out to the Orbital team on [Slack](https://join.slack.com/t/orbitalapi/shared_invite/zt-697laanr-DHGXXak5slqsY9DqwrkzHg) or on [Github](https://github.com/orbitalapi/orbital)
+* [Publishing query results as a REST API](https://orbitalhq.com/docs/querying/queries-as-endpoints)
+* [Building streaming data pipelines](https://orbitalhq.com/docs/querying/streaming-data)
+* [Adding data security policies](https://orbitalhq.com/docs/data-policies/data-policies)
+
+Questions? Find us on [Slack](https://join.slack.com/t/orbitalapi/shared_invite/zt-697laanr-DHGXXak5slqsY9DqwrkzHg) or [GitHub](https://github.com/orbitalapi/orbital).
