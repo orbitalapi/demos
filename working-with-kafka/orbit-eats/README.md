@@ -1,11 +1,10 @@
-# Working with Kafka
+## Overview
 
-This demo showcases common scenarios when working with Kafka.
+This demo shows how Orbital works with Kafka streams — subscribing to topics, joining events from multiple streams, and enriching the results with data from a REST API.
 
-It's based in a fictitious food delivery service, called Orbit Eats.
+It's built around a fictitious food delivery service, Orbit Eats, with two event streams: orders being placed and delivery updates from drivers.
 
-## Architecture
-Our main two components are our Kafka topics, `OrderPlaced` events and `DeliveryUpdates`.
+## Key services
 
 ```schemaDiagram
 {
@@ -16,72 +15,59 @@ Our main two components are our Kafka topics, `OrderPlaced` events and `Delivery
 }
 ```
 
-## Joining streams
-We have two separate streams of events:
+* [OrderService](/services/com.orbitEats.orders.OrderService) — publishes `OrderPlaced` events when a new order is received
+* [DeliveryService](/services/com.orbitEats.delivery.DeliveryService) — publishes `DeliveryUpdate` events as drivers collect and deliver orders
+
+## Reading individual streams
+
+Each topic can be subscribed to independently. TaxiQL uses `stream { }` rather than `find { }` for streaming sources — the query stays open and emits each message as it arrives.
 
 **Orders:**
-New orders being placed:
-
 ```taxiql
-import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced }
 ```
 
 **Delivery updates:**
-Updates from the drivers as they collect and deliver orders to customers:
-
 ```taxiql
-import com.orbitEats.delivery.DeliveryUpdate
 stream { DeliveryUpdate }
 ```
 
-### Union types - each message as it arrives
-Streams are joined based on linked IDs - we can see patchy updates by requesting a union
-of the two types:
+## Joining streams
+
+### Union types — each message as it arrives
+
+The `|` operator subscribes to multiple topics and emits each message as it arrives, regardless of source:
 
 ```taxiql
-import com.orbitEats.delivery.DeliveryUpdate
-import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced | DeliveryUpdate }
 ```
 
-This shows each message as it arrives. This query is stateless by default, so there's no
-way to link messages.
-
-We can add a state store (which, by default uses the build-in Hazelcast store):
+By default this is stateless, so there's no way to correlate messages from one topic with messages from the other. Adding a `@StateStore` annotation enables Orbital to hold state across messages, so that data from an earlier `OrderPlaced` event is automatically joined with a later `DeliveryUpdate` that shares the same order ID:
 
 ```taxiql
-import com.orbitEats.delivery.DeliveryUpdate
-import com.orbitEats.orders.OrderPlaced
-
 @StateStore
 stream { OrderPlaced | DeliveryUpdate }
 ```
 
-Messages are still streamed as they arrive, but we hold state, so that data from earlier
-messages is joined with newer messages as they arrive.
+Messages are still emitted as they arrive — the difference is that Orbital now has enough context to enrich each message with data from earlier events in the stream.
 
-### Intersection types - wait until a message from each source
-Intersection types wait until all sources have emitted a message before emitting.
+### Intersection types — wait for a match from each source
+
+The `&` operator waits until a matching message has arrived from *all* sources before emitting. This is useful when you want a complete view — for example, waiting until you have both the original order and at least one delivery update before processing:
 
 ```taxiql
-import com.orbitEats.delivery.DeliveryUpdate
-import com.orbitEats.orders.OrderPlaced
-
-stream { OrderPlaced & DeliveryUpdate } 
+stream { OrderPlaced & DeliveryUpdate }
 ```
 
-Intersection types force the usage of state - so there's no need to define a `@StateStore`, unless
-you wish to customize the behaviour.
+Intersection types implicitly require state (to hold messages until a match is found), so there's no need to add `@StateStore` explicitly.
 
-## Projecting the data
-Here, we'll join the data from both sources, and enrich with a REST API call to gather
-customer details
+## Projecting and enriching
+
+The `as { }` block works the same way as in standard TaxiQL queries — Orbital maps fields from both stream sources into the target shape, and automatically calls any additional services needed to populate fields that aren't present in the stream data.
+
+Here, `customerName: CustomerName` isn't available in either Kafka topic, so Orbital calls the relevant REST API using the customer identifier already in scope:
 
 ```taxiql
-import com.orbitEats.delivery.DeliveryUpdate
-import com.orbitEats.orders.OrderPlaced
-
 stream { OrderPlaced & DeliveryUpdate } as {
     orderId,
     items,
@@ -91,8 +77,3 @@ stream { OrderPlaced & DeliveryUpdate } as {
     customerName: CustomerName
 }[]
 ```
-
-## TODO:
- - Stream results into a cache
-   - Requires a Hazelcast (or Redis) Nebula connector
- - Expose the cache on a rest API
