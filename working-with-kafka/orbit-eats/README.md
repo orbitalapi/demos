@@ -23,6 +23,7 @@ We have two separate streams of events:
 New orders being placed:
 
 ```taxiql
+import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced }
 ```
 
@@ -30,6 +31,7 @@ stream { OrderPlaced }
 Updates from the drivers as they collect and deliver orders to customers:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
 stream { DeliveryUpdate }
 ```
 
@@ -38,6 +40,8 @@ Streams are joined based on linked IDs - we can see patchy updates by requesting
 of the two types:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced | DeliveryUpdate }
 ```
 
@@ -47,6 +51,9 @@ way to link messages.
 We can add a state store (which, by default uses the build-in Hazelcast store):
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+
 @StateStore
 stream { OrderPlaced | DeliveryUpdate }
 ```
@@ -58,6 +65,9 @@ messages is joined with newer messages as they arrive.
 Intersection types wait until all sources have emitted a message before emitting.
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+
 stream { OrderPlaced & DeliveryUpdate } 
 ```
 
