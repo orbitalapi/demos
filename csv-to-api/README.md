@@ -1,33 +1,13 @@
-## CSV to API
-This demo shows using Orbital to accept a CSV file, then publish it to a 3rd party server as JSON.
+## Overview
 
-> [!TIP]
-> This demo uses [Nebula](https://nebula.orbitalhq.com/) to provide the stubbed
-> out API.
->
-> Make sure Nebula is running (if you started Orbital using the docker composer from [start.orbitalhq.com](https://start.orbitalhq.com), then it should be configured automatically for you). 
-> 
-> You see the HTTP server running in the [Stub servers](/stubs) panel.
-> 
-> Read more about Nebula in our [docs](https://orbitalhq.com/docs/testing/stubbing-services)
-
-## Importing this project into Orbital
+This demo shows how Orbital accepts a CSV file over HTTP and forwards it to a third-party REST API as JSON — automatically translating between the two formats, including differences in field names and structure.
 
 > [!NOTE]
-> If you're reading this within Orbital, you can skip this section - you've already done it :)
- * Open Orbital, and head to Projects -> Add New Project -> Git Repository
- * Fill in the form:
- * * **Repository URL:** `https://github.com/orbitalapi/demos`
-   * Click Test Connection to populate the defaults.
-   * **Path to taxi project** `/csv-to-api`
-* Click Create
+> This demo uses [Nebula](https://nebula.orbitalhq.com/) to stub out the target API. Check the [stubs panel](/stubs) to confirm the HTTP server is running. If you started Orbital using the Docker Compose from [start.orbitalhq.com](https://start.orbitalhq.com), Nebula should be configured automatically. See the [Nebula docs](https://orbitalhq.com/docs/testing/stubbing-services) for more.
 
-> [!NOTE]
-> The rest of this README is intended to be read from within Orbital - Links are relative within Orbital, and interactive architecture charts only render within Orbital
+## The endpoint
 
-
-### Orbital endpoint
-The entry point to the demo is `endpoint.taxi`, which declares a query with an endpoint:
+The entry point is a single HTTP endpoint that accepts a CSV payload and forwards it to the [StockMonitorApi](/services/StockMonitorApi):
 
 ```taxi
 @HttpOperation(method = "POST", url = "/api/q/submit")
@@ -37,28 +17,7 @@ query submitCsv(@RequestBody body: StockReportCsv[]) {
 }
 ```
 
-This is callable at `http://orbitalUrl/api/q/submit`. Assuming that Orbital
-is running on `localhost:9022`, you can curl this right now:
-
-```bash
-curl --location 'localhost:9022/api/q/submit' \
---header 'Content-Type: text/plain' \
---data 'part,quantity,lastUpdated
-ABC-01,1000,2025-01-06
-ABC-02,2000,2025-01-06
-'
-```
-
-After running this, check the logs in docker desktop for Nebula. You should see the following logged out by the http server:
-
-
-```
-Request recevied - Body: 
- [{"id":"ABC-01","stockLevel":1000,"timestamp":"2025-01-06"},{"id":"ABC-02","stockLevel":2000,"timestamp":"2025-01-06"}]
- ```
-
- ### How this works
-The `@RequestBody` for this query is a csv format: [StockReportCsv](/catalog/StockReportCsv), which is a simple Taxi model containing a `@Csv` annotation:
+The `@RequestBody` is typed as `StockReportCsv[]` — a Taxi model annotated with `@Csv`, which tells Orbital to parse the incoming request body as CSV:
 
 ```taxi
 @Csv
@@ -69,11 +28,30 @@ model StockReportCsv {
 }
 ```
 
-The query calls [submitStockLevels](/services/StockMonitorApi/submitStockLevels), which accpets a JSON payload of `StockLevelReport[]`:
+## Try it
+
+With Orbital running on `localhost:9022`:
+
+```bash
+curl --location 'localhost:9022/api/q/submit' \
+--header 'Content-Type: text/plain' \
+--data 'part,quantity,lastUpdated
+ABC-01,1000,2025-01-06
+ABC-02,2000,2025-01-06
+'
+```
+
+After running this, check the Nebula logs in Docker Desktop. You should see the forwarded JSON payload logged by the stub server:
+
+```json
+[{"id":"ABC-01","stockLevel":1000,"timestamp":"2025-01-06"},{"id":"ABC-02","stockLevel":2000,"timestamp":"2025-01-06"}]
+```
+
+## How the transformation works
+
+The target API's [submitStockLevels](/services/StockMonitorApi/submitStockLevels) operation accepts a `StockLevelReport[]` — a JSON format with different field names from the CSV:
 
 ```taxi
-// JSON by default
-// Note that field names differ from our CSV
 parameter model StockLevelReport {
    id: PartId
    stockLevel: Quantity
@@ -82,14 +60,11 @@ parameter model StockLevelReport {
 
 service StockMonitorApi {
    @HttpOperation(method = "POST", url = "http://stockMonitor/report")
-   write operation submitStockLevels(@RequestBody report: StockLevelReport[]):StockUpdate
+   write operation submitStockLevels(@RequestBody report: StockLevelReport[]): StockUpdate
 }
 ```
 
-Orbital handles the translation from CSV -> JSON automatically.
+`StockReportCsv` and `StockLevelReport` share the same semantic types — `PartId`, `Quantity`, and `LastUpdated` — even though their field names differ. Orbital uses those shared types to map between the two models automatically, converting from CSV to JSON in the process.
 
 > [!TIP]
-> This transformation is using the standard Orbital query engine,
-> and could therefore be performing enrichments (loading data from other services) 
-> as well as simple data transformation.
-
+> Because this transformation runs through Orbital's standard query engine, it can do more than simple field mapping — it can also enrich the data by calling other services before forwarding, using exactly the same mechanism shown in the other demos.

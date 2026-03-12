@@ -6,3 +6,12 @@ query submitCsv(@RequestBody body: StockReportCsv[]) {
    given { body }
    call StockMonitorApi::submitStockLevels
 }
+
+@HttpOperation(method = "POST", url = "/api/q/submit-single-calls")
+query submitCsv(@RequestBody body: StockReportCsv[]) {
+   given {
+      ApiKey = 'IAmTheApiKey'
+   }
+   find { StockReportCsv[] }
+   //call StockMonitorApi::submitSingleStockLevel
+}

@@ -4,6 +4,7 @@ import LastUpdated
 import Quantity
 import PartId
 
+type ApiKey inherits String
 
 parameter model StockLevelReport {
    id: PartId
@@ -18,4 +19,7 @@ model StockUpdate {
 service StockMonitorApi {
    @HttpOperation(method = "POST", url = "http://stockMonitor/report")
    write operation submitStockLevels(@RequestBody report: StockLevelReport[]):StockUpdate
+
+     @HttpOperation(method = "POST", url = "http://stockMonitor/report-single")
+     write operation submitSingleStockLevel(@RequestBody report: StockLevelReport, apiKey: ApiKey):StockUpdate
 }

@@ -1,0 +1,22 @@
+import taxi.http.RequestBody
+import taxi.http.HttpOperation
+
+parameter model ConsumerReportRequest {
+    contact_id: ContactId inherits String
+    title: ContactTitle inherits String
+    first_name: ContactFirstName inherits String
+    middle_name: ContactMiddleName? inherits String
+    last_name: ContactLastName inherits String
+    date_of_birth: ContactDateOfBirth inherits String
+    house_number: ContactMailingAddressBuildingNumber?  inherits String
+    street: ContactMailingAddressStreet? inherits String
+    district: ContactMailingAddressSubStreet? inherits String
+    post_town: ContactMailingAddressCity? inherits String
+    county: ContactMailingAddressCounty? inherits String
+    post_code: ContactMailingAddressPostcode inherits String
+}
+
+ service ConsumerReportService{
+     @HttpOperation(method = "POST", url = "http://stockMonitor/report")
+     write operation getConsumerReport(@RequestBody request: ConsumerReportRequest): ConsumerReportRequest
+ }
