@@ -24,11 +24,13 @@ Each topic can be subscribed to independently. TaxiQL uses `stream { }` rather t
 
 **Orders:**
 ```taxiql
+import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced }
 ```
 
 **Delivery updates:**
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
 stream { DeliveryUpdate }
 ```
 
@@ -39,12 +41,17 @@ stream { DeliveryUpdate }
 The `|` operator subscribes to multiple topics and emits each message as it arrives, regardless of source:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
 stream { OrderPlaced | DeliveryUpdate }
 ```
 
 By default this is stateless, so there's no way to correlate messages from one topic with messages from the other. Adding a `@StateStore` annotation enables Orbital to hold state across messages, so that data from an earlier `OrderPlaced` event is automatically joined with a later `DeliveryUpdate` that shares the same order ID:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+
 @StateStore
 stream { OrderPlaced | DeliveryUpdate }
 ```
@@ -56,6 +63,9 @@ Messages are still emitted as they arrive — the difference is that Orbital now
 The `&` operator waits until a matching message has arrived from *all* sources before emitting. This is useful when you want a complete view — for example, waiting until you have both the original order and at least one delivery update before processing:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+
 stream { OrderPlaced & DeliveryUpdate }
 ```
 
@@ -68,6 +78,9 @@ The `as { }` block works the same way as in standard TaxiQL queries — Orbital 
 Here, `customerName: CustomerName` isn't available in either Kafka topic, so Orbital calls the relevant REST API using the customer identifier already in scope:
 
 ```taxiql
+import com.orbitEats.delivery.DeliveryUpdate
+import com.orbitEats.orders.OrderPlaced
+
 stream { OrderPlaced & DeliveryUpdate } as {
     orderId,
     items,
