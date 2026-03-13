@@ -100,9 +100,9 @@ stack {
       val mapper = jacksonObjectMapper()
       get("/customers/{id}") { call ->
          val id = call.parameters["id"]!!
-         if (id == "CUST-3") {
-            error("Not found")
-         }
+//         if (id == "CUST-3") {
+//            error("Not found")
+//         }
          call.respondText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(customers[id]!!))
       }
    }
