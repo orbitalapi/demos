@@ -1,0 +1,10 @@
+// import com.orbitalhq.authentication.AllowAnonymous
+import taxi.http.HttpOperation
+
+// @AllowAnonymous
+// @HttpOperation(method = "GET", url = "/api/orbital1/e_simplicity_demo/q/a2")
+// @HttpOperation(method = "GET", url = "/api/q/a2")
+// query Foo2 {
+//     given { s: String[] = ['A','B','C']}
+//     find { s }
+// }

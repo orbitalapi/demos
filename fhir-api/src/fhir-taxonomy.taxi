@@ -1,0 +1,132 @@
+// ════════════════════════════════════════════════════════════════════
+//  Orbital CMS demo — core semantic taxonomy
+//  --------------------------------------------------------------------
+//  These are the *shared* semantic types: the vocabulary that lets the
+//  FHIR EHR, the Snowflake claims warehouse and the Databricks risk
+//  model line up without mapping code.
+//
+//  Nothing in here is bound to a connection or a wire format. The FHIR
+//  models are created by importing the annotated OpenAPI spec; the
+//  Snowflake / Databricks models live in their own files. They all
+//  reference the types below.
+//
+//  The single most important type is `fhir.PatientMrn` — it is the join
+//  key that spans all three systems.
+// ════════════════════════════════════════════════════════════════════
+
+// --------------------------------------------------------------------
+//  fhir — clinical concepts sourced from the EHR (and any provider that
+//         maps onto the same meanings, conformant or not).
+// --------------------------------------------------------------------
+namespace fhir {
+
+   // ─── Patient identity ───────────────────────────────────────────
+
+   // Medical Record Number. The canonical patient identifier and the
+   // join key used across FHIR, the claims warehouse and the risk model.
+   type PatientMrn inherits String
+
+   // FHIR logical resource id (e.g. "pat-00124"). Local to the FHIR
+   // server — used to resolve references within FHIR, not for cross-
+   // system joins.
+   type PatientId inherits String
+
+   type PatientGivenName inherits String
+   type PatientFamilyName inherits String
+
+   // A single composed display name (e.g. "Jane Doe"). Derived from the
+   // FHIR HumanName parts — see the projections in the query file.
+   type PatientName inherits String
+
+   type BirthDate inherits Date
+
+   // male | female | other | unknown
+   enum AdministrativeGender {
+      male, female, other, unknown
+   }
+
+   // ─── Encounter ──────────────────────────────────────────────────
+
+   type EncounterId inherits String
+
+   // planned | arrived | triaged | in-progress | onleave | finished |
+   // cancelled | entered-in-error | unknown
+   type EncounterStatus inherits String
+
+   // HL7 v3 ActCode class: AMB (ambulatory), EMER (emergency),
+   // IMP (inpatient).
+   type EncounterClassCode inherits String
+
+   // The CMS service category an encounter rolls up to. Derived from
+   // Encounter.type — this is the "tag Encounter.type against CMS
+   // service categories" annotation called out in the demo outline.
+   type CmsServiceCategory inherits String
+
+   // ─── Condition / diagnosis ──────────────────────────────────────
+
+   type ConditionId inherits String
+
+   // ICD-10-CM or SNOMED CT code (e.g. "E11.9").
+   type DiagnosisCode inherits String
+
+   // Human-readable diagnosis text (e.g. "Type 2 diabetes mellitus").
+   type DiagnosisDescription inherits String
+
+   // active | recurrence | relapse | inactive | remission | resolved
+   type ConditionClinicalStatus inherits String
+
+   // Count of a patient's active diagnoses — a feature for the risk model.
+   type ActiveDiagnosisCount inherits Int
+
+   // A single active diagnosis. Both the conformant FHIR Condition
+   // resource and the non-conformant provider map their diagnosis fields
+   // onto this model, so a query asking for diagnoses resolves the same
+   // way regardless of source (Stage 3 of the demo).
+   closed model ActiveDiagnosis {
+      code : DiagnosisCode
+      description : DiagnosisDescription
+      clinicalStatus : ConditionClinicalStatus?
+   }
+}
+
+// --------------------------------------------------------------------
+//  claims — coverage and claims concepts owned by the payer's warehouse
+//           (Snowflake). Deliberately distinct from the FHIR Coverage /
+//           ExplanationOfBenefit resources so the planner sources this
+//           data from Snowflake, matching the demo narrative.
+// --------------------------------------------------------------------
+namespace claims {
+
+   // active | cancelled | draft | entered-in-error
+   type CoverageStatus inherits String
+
+   // Plan / product name (e.g. "BCBS PPO").
+   type CoveragePlanName inherits String
+
+   // Name of the payor organisation (e.g. "Blue Cross Blue Shield").
+   type PayorName inherits String
+
+   type ClaimId inherits String
+
+   // institutional | professional | pharmacy | vision | oral
+   type ClaimType inherits String
+
+   type ClaimAmount inherits Decimal
+   type CurrencyCode inherits String
+   type ClaimServiceDate inherits Date
+
+   // Number of claims in a trailing window (e.g. last 12 months).
+   type ClaimCount inherits Int
+}
+
+// --------------------------------------------------------------------
+//  risk — output of the Databricks readmission model.
+// --------------------------------------------------------------------
+namespace risk {
+
+   // Readmission risk score, 0.0–1.0.
+   type RiskScore inherits Decimal
+
+   // Bucketed band derived from the score (low | medium | high).
+   type RiskBand inherits String
+}

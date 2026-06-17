@@ -1,0 +1,9 @@
+// import com.orbitalhq.authentication.AllowAnonymous
+import taxi.http.HttpOperation
+
+// @AllowAnonymous
+// @HttpOperation(method = "GET", url = "/api/orbital1/e_simplicity_demo/q/hello")
+// query HelloWorld {
+//     find { message: "Hello" }
+// }
+// 

@@ -1,0 +1,34 @@
+import fhir.AdministrativeGender
+
+namespace meridian
+
+type MeridianMemberId inherits String
+
+enum MeridianSex {
+   MALE(1)   synonym of AdministrativeGender.male,
+   FEMALE(2) synonym of AdministrativeGender.female,
+   NOT_KNOWN(0)      synonym of AdministrativeGender.unknown,
+   NOT_APPLICABLE(9) synonym of AdministrativeGender.unknown
+}
+
+model MeridianMember {
+   memberId    : MeridianMemberId
+   lastName    : PatientFamilyName
+   firstName   : PatientGivenName
+   @Format("yyyyMMdd")
+   dateOfBirth : BirthDate
+   genderCode  : MeridianSex          // maps to AdministrativeGender via synonyms
+}
+
+model MeridianIdentity {
+   memberId : MeridianMemberId
+   mrn      : PatientMrn
+}
+
+service Meridian {
+   @HttpOperation(method = "GET", url = "http://meridian/v2/roster")
+   operation listRoster() : MeridianMember[]
+
+   @HttpOperation(method = "GET", url = "http://meridian/v2/mpi/{memberId}")
+   operation resolveMrn(@PathVariable("memberId") memberId : MeridianMemberId) : MeridianIdentity
+}

@@ -1,0 +1,26 @@
+import fhir.extensions.DefaultPatientMrn
+import fhir.Encounter
+import fhir.Patient
+import taxi.stdlib.singleBy
+import gov.us.fhir.r4.Identifier
+import claims.CoverageStatus
+import taxi.http.HttpOperation
+
+@HttpOperation(method = "GET", url = "/api/q/populatePatientSummary")
+query PopulatePatientSummary {
+   find { Patient[] } as  (Patient, mrn: Patient::DefaultPatientMrn) -> {
+      mrn: DefaultPatientMrn
+      familyName : (PatientFamilyName) OfficialPatientFamilyName
+      givenName: (PatientGivenName) OfficialPatientGivenName
+      encounterId : EncounterBundle::EncounterId
+      encounterClass : EncounterBundle::EncounterClassCode
+      serviceCategory : EncounterBundle::CmsServiceCategory
+      riskScore : PatientRiskScore::RiskScore
+      riskBand : PatientRiskScore::RiskBand
+      coverageStatus : MemberCoverage::CoverageStatus
+      planName : MemberCoverage::CoveragePlanName
+      claimsLast12Months : MemberCoverage::ClaimCount
+   }[] as PatientEncounterSummary[]
+
+   call PatientSummaryStore::saveSummary
+}

@@ -1,0 +1,104 @@
+// ════════════════════════════════════════════════════════════════════
+//  Snowflake — the payer's claims & coverage warehouse
+//  --------------------------------------------------------------------
+//  Read: coverage status + claims history, keyed by MRN.
+//  Write: the enriched PatientEncounterSummary (Stage 2, step 5), which
+//         is also the contract returned by the Stage 4 REST endpoint.
+//
+//  The connection `snowflake-claims` is defined in connections.conf.
+// ════════════════════════════════════════════════════════════════════
+
+import fhir.PatientMrn
+import fhir.PatientName
+import fhir.EncounterId
+import fhir.EncounterClassCode
+import fhir.CmsServiceCategory
+import fhir.PatientGivenName
+import fhir.PatientFamilyName
+import fhir.ActiveDiagnosis
+import claims.CoverageStatus
+import claims.CoveragePlanName
+import claims.PayorName
+import claims.ClaimId
+import claims.ClaimType
+import claims.ClaimAmount
+import claims.CurrencyCode
+import claims.ClaimServiceDate
+import claims.ClaimCount
+import risk.RiskScore
+import risk.RiskBand
+
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.UpsertOperation
+
+namespace snowflake
+
+// ── Reads ───────────────────────────────────────────────────────────
+
+// One row per member: coverage status, plan, and a rolling claim count.
+// The MRN column carries fhir.PatientMrn — the same semantic type the
+// FHIR Patient.identifier is tagged with — so Orbital joins the two
+// systems on meaning, with no mapping code.
+@Table(connection = "snowflake-claims", schema = "CLAIMS", table = "member_coverage")
+closed model MemberCoverage {
+   @Id
+   mrn : PatientMrn
+   coverage_status : CoverageStatus
+   plan_name : CoveragePlanName
+   payor : PayorName
+   claims_last_12_months : ClaimCount
+}
+
+// Individual claim lines — the "recent claims" detail behind the count.
+@Table(connection = "snowflake-claims", schema = "CLAIMS", table = "claim")
+closed model Claim {
+   @Id
+   claimId : ClaimId
+   mrn : PatientMrn
+   claimType : ClaimType
+   serviceDate : ClaimServiceDate
+   amount : ClaimAmount
+   currency : CurrencyCode
+}
+
+@DatabaseService(connection = "snowflake-claims")
+service ClaimsWarehouse {
+   table memberCoverage : MemberCoverage[]
+   table claims : Claim[]
+}
+
+// ── Write-through target ────────────────────────────────────────────
+
+// The enriched record Orbital composes and writes back (Stage 2,
+// step 5). The same model is the response contract for the Stage 4
+// REST endpoint.
+//
+// Note: `diagnoses` is a nested array; in Snowflake this maps to a
+// VARIANT column. `patientName` is composed from the FHIR name parts
+@Table(connection = "snowflake-claims", schema = "ANALYTICS", table = "patient_encounter_summary")
+model PatientEncounterSummary {
+   @Id
+   mrn : PatientMrn
+
+   patient_name : PatientName = concat(PatientGivenName, ' ', PatientFamilyName)
+
+   encounter_id : EncounterId
+   encounter_class : EncounterClassCode
+   service_category : CmsServiceCategory
+
+   coverage_status : CoverageStatus
+   plan_name : CoveragePlanName
+   claims_last_12_months : ClaimCount
+
+   risk_score : RiskScore
+   risk_band : RiskBand
+}
+
+@DatabaseService(connection = "snowflake-claims")
+service PatientSummaryStore {
+   table patientEncounterSummary : PatientEncounterSummary[]
+
+   @UpsertOperation
+   write operation saveSummary(PatientEncounterSummary) : PatientEncounterSummary
+}

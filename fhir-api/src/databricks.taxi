@@ -1,0 +1,41 @@
+// ════════════════════════════════════════════════════════════════════
+//  Databricks — readmission risk model (model-serving endpoint)
+//  --------------------------------------------------------------------
+//  Orbital POSTs a patient feature vector to a Databricks serving
+//  endpoint and gets back a readmission risk score. It's modelled as a
+//  plain HTTP service: model serving endpoints are REST.
+//
+//  Only the MRN is required on the request — every other feature is
+//  optional, so the planner can call the model with whatever it has
+//  resolved from FHIR and Snowflake. The response carries the MRN back,
+//  so the score is keyed to the right patient.
+//
+//  The bearer token for the endpoint is configured in auth.conf against
+//  the service's fully-qualified name: `databricks.ReadmissionRiskModel`.
+// ════════════════════════════════════════════════════════════════════
+
+import fhir.PatientMrn
+import fhir.EncounterClassCode
+import fhir.ActiveDiagnosisCount
+import claims.ClaimCount
+import risk.RiskScore
+import risk.RiskBand
+
+import taxi.http.HttpOperation
+import taxi.http.RequestBody
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.UpsertOperation
+namespace databricks
+
+@Table(connection = "databricks-risk", table = "risk_scores", schema = "public")
+model PatientRiskScore {
+   @Id mrn : PatientMrn
+   risk_score : RiskScore
+   risk_band : RiskBand
+}
+
+@DatabaseService(connection = "databricks-risk")
+service ReadmissionRiskStore {
+   table riskScores : PatientRiskScore[]
+}

@@ -1,0 +1,972 @@
+openapi: 3.0.3
+info:
+  title: FHIR R4 API (Demo Subset)
+  description: >
+    Trimmed FHIR R4 API covering Patient, Encounter, Condition, Coverage,
+    and ExplanationOfBenefit resources. Only fields relevant to the Orbital
+    CMS demo are included. Based on HL7 FHIR R4 (v4.0.1).
+  version: 4.0.1
+  contact:
+    name: HL7 FHIR
+    url: https://www.hl7.org/fhir/R4/
+
+servers:
+  - url: https://fhir.demo.example.com/r4
+    description: Simulated FHIR R4 server
+
+paths:
+  /Patient:
+    get:
+      summary: Search for patients
+      operationId: searchPatient
+      tags: [ Patient ]
+      parameters:
+        - name: identifier
+          in: query
+          description: A patient identifier (e.g. MRN)
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: family
+          in: query
+          description: Family (last) name
+          schema:
+            type: string
+        - name: given
+          in: query
+          description: Given (first) name
+          schema:
+            type: string
+        - name: birthdate
+          in: query
+          description: Date of birth (eq, ge, le prefixes supported)
+          schema:
+            type: string
+        - name: _count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A Bundle of matching Patient resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/PatientBundle'
+
+  /Patients/all:
+    get:
+      summary: List all patients (demo helper — returns the full collection)
+      operationId: listAllPatients
+      tags: [ Patient ]
+      responses:
+        '200':
+          description: All Patient resources
+          content:
+            application/fhir+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+
+  /Patient/{id}:
+    get:
+      summary: Read a Patient by ID
+      operationId: readPatient
+      tags: [ Patient ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientId
+      responses:
+        '200':
+          description: A single Patient resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+
+  /Encounter:
+    get:
+      summary: Search for encounters
+      operationId: searchEncounter
+      tags: [ Encounter ]
+      parameters:
+        - name: patient
+          in: query
+          description: Patient reference (e.g. Patient/123 or MRN)
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: status
+          in: query
+          description: Encounter status (planned | arrived | triaged | in-progress | onleave | finished | cancelled | entered-in-error | unknown)
+          schema:
+            type: string
+            enum: [ planned, arrived, triaged, in-progress, onleave, finished, cancelled, entered-in-error, unknown ]
+        - name: class
+          in: query
+          description: Classification of the encounter (e.g. AMB, EMER, IMP)
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: Date range for the encounter period
+          schema:
+            type: string
+        - name: _lastUpdated
+          in: query
+          description: Filter by last update date (e.g. gt2024-03-14)
+          schema:
+            type: string
+        - name: _include
+          in: query
+          description: Include referenced resources (e.g. Encounter:patient)
+          schema:
+            type: string
+        - name: _count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A Bundle of matching Encounter resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/EncounterBundle'
+
+  /Encounter/{id}:
+    get:
+      summary: Read an Encounter by ID
+      operationId: readEncounter
+      tags: [ Encounter ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.EncounterId
+      responses:
+        '200':
+          description: A single Encounter resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Encounter'
+
+  /Condition:
+    get:
+      summary: Search for conditions
+      operationId: searchCondition
+      tags: [ Condition ]
+      parameters:
+        - name: patient
+          in: query
+          description: Patient reference
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: encounter
+          in: query
+          description: Encounter reference
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.EncounterId
+        - name: clinical-status
+          in: query
+          description: Clinical status (active | recurrence | relapse | inactive | remission | resolved)
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Category (problem-list-item | encounter-diagnosis)
+          schema:
+            type: string
+        - name: _count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A Bundle of matching Condition resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/ConditionBundle'
+
+  /Condition/{id}:
+    get:
+      summary: Read a Condition by ID
+      operationId: readCondition
+      tags: [ Condition ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.ConditionId
+      responses:
+        '200':
+          description: A single Condition resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+
+  /Coverage:
+    get:
+      summary: Search for coverage records
+      operationId: searchCoverage
+      tags: [ Coverage ]
+      parameters:
+        - name: patient
+          in: query
+          description: Patient reference
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: beneficiary
+          in: query
+          description: Beneficiary reference
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: status
+          in: query
+          description: Coverage status (active | cancelled | draft | entered-in-error)
+          schema:
+            type: string
+            enum: [ active, cancelled, draft, entered-in-error ]
+        - name: _count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A Bundle of matching Coverage resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/CoverageBundle'
+
+  /Coverage/{id}:
+    get:
+      summary: Read a Coverage by ID
+      operationId: readCoverage
+      tags: [ Coverage ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single Coverage resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Coverage'
+
+  /ExplanationOfBenefit:
+    get:
+      summary: Search for Explanation of Benefit records
+      operationId: searchExplanationOfBenefit
+      tags: [ ExplanationOfBenefit ]
+      parameters:
+        - name: patient
+          in: query
+          description: Patient reference
+          schema:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientMrn
+        - name: status
+          in: query
+          description: Status (active | cancelled | draft | entered-in-error)
+          schema:
+            type: string
+        - name: created
+          in: query
+          description: Date range for when the EOB was created
+          schema:
+            type: string
+        - name: _count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A Bundle of matching ExplanationOfBenefit resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/ExplanationOfBenefitBundle'
+
+  /ExplanationOfBenefit/{id}:
+    get:
+      summary: Read an ExplanationOfBenefit by ID
+      operationId: readExplanationOfBenefit
+      tags: [ ExplanationOfBenefit ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single ExplanationOfBenefit resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/ExplanationOfBenefit'
+
+components:
+  schemas:
+
+    # ──────────────────────────────────────────────
+    # Common FHIR types
+    # ──────────────────────────────────────────────
+
+    Reference:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: Relative or absolute reference (e.g. "Patient/123")
+        display:
+          type: string
+
+    CodeableConcept:
+      type: object
+      properties:
+        coding:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+        text:
+          type: string
+
+    Coding:
+      type: object
+      properties:
+        system:
+          type: string
+          description: URI identifying the code system
+        code:
+          type: string
+        display:
+          type: string
+
+    Period:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+
+    HumanName:
+      type: object
+      properties:
+        use:
+          type: string
+          enum: [ usual, official, temp, nickname, anonymous, old, maiden ]
+        family:
+          type: string
+          x-taxi-type:
+            name: fhir.PatientFamilyName
+        given:
+          type: array
+          items:
+            type: string
+            x-taxi-type:
+              name: fhir.PatientGivenName
+        prefix:
+          type: array
+          items:
+            type: string
+
+    Identifier:
+      type: object
+      properties:
+        use:
+          type: string
+          enum: [ usual, official, temp, secondary, old ]
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+        system:
+          type: string
+          description: The namespace for the identifier (e.g. http://hospital.example.org/mrn)
+        value:
+          type: string
+          x-taxi-type:
+            name: fhir.PatientMrn
+    Money:
+      type: object
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+
+    # ──────────────────────────────────────────────
+    # Search bundles
+    # ──────────────────────────────────────────────
+    #
+    # A searchset Bundle shares one envelope (resourceType / type / total)
+    # across every search; only entry[].resource varies. BundleBase holds
+    # the envelope; each <Resource>Bundle composes it via allOf and pins
+    # entry[].resource to a concrete resource type, so the importer sees
+    # exactly which resource each search returns (e.g. searchPatient ->
+    # Patient). The resource $ref carries that resource's own x-taxi-type
+    # annotations through — do NOT add a sibling x-taxi-type next to a
+    # $ref, it is ignored in OpenAPI 3.0.
+
+    BundleBase:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ Bundle ]
+        type:
+          type: string
+          enum: [ searchset ]
+        total:
+          type: integer
+
+    PatientBundle:
+      allOf:
+        - $ref: '#/components/schemas/BundleBase'
+        - type: object
+          properties:
+            entry:
+              type: object
+              properties:
+                fullUrl:
+                  type: string
+                resource:
+                  $ref: '#/components/schemas/Patient'
+
+    EncounterBundle:
+      allOf:
+        - $ref: '#/components/schemas/BundleBase'
+        - type: object
+          properties:
+            entry:
+              type: object
+              properties:
+                fullUrl:
+                  type: string
+                resource:
+                  $ref: '#/components/schemas/Encounter'
+
+    ConditionBundle:
+      allOf:
+        - $ref: '#/components/schemas/BundleBase'
+        - type: object
+          properties:
+            entry:
+              type: array
+              items:
+                type: object
+                properties:
+                  fullUrl:
+                    type: string
+                  resource:
+                    $ref: '#/components/schemas/Condition'
+
+    CoverageBundle:
+      allOf:
+        - $ref: '#/components/schemas/BundleBase'
+        - type: object
+          properties:
+            entry:
+              type: array
+              items:
+                type: object
+                properties:
+                  fullUrl:
+                    type: string
+                  resource:
+                    $ref: '#/components/schemas/Coverage'
+
+    ExplanationOfBenefitBundle:
+      allOf:
+        - $ref: '#/components/schemas/BundleBase'
+        - type: object
+          properties:
+            entry:
+              type: array
+              items:
+                type: object
+                properties:
+                  fullUrl:
+                    type: string
+                  resource:
+                    $ref: '#/components/schemas/ExplanationOfBenefit'
+
+    # ──────────────────────────────────────────────
+    # Patient
+    # ──────────────────────────────────────────────
+
+    Patient:
+      x-taxi-type:
+        name: fhir.Patient
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ Patient ]
+        id:
+          type: string
+          x-taxi-type:
+            name: fhir.PatientId
+        identifier:
+          type: array
+          description: Patient identifiers including MRN
+          items:
+            $ref: '#/components/schemas/Identifier'
+        active:
+          type: boolean
+        name:
+          type: array
+          items:
+            $ref: '#/components/schemas/HumanName'
+        gender:
+          type: string
+          enum: [ male, female, other, unknown ]
+          x-taxi-type:
+            name: fhir.AdministrativeGender
+        birthDate:
+          type: string
+          format: date
+          x-taxi-type:
+            name: fhir.BirthDate
+      example:
+        resourceType: Patient
+        id: "pat-00124"
+        identifier:
+          - use: usual
+            type:
+              coding:
+                - system: http://terminology.hl7.org/CodeSystem/v2-0203
+                  code: MR
+                  display: Medical Record Number
+            system: http://hospital.example.org/mrn
+            value: MRN-00124
+        active: true
+        name:
+          - use: official
+            family: Doe
+            given: [ Jane ]
+        gender: female
+        birthDate: "1958-03-12"
+
+    # ──────────────────────────────────────────────
+    # Encounter
+    # ──────────────────────────────────────────────
+
+    Encounter:
+      x-taxi-type:
+        name: fhir.Encounter
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ Encounter ]
+        id:
+          type: string
+          x-taxi-type:
+            name: fhir.EncounterId
+        status:
+          type: string
+          enum: [ planned, arrived, triaged, in-progress, onleave, finished, cancelled, entered-in-error, unknown ]
+          x-taxi-type:
+            name: fhir.EncounterStatus
+        class:
+          type: object
+          properties:
+            system:
+              type: string
+            code:
+              type: string
+              x-taxi-type:
+                name: fhir.EncounterClassCode
+            display:
+              type: string
+          description: Classification (AMB=ambulatory, EMER=emergency, IMP=inpatient)
+        type:
+          type: array
+          description: Encounter type, mapped to CMS service categories
+          items:
+            type: object
+            properties:
+              coding:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    system:
+                      type: string
+                    code:
+                      type: string
+                      x-taxi-type:
+                        name: fhir.CmsServiceCategory
+                    display:
+                      type: string
+              text:
+                type: string
+        subject:
+          $ref: '#/components/schemas/Reference'
+          description: Reference to the Patient
+        participant:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeableConcept'
+              individual:
+                $ref: '#/components/schemas/Reference'
+        period:
+          $ref: '#/components/schemas/Period'
+        reasonCode:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+        diagnosis:
+          type: array
+          items:
+            type: object
+            properties:
+              condition:
+                $ref: '#/components/schemas/Reference'
+              use:
+                $ref: '#/components/schemas/CodeableConcept'
+        serviceProvider:
+          $ref: '#/components/schemas/Reference'
+      example:
+        resourceType: Encounter
+        id: "enc-0057"
+        status: in-progress
+        class:
+          system: http://terminology.hl7.org/CodeSystem/v3-ActCode
+          code: EMER
+          display: emergency
+        type:
+          - coding:
+              - system: http://snomed.info/sct
+                code: "183452005"
+                display: Emergency hospital admission
+        subject:
+          reference: Patient/pat-00124
+          display: Jane Doe
+        participant:
+          - individual:
+              reference: Practitioner/pract-0012
+              display: Dr. Sarah Chen
+        period:
+          start: "2024-03-15T08:23:00Z"
+        diagnosis:
+          - condition:
+              reference: Condition/cond-001
+            use:
+              coding:
+                - system: http://terminology.hl7.org/CodeSystem/diagnosis-role
+                  code: AD
+                  display: Admission diagnosis
+        serviceProvider:
+          reference: Organization/org-metro-general
+          display: Metro General Hospital
+
+    # ──────────────────────────────────────────────
+    # Condition
+    # ──────────────────────────────────────────────
+
+    Condition:
+      x-taxi-type:
+        name: fhir.Condition
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ Condition ]
+        id:
+          type: string
+          x-taxi-type:
+            name: fhir.ConditionId
+        clinicalStatus:
+          type: object
+          properties:
+            coding:
+              type: array
+              items:
+                type: object
+                properties:
+                  system:
+                    type: string
+                  code:
+                    type: string
+                    x-taxi-type:
+                      name: fhir.ConditionClinicalStatus
+                  display:
+                    type: string
+            text:
+              type: string
+        category:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+        code:
+          type: object
+          description: Identification of the condition (ICD-10 or SNOMED)
+          properties:
+            coding:
+              type: array
+              items:
+                type: object
+                properties:
+                  system:
+                    type: string
+                  code:
+                    type: string
+                    x-taxi-type:
+                      name: fhir.DiagnosisCode
+                  display:
+                    type: string
+                    x-taxi-type:
+                      name: fhir.DiagnosisDescription
+            text:
+              type: string
+        subject:
+          $ref: '#/components/schemas/Reference'
+        encounter:
+          $ref: '#/components/schemas/Reference'
+        onsetDateTime:
+          type: string
+          format: date-time
+      example:
+        resourceType: Condition
+        id: "cond-001"
+        clinicalStatus:
+          coding:
+            - system: http://terminology.hl7.org/CodeSystem/condition-clinical
+              code: active
+        category:
+          - coding:
+              - system: http://terminology.hl7.org/CodeSystem/condition-category
+                code: encounter-diagnosis
+                display: Encounter Diagnosis
+        code:
+          coding:
+            - system: http://hl7.org/fhir/sid/icd-10-cm
+              code: E11.9
+              display: Type 2 diabetes mellitus without complications
+          text: Type 2 diabetes mellitus
+        subject:
+          reference: Patient/pat-00124
+        encounter:
+          reference: Encounter/enc-0057
+        onsetDateTime: "2019-06-15"
+
+    # ──────────────────────────────────────────────
+    # Coverage
+    # ──────────────────────────────────────────────
+
+    Coverage:
+      x-taxi-type:
+        name: fhir.Coverage
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ Coverage ]
+        id:
+          type: string
+        status:
+          type: string
+          enum: [ active, cancelled, draft, entered-in-error ]
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+          description: Coverage type (e.g. PPO, HMO)
+        subscriber:
+          $ref: '#/components/schemas/Reference'
+        beneficiary:
+          $ref: '#/components/schemas/Reference'
+        relationship:
+          $ref: '#/components/schemas/CodeableConcept'
+        period:
+          $ref: '#/components/schemas/Period'
+        payor:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+        class:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                $ref: '#/components/schemas/CodeableConcept'
+              value:
+                type: string
+              name:
+                type: string
+      example:
+        resourceType: Coverage
+        id: "cov-00124"
+        status: active
+        type:
+          coding:
+            - system: http://terminology.hl7.org/CodeSystem/v3-ActCode
+              code: PPO
+              display: preferred provider organization policy
+        beneficiary:
+          reference: Patient/pat-00124
+        period:
+          start: "2022-01-15"
+        payor:
+          - reference: Organization/org-bcbs
+            display: Blue Cross Blue Shield
+        class:
+          - type:
+              coding:
+                - system: http://terminology.hl7.org/CodeSystem/coverage-class
+                  code: group
+            value: GRP-88421
+            name: Metro Employees Group
+
+    # ──────────────────────────────────────────────
+    # ExplanationOfBenefit
+    # ──────────────────────────────────────────────
+
+    ExplanationOfBenefit:
+      x-taxi-type:
+        name: fhir.ExplanationOfBenefit
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ ExplanationOfBenefit ]
+        id:
+          type: string
+        status:
+          type: string
+          enum: [ active, cancelled, draft, entered-in-error ]
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+          description: Claim type (institutional, oral, pharmacy, professional, vision)
+        use:
+          type: string
+          enum: [ claim, preauthorization, predetermination ]
+        patient:
+          $ref: '#/components/schemas/Reference'
+        billablePeriod:
+          $ref: '#/components/schemas/Period'
+        created:
+          type: string
+          format: date-time
+        insurer:
+          $ref: '#/components/schemas/Reference'
+        provider:
+          $ref: '#/components/schemas/Reference'
+        outcome:
+          type: string
+          enum: [ queued, complete, error, partial ]
+        diagnosis:
+          type: array
+          items:
+            type: object
+            properties:
+              sequence:
+                type: integer
+              diagnosisCodeableConcept:
+                $ref: '#/components/schemas/CodeableConcept'
+              type:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeableConcept'
+        total:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                $ref: '#/components/schemas/CodeableConcept'
+              amount:
+                $ref: '#/components/schemas/Money'
+      example:
+        resourceType: ExplanationOfBenefit
+        id: "eob-7721"
+        status: active
+        type:
+          coding:
+            - system: http://terminology.hl7.org/CodeSystem/claim-type
+              code: institutional
+              display: Institutional
+        use: claim
+        patient:
+          reference: Patient/pat-00124
+        billablePeriod:
+          start: "2024-02-25"
+          end: "2024-02-28"
+        created: "2024-03-05T10:00:00Z"
+        insurer:
+          reference: Organization/org-bcbs
+          display: Blue Cross Blue Shield
+        provider:
+          reference: Organization/org-metro-general
+          display: Metro General Hospital
+        outcome: complete
+        diagnosis:
+          - sequence: 1
+            diagnosisCodeableConcept:
+              coding:
+                - system: http://hl7.org/fhir/sid/icd-10-cm
+                  code: J44.1
+                  display: Chronic obstructive pulmonary disease with acute exacerbation
+            type:
+              - coding:
+                  - system: http://terminology.hl7.org/CodeSystem/ex-diagnosistype
+                    code: principal
+        total:
+          - category:
+              coding:
+                - system: http://terminology.hl7.org/CodeSystem/adjudication
+                  code: submitted
+            amount:
+              value: 12400.00
+              currency: USD
+          - category:
+              coding:
+                - system: http://terminology.hl7.org/CodeSystem/adjudication
+                  code: benefit
+            amount:
+              value: 9920.00
+              currency: USD

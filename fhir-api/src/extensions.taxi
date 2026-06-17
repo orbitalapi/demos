@@ -1,0 +1,11 @@
+namespace fhir.extensions
+
+// A patient can have many HumanNames, but we need an Official name
+// So filter for usage
+type OfficialPatientFamilyName inherits PatientFamilyName = HumanName[].single( (HumanNameUse) -> HumanNameUse == HumanNameUse.official )::PatientFamilyName
+
+type OfficialPatientGivenName inherits PatientGivenName =  HumanName[].single( (HumanNameUse) -> HumanNameUse == HumanNameUse.official )::PatientGivenName[].joinToString(" ")
+type OfficialPatientFullName inherits String =  concat(OfficialPatientGivenName, ' ', OfficialPatientFamilyName)
+
+
+type DefaultPatientMrn inherits PatientMrn = Identifier[].single((identifier:Identifier) -> identifier.system == "http://hospital.example.org/mrn")::PatientMrn

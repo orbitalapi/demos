@@ -1,0 +1,15 @@
+// import com.orbitalhq.authentication.AllowAnonymous
+import taxi.http.HttpOperation
+
+// @AllowAnonymous
+// @HttpOperation(method = "GET", url = "/api/orbital1/e_simplicity_demo/q/patients")
+@HttpOperation(method = "GET", url = "/api/q/patients")
+query ListPatients {
+    find { PatientEncounterSummary[] }
+}
+
+@HttpOperation(method = "GET", url = "/api/q/patients/{mrn}")
+query GetPatientEncounterSummary(@PathVariable("mrn") mrn: PatientMrn) {
+    given { mrn }
+    find { PatientEncounterSummary(PatientMrn == mrn) }
+}

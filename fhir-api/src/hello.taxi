@@ -1,0 +1,8 @@
+
+import taxi.http.HttpOperation
+
+// @HttpOperation(method = "GET", url = "/api/orbital1/e_simplicity_demo/q/aabb")
+// @HttpOperation(method = "GET", url = "/api/q/aabb")
+// query Foo {
+//     find { "Hello" }
+// }
