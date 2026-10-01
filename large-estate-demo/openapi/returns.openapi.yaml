@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: Returns API
+  version: 1.0.0
+  description: Returns/RMA service. Works in order and order-line identifiers and deliberately does not know billing or payment
+    identifiers.
+servers:
+- url: https://acmeApi/returns
+paths:
+  /rmas/{rmaId}:
+    get:
+      operationId: getRma
+      summary: Get return authorisation
+      parameters:
+      - name: rmaId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaId
+        description: Return-merchandise-authorisation ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rma'
+      description: Get return authorisation. This is the returns system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /rmas:
+    get:
+      operationId: listRmasForOrder
+      summary: List returns for order
+      parameters:
+      - name: orderId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rma'
+      description: List returns for order. This is the returns system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+    post:
+      operationId: createRma
+      summary: Create return authorisation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RmaRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rma'
+      description: Create return authorisation. This is the returns system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /eligibility/{orderId}/{lineId}:
+    get:
+      operationId: getReturnEligibility
+      summary: Check line return eligibility
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      - name: lineId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderLineId
+        description: Order-management line ID within an order.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eligibility'
+      description: Check whether an order line is eligible for return before creating an RMA.
+  /rmas/{rmaId}/receive:
+    post:
+      operationId: receiveReturn
+      summary: Record warehouse receipt of return
+      parameters:
+      - name: rmaId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaId
+        description: Return-merchandise-authorisation ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiveRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rma'
+      description: Record warehouse receipt of return. This is the returns system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /rmas/{rmaId}/approve:
+    post:
+      operationId: approveReturnCredit
+      summary: Approve return credit
+      parameters:
+      - name: rmaId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaId
+        description: Return-merchandise-authorisation ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnApproval'
+      description: Approve return credit and return the approved amount in major currency units.
+components:
+  schemas:
+    Rma:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.Rma
+      properties:
+        rma_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaId
+          description: Return-merchandise-authorisation ID.
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaStatus
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.ReturnReason
+      required:
+      - rma_id
+      - order_ref
+      - status
+    Eligibility:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.Eligibility
+      properties:
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        line_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderLineId
+          description: Order-management line ID within an order.
+        eligible:
+          type: boolean
+          x-taxi-type:
+            name: com.acme.returns.ReturnEligible
+        max_qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.EligibilityReason
+      required:
+      - order_ref
+      - line_ref
+      - eligible
+    RmaRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.RmaRequest
+      properties:
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        line_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderLineId
+          description: Order-management line ID within an order.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.ReturnReason
+      required:
+      - order_ref
+      - line_ref
+      - qty
+      - reason
+    ReceiveRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.ReceiveRequest
+      properties:
+        received_qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - received_qty
+    ApproveRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.ApproveRequest
+      properties:
+        approved_amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+      required:
+      - approved_amount
+    ReturnApproval:
+      type: object
+      x-taxi-type:
+        name: com.acme.returns.ReturnApproval
+      properties:
+        rma_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaId
+          description: Return-merchandise-authorisation ID.
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        approved_amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.returns.RmaStatus
+      required:
+      - rma_id
+      - order_ref
+      - approved_amount
+      - status

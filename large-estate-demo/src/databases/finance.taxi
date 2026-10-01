@@ -1,0 +1,57 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+
+namespace com.acme.db.finance {
+
+   @Table(connection = "acme-db", schema = "public", table = "finance_cash_application")
+   closed model FinanceCashApplicationRow {
+      @Id transaction_ref: com.acme.payments.TransactionId
+      @Id invoice_no: com.acme.billing.InvoiceNumber
+      debtor_code: com.acme.erp.DebtorCode
+      received_amount: com.acme.shared.MoneyAmount
+      received_on: com.acme.shared.BusinessDate
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "finance_payment_terms")
+   closed model FinancePaymentTermsRow {
+      @Id debtor_code: com.acme.erp.DebtorCode
+      terms_code: com.acme.erp.PaymentTermsCode
+      days_due: com.acme.erp.PaymentTermDays
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "finance_credit_review")
+   closed model FinanceCreditReviewRow {
+      @Id review_id: com.acme.analytics.SignalId
+      debtor_code: com.acme.erp.DebtorCode
+      reviewed_on: com.acme.analytics.FinanceReviewDate
+      risk_score: com.acme.analytics.SignalScore
+      note: com.acme.analytics.FinanceReviewNote?
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "finance_dispute")
+   closed model FinanceDisputeRow {
+      @Id dispute_id: com.acme.analytics.SignalId
+      invoice_no: com.acme.billing.InvoiceNumber
+      opened_on: com.acme.analytics.DisputeOpenedDate
+      amount: com.acme.shared.MoneyAmount
+      status: com.acme.analytics.DisputeStatus
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "finance_credit_note_ledger")
+   closed model FinanceCreditNoteLedgerRow {
+      @Id credit_note_no: com.acme.billing.CreditNoteNumber
+      invoice_no: com.acme.billing.InvoiceNumber
+      issued_on: com.acme.billing.CreditNoteIssuedDate
+      amount: com.acme.shared.MoneyAmount
+      currency: com.acme.shared.CurrencyCode
+   }
+
+   @DatabaseService(connection = "acme-db")
+   service FinanceDatabase {
+      table finance_cash_application: FinanceCashApplicationRow[]
+      table finance_payment_terms: FinancePaymentTermsRow[]
+      table finance_credit_review: FinanceCreditReviewRow[]
+      table finance_dispute: FinanceDisputeRow[]
+      table finance_credit_note_ledger: FinanceCreditNoteLedgerRow[]
+   }
+}

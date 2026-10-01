@@ -1,0 +1,316 @@
+openapi: 3.0.3
+info:
+  title: Product Catalogue API
+  version: 1.0.0
+  description: Commercial catalogue. Product SKU differs from warehouse SKU, supplier part number and acquired Northstar legacy
+    SKU.
+servers:
+- url: https://acmeApi/catalog
+paths:
+  /products/{sku}:
+    get:
+      operationId: getProduct
+      summary: Get product by commercial SKU
+      parameters:
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+      description: Get product by commercial SKU. This is the catalog system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /products:
+    get:
+      operationId: searchProducts
+      summary: Search products
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSearchTerm
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+      description: Search products. This is the catalog system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /products/by-ean/{ean}:
+    get:
+      operationId: getProductByEan
+      summary: Resolve EAN to product
+      parameters:
+      - name: ean
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.Ean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+      description: Resolve EAN to product. This is the catalog system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /products/{sku}/alternates:
+    get:
+      operationId: listProductAlternates
+      summary: List approved substitute products
+      parameters:
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alternate'
+      description: List approved substitute products. This is the catalog system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /categories/{categoryId}:
+    get:
+      operationId: getCategory
+      summary: Get catalogue category
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.CategoryId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+      description: Get catalogue category. This is the catalog system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /products/{sku}/supplier-links:
+    get:
+      operationId: getSupplierLinks
+      summary: Get supplier references for product
+      parameters:
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupplierLink'
+      description: Get supplier references for product. This is the catalog system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /product-equivalents/search:
+    post:
+      operationId: searchProductEquivalents
+      summary: Search product equivalents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSearch'
+      x-taxi-operation-kind: read
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+      description: Search product equivalents. This is the catalog system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /legacy-code/{legacySku}:
+    get:
+      operationId: resolveLegacyProductCode
+      summary: Resolve acquired Northstar product code
+      parameters:
+      - name: legacySku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacySku
+        description: Northstar legacy product code.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyCodeMap'
+      description: Resolve acquired Northstar product code. This is the catalog system's native contract; system-specific
+        identifiers are not interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Product:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.Product
+      properties:
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        name:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductName
+        ean13:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.Ean
+        category_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.CategoryId
+        mfr_part_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ManufacturerPartNumber
+        active:
+          type: boolean
+          x-taxi-type:
+            name: com.acme.catalog.ProductActive
+      required:
+      - sku
+      - name
+    Alternate:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.ProductAlternate
+      properties:
+        source_sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        alternate_sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.AlternateReason
+      required:
+      - source_sku
+      - alternate_sku
+    Category:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.Category
+      properties:
+        category_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.CategoryId
+        label:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.CategoryLabel
+      required:
+      - category_id
+      - label
+    SupplierLink:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.SupplierLink
+      properties:
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        supplier_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+          description: Supplier-native part number. Not a catalogue or warehouse SKU.
+      required:
+      - sku
+      - supplier_id
+      - supplier_part
+    ProductSearch:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.ProductSearch
+      properties:
+        query:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSearchTerm
+        manufacturer_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ManufacturerPartNumber
+    LegacyCodeMap:
+      type: object
+      x-taxi-type:
+        name: com.acme.catalog.LegacyCodeMap
+      properties:
+        legacy_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacySku
+          description: Northstar legacy product code.
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      required:
+      - legacy_code
+      - sku

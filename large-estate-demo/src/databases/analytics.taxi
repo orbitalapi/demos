@@ -1,0 +1,65 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+
+namespace com.acme.db.analytics {
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_customer_signal")
+   closed model AnalyticsCustomerSignalRow {
+      @Id signal_id: com.acme.analytics.SignalId
+      company_no: com.acme.shared.CompanyRegistrationNumber
+      signal_type: com.acme.analytics.CustomerSignalType
+      score: com.acme.analytics.SignalScore
+      observed_at: com.acme.analytics.CustomerSignalObservedAt
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_order_event")
+   closed model AnalyticsOrderEventRow {
+      @Id event_id: com.acme.analytics.SignalId
+      order_id: com.acme.orders.OrderId
+      event_type: com.acme.analytics.OrderEventType
+      event_at: com.acme.analytics.OrderEventAt
+      detail: com.acme.analytics.OrderEventDetail?
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_service_case_signal")
+   closed model AnalyticsServiceCaseSignalRow {
+      @Id signal_id: com.acme.analytics.SignalId
+      ticket_id: com.acme.support.TicketId
+      order_id: com.acme.orders.OrderId?
+      severity: com.acme.analytics.SignalScore
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_supplier_performance")
+   closed model AnalyticsSupplierPerformanceRow {
+      @Id supplier_id: com.acme.supplier.SupplierId
+      @Id supplier_part: com.acme.supplier.SupplierPartNumber
+      otif_pct: com.acme.shared.Percentage
+      avg_delay_days: com.acme.supplier.AverageDelayDays
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_product_demand")
+   closed model AnalyticsProductDemandRow {
+      @Id product_sku: com.acme.catalog.ProductSku
+      @Id warehouse_code: com.acme.warehouse.WarehouseCode
+      weekly_demand: com.acme.shared.Quantity
+      snapshot_date: com.acme.analytics.DemandSnapshotDate
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "analytics_account_health")
+   closed model AnalyticsAccountHealthRow {
+      @Id company_no: com.acme.shared.CompanyRegistrationNumber
+      health_score: com.acme.analytics.SignalScore
+      calculated_at: com.acme.analytics.AccountHealthCalculatedAt
+      explanation: com.acme.analytics.AccountHealthExplanation?
+   }
+
+   @DatabaseService(connection = "acme-db")
+   service AnalyticsDatabase {
+      table analytics_customer_signal: AnalyticsCustomerSignalRow[]
+      table analytics_order_event: AnalyticsOrderEventRow[]
+      table analytics_service_case_signal: AnalyticsServiceCaseSignalRow[]
+      table analytics_supplier_performance: AnalyticsSupplierPerformanceRow[]
+      table analytics_product_demand: AnalyticsProductDemandRow[]
+      table analytics_account_health: AnalyticsAccountHealthRow[]
+   }
+}

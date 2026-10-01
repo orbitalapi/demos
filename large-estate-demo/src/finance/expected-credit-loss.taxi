@@ -1,0 +1,43 @@
+namespace com.acme.finance {
+
+   [[ The date receivables are measured at - usually the month-end being closed. ]]
+   type ReportingDate inherits Date
+
+   [[ Days from a receivable's due date to the reporting date. Zero or negative when not yet due. ]]
+   type DaysPastDue inherits Int
+
+   [[ The amount of a receivable still genuinely owed: invoiced, less cash applied in the finance ledger, less credit notes. ]]
+   type NetExposure inherits Decimal
+
+   [[ Whether the receivable has an open dispute in the finance system. ]]
+   type HasOpenDispute inherits Boolean
+
+   [[ The share of a receivable's exposure that is expected to be lost. ]]
+   type ProvisionRate inherits Decimal
+
+   [[
+   The expected credit loss on a receivable, under the IFRS 9 simplified approach:
+   the provision booked against receivables that are not expected to be collected.
+   ]]
+   type ExpectedCreditLoss inherits Decimal
+
+   // IFRS 9 provision matrix: the loss rate rises with how long the receivable is overdue.
+   // Disputed receivables are assessed at no less than 40%.
+   // The rates are illustrative, not a recommendation.
+   function provisionRate(daysPastDue: DaysPastDue, disputed: HasOpenDispute): ProvisionRate -> when {
+      disputed == true && daysPastDue <= 180 -> 0.40
+      daysPastDue <= 0 -> 0.005
+      daysPastDue <= 30 -> 0.015
+      daysPastDue <= 60 -> 0.04
+      daysPastDue <= 90 -> 0.10
+      daysPastDue <= 180 -> 0.25
+      else -> 0.50
+   }
+
+   // Expected credit loss = what's still owed x the provision rate for its age and dispute status.
+   // Nothing is provisioned when nothing is owed - including overpaid invoices, where exposure is negative.
+   function expectedCreditLoss(exposure: NetExposure, daysPastDue: DaysPastDue, disputed: HasOpenDispute): ExpectedCreditLoss -> when {
+      exposure <= 0 -> 0.0
+      else -> exposure * provisionRate(daysPastDue, disputed)
+   }
+}

@@ -1,0 +1,63 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+import com.orbitalhq.jdbc.UpsertOperation
+
+namespace com.acme.db.contracts {
+
+   @Table(connection = "acme-db", schema = "public", table = "contracts_agreement")
+   closed model ContractsAgreementRow {
+      @Id agreement_id: com.acme.contracts.AgreementId
+      company_no: com.acme.shared.CompanyRegistrationNumber
+      debtor_code: com.acme.erp.DebtorCode
+      starts_on: com.acme.contracts.ContractStartDate
+      ends_on: com.acme.contracts.ContractEndDate
+      currency: com.acme.shared.CurrencyCode
+      status: com.acme.contracts.AgreementStatus
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "contracts_price_rule")
+   closed model ContractsPriceRuleRow {
+      @Id rule_id: com.acme.contracts.PriceRuleId
+      agreement_id: com.acme.contracts.AgreementId
+      product_sku: com.acme.catalog.ProductSku
+      unit_price: com.acme.pricing.ContractUnitPrice
+      discount_pct: com.acme.pricing.DiscountPercentage
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "contracts_entitlement")
+   closed model ContractsEntitlementRow {
+      @Id agreement_id: com.acme.contracts.AgreementId
+      @Id category_id: com.acme.catalog.CategoryId
+      max_qty: com.acme.shared.Quantity
+      active_flag: com.acme.contracts.EntitlementActive
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "contracts_renewal_audit")
+   closed model ContractsRenewalAuditRow {
+      @Id audit_id: com.acme.analytics.SignalId
+      agreement_id: com.acme.contracts.AgreementId
+      changed_at: com.acme.contracts.RenewalAuditAt
+      note: com.acme.contracts.RenewalAuditNote?
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "contracts_account_terms")
+   closed model ContractsAccountTermsRow {
+      @Id debtor_code: com.acme.erp.DebtorCode
+      payment_terms: com.acme.erp.PaymentTermsCode
+      credit_review_date: com.acme.contracts.CreditReviewDate
+   }
+
+   @DatabaseService(connection = "acme-db")
+   service ContractsDatabase {
+      table contracts_agreement: ContractsAgreementRow[]
+      table contracts_price_rule: ContractsPriceRuleRow[]
+      table contracts_entitlement: ContractsEntitlementRow[]
+      table contracts_renewal_audit: ContractsRenewalAuditRow[]
+      table contracts_account_terms: ContractsAccountTermsRow[]
+
+      @UpsertOperation
+      write operation saveAgreement(ContractsAgreementRow): ContractsAgreementRow
+      @UpsertOperation
+      write operation savePriceRule(ContractsPriceRuleRow): ContractsPriceRuleRow
+   }
+}

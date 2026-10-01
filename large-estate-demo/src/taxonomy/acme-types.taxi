@@ -1,0 +1,389 @@
+// Shared semantic taxonomy for the Acme Industrial estate.
+// Intentionally contains semantic scalars, not canonical enterprise DTOs.
+
+namespace com.acme.shared {
+   [[ UK company-registration identifier used as a cross-system legal-entity bridge. ]]
+   type CompanyRegistrationNumber inherits String
+   [[ Customer-name search term supplied by a user. ]]
+   type CustomerName inherits String
+   [[ Human person name. ]]
+   type PersonName inherits String
+   [[ Email address. ]]
+   type EmailAddress inherits String
+   [[ Telephone number. ]]
+   type PhoneNumber inherits String
+   [[ ISO-style country code. ]]
+   type CountryCode inherits String
+   [[ Currency code. ]]
+   type CurrencyCode inherits String
+   [[ Major-unit monetary amount. ]]
+   type MoneyAmount inherits Decimal
+   [[ Business-local calendar date. ]]
+   type BusinessDate inherits Date
+   [[ UTC event timestamp. ]]
+   type EventInstant inherits Instant
+   [[ Count of physical units. ]]
+   type Quantity inherits Int
+   [[ Formatted postal address. ]]
+   type PostalAddress inherits String
+   [[ Percentage value. ]]
+   type Percentage inherits Decimal
+}
+
+namespace com.acme.crm {
+   [[ CRM-native account identifier. ]]
+   type AccountId inherits String
+   [[ CRM-native contact identifier. ]]
+   type ContactId inherits String
+   [[ CRM user / account-owner identifier. ]]
+   type UserId inherits String
+   [[ CRM activity identifier. ]]
+   type ActivityId inherits String
+   [[ CRM account display name. ]]
+   type AccountDisplayName inherits String
+   [[ CRM commercial tier. ]]
+   type AccountTier inherits String
+   [[ CRM activity note text. ]]
+   type ActivityNote inherits String
+   [[ Timestamp recorded against a CRM activity. ]]
+   type ActivityOccurredAt inherits Instant
+}
+
+namespace com.acme.identity {
+   [[ Customer identity platform organisation identifier. ]]
+   type OrganisationId inherits String
+   [[ Customer identity platform user identifier. ]]
+   type UserId inherits String
+   [[ Customer portal role code. ]]
+   type RoleCode inherits String
+   [[ Identity-platform organisation name. ]]
+   type OrganisationName inherits String
+   [[ Identity-platform organisation primary email domain. ]]
+   type PrimaryDomain inherits String
+}
+
+namespace com.acme.orders {
+   [[ Modern order-management identifier. ]]
+   type OrderId inherits String
+   [[ Order-management line identifier. ]]
+   type OrderLineId inherits String
+   [[ Order lifecycle status. ]]
+   type OrderStatus inherits String
+   [[ Order creation timestamp. ]]
+   type OrderPlacedAt inherits Instant
+   [[ Customer requested delivery date. ]]
+   type RequestedDeliveryDate inherits Date
+   [[ Operational hold reason on an order. ]]
+   type OrderHoldReason inherits String
+   [[ Reason for cancelling order lines. ]]
+   type CancellationReason inherits String
+   [[ Gross order value. ]]
+   type OrderGrossAmount inherits com.acme.shared.MoneyAmount
+   [[ Net value of an order line. ]]
+   type OrderLineNetAmount inherits com.acme.shared.MoneyAmount
+}
+
+namespace com.acme.catalog {
+   [[ Canonical commercial SKU used by the product catalogue. ]]
+   type ProductSku inherits String
+   [[ EAN/GTIN barcode. ]]
+   type Ean inherits String
+   [[ Catalogue category identifier. ]]
+   type CategoryId inherits String
+   [[ Commercial product name. ]]
+   type ProductName inherits String
+   [[ Manufacturer part number. ]]
+   type ManufacturerPartNumber inherits String
+   [[ Whether a catalogue product is active. ]]
+   type ProductActive inherits Boolean
+   [[ Reason a product is an approved alternate. ]]
+   type AlternateReason inherits String
+   [[ Human-readable catalogue category label. ]]
+   type CategoryLabel inherits String
+   [[ Free-form catalogue search term. ]]
+   type ProductSearchTerm inherits String
+}
+
+namespace com.acme.warehouse {
+   [[ Warehouse-management SKU; not interchangeable with ProductSku. ]]
+   type WarehouseSku inherits String
+   [[ Warehouse/location code. ]]
+   type WarehouseCode inherits String
+   [[ Inventory reservation identifier. ]]
+   type ReservationId inherits String
+   [[ Warehouse pick identifier. ]]
+   type PickId inherits String
+   [[ Inter-warehouse transfer identifier. ]]
+   type TransferId inherits String
+   [[ Quantity presently available to promise. ]]
+   type AvailableQuantity inherits Int
+   [[ Quantity allocated to existing demand. ]]
+   type ReservedQuantity inherits Int
+   [[ Warehouse reservation state. ]]
+   type ReservationStatus inherits String
+   [[ Warehouse pick state. ]]
+   type PickStatus inherits String
+   [[ Reason a warehouse pick is blocked. ]]
+   type PickBlockReason inherits String
+   [[ Inter-warehouse transfer state. ]]
+   type TransferStatus inherits String
+   [[ Reason an inventory reservation is released. ]]
+   type ReservationReleaseReason inherits String
+   [[ Warehouse display name. ]]
+   type WarehouseName inherits String
+   [[ Timestamp of a stock snapshot. ]]
+   type InventorySnapshotAt inherits Instant
+   [[ Timestamp of an inventory cycle count. ]]
+   type CycleCountAt inherits Instant
+}
+
+namespace com.acme.erp {
+   [[ ERP customer/debtor identifier. ]]
+   type DebtorCode inherits String
+   [[ ERP payment-terms code. ]]
+   type PaymentTermsCode inherits String
+   [[ Number of days in an ERP payment term. ]]
+   type PaymentTermDays inherits Int
+}
+
+namespace com.acme.billing {
+   [[ ERP invoice identifier. ]]
+   type InvoiceNumber inherits String
+   [[ ERP credit-note identifier. ]]
+   type CreditNoteNumber inherits String
+   [[ Credit currently available to customer. ]]
+   type AvailableCredit inherits Decimal
+   [[ Approved customer credit limit. ]]
+   type CreditLimit inherits Decimal
+   [[ Current outstanding receivables balance. ]]
+   type OutstandingBalance inherits Decimal
+   [[ Invoice due date. ]]
+   type InvoiceDueDate inherits Date
+   [[ Invoice issue date. ]]
+   type InvoiceIssuedDate inherits Date
+   [[ Legal name held by the ERP debtor master. ]]
+   type DebtorLegalName inherits String
+   [[ ERP invoice lifecycle status. ]]
+   type InvoiceStatus inherits String
+   [[ Reason for an ERP credit note. ]]
+   type CreditNoteReason inherits String
+   [[ Credit-note issue date. ]]
+   type CreditNoteIssuedDate inherits Date
+   [[ ERP opening-balance document created when migrating receivables from an acquired system. ]]
+   type OpeningBalanceReference inherits String
+   [[ Date an opening balance was loaded into the ERP. ]]
+   type OpeningBalanceMigratedDate inherits Date
+   [[ ERP status of a migrated opening balance. ]]
+   type OpeningBalanceStatus inherits String
+}
+
+namespace com.acme.logistics {
+   [[ Shipment identifier. ]]
+   type ShipmentId inherits String
+   [[ Carrier tracking number. ]]
+   type TrackingNumber inherits String
+   [[ Carrier/depot location code. ]]
+   type DepotCode inherits String
+   [[ Estimated delivery instant. ]]
+   type DeliveryEstimate inherits Instant
+   [[ Shipment lifecycle status. ]]
+   type ShipmentStatus inherits String
+   [[ Carrier tracking status. ]]
+   type TrackingStatus inherits String
+   [[ Timestamp of the most recent carrier event. ]]
+   type TrackingEventAt inherits Instant
+   [[ Carrier tracking detail text. ]]
+   type TrackingDetail inherits String
+   [[ Date goods are ready to enter the delivery network. ]]
+   type DeliveryReadyDate inherits Date
+   [[ Reason a shipment is held. ]]
+   type ShipmentHoldReason inherits String
+   [[ Carrier service name. ]]
+   type DeliveryServiceName inherits String
+}
+
+namespace com.acme.procurement {
+   [[ Supplier purchase-order identifier. ]]
+   type PurchaseOrderId inherits String
+   [[ Goods receipt identifier. ]]
+   type GoodsReceiptId inherits String
+   [[ Expected inbound receipt date. ]]
+   type ExpectedReceiptDate inherits Date
+   [[ Supplier purchase-order lifecycle status. ]]
+   type PurchaseOrderStatus inherits String
+   [[ Reason a purchase order is expedited. ]]
+   type ExpediteReason inherits String
+   [[ Required-by date for a procurement expedite request. ]]
+   type RequiredByDate inherits Date
+   [[ Timestamp a supplier delivery was received. ]]
+   type GoodsReceivedAt inherits Instant
+}
+
+namespace com.acme.supplier {
+   [[ Supplier-master identifier. ]]
+   type SupplierId inherits String
+   [[ Supplier-specific part identifier. ]]
+   type SupplierPartNumber inherits String
+   [[ Supplier VAT identifier. ]]
+   type VatNumber inherits String
+   [[ Supplier quoted lead time in days. ]]
+   type LeadTimeDays inherits Int
+   [[ Observed average delivery delay in days. ]]
+   type AverageDelayDays inherits Decimal
+   [[ Supplier legal/display name. ]]
+   type SupplierName inherits String
+   [[ Supplier catalogue description. ]]
+   type SupplierProductDescription inherits String
+   [[ Date a supplier lead time was observed. ]]
+   type LeadTimeAsOfDate inherits Date
+}
+
+namespace com.acme.pricing {
+   [[ Pricing quote identifier. ]]
+   type QuoteId inherits String
+   [[ Unit selling price. ]]
+   type UnitPrice inherits com.acme.shared.MoneyAmount
+   [[ Negotiated contractual unit price. ]]
+   type ContractUnitPrice inherits UnitPrice
+   [[ Foreign exchange rate. ]]
+   type FxRate inherits Decimal
+   [[ Discount percentage. ]]
+   type DiscountPercentage inherits Decimal
+   [[ Currency-pair code for FX lookup. ]]
+   type FxPair inherits String
+}
+
+namespace com.acme.payments {
+   [[ Payment-provider transaction identifier. ]]
+   type TransactionId inherits String
+   [[ Payment-provider refund identifier. ]]
+   type RefundId inherits String
+   [[ Stored payment method identifier. ]]
+   type PaymentMethodId inherits String
+   [[ Monetary amount represented in the currency minor unit; not interchangeable with major-unit MoneyAmount. ]]
+   type MinorUnitAmount inherits Int
+   [[ Payment transaction status. ]]
+   type TransactionStatus inherits String
+   [[ Refund lifecycle status. ]]
+   type RefundStatus inherits String
+   [[ Payment-provider refund reason code. ]]
+   type RefundReason inherits String
+   [[ Stored payment method type. ]]
+   type PaymentMethodType inherits String
+   [[ Masked payment-card tail digits. ]]
+   type MaskedCardDigits inherits String
+}
+
+namespace com.acme.returns {
+   [[ Return merchandise authorisation identifier. ]]
+   type RmaId inherits String
+   [[ Return line identifier. ]]
+   type ReturnLineId inherits String
+   [[ Return merchandise authorisation status. ]]
+   type RmaStatus inherits String
+   [[ Reason goods are being returned. ]]
+   type ReturnReason inherits String
+   [[ Explanation of return eligibility. ]]
+   type EligibilityReason inherits String
+   [[ Whether a line is eligible for return. ]]
+   type ReturnEligible inherits Boolean
+}
+
+namespace com.acme.support {
+   [[ Support-ticket identifier. ]]
+   type TicketId inherits String
+   [[ Support SLA tier. ]]
+   type SlaTier inherits String
+   [[ Support ticket subject. ]]
+   type TicketSubject inherits String
+   [[ Support ticket workflow status. ]]
+   type TicketStatus inherits String
+   [[ Timestamp a support ticket was opened. ]]
+   type TicketOpenedAt inherits Instant
+   [[ Maximum SLA first-response time in minutes. ]]
+   type SlaResponseMinutes inherits Int
+   [[ Support ticket comment text. ]]
+   type TicketComment inherits String
+   [[ Support queue or owner label. ]]
+   type TicketOwner inherits String
+}
+
+namespace com.acme.contracts {
+   [[ Commercial agreement identifier. ]]
+   type AgreementId inherits String
+   [[ Contract pricing-rule identifier. ]]
+   type PriceRuleId inherits String
+   [[ Agreement start date. ]]
+   type ContractStartDate inherits Date
+   [[ Agreement end date. ]]
+   type ContractEndDate inherits Date
+   [[ Commercial agreement lifecycle status. ]]
+   type AgreementStatus inherits String
+   [[ Whether a contract entitlement is active. ]]
+   type EntitlementActive inherits Boolean
+   [[ Timestamp of a contract renewal audit entry. ]]
+   type RenewalAuditAt inherits Instant
+   [[ Contract renewal audit note. ]]
+   type RenewalAuditNote inherits String
+   [[ Contract account credit-review date. ]]
+   type CreditReviewDate inherits Date
+}
+
+namespace com.acme.legacy {
+   [[ Northstar legacy customer identifier. ]]
+   type LegacyCustomerId inherits String
+   [[ Northstar legacy order identifier. ]]
+   type LegacyOrderId inherits String
+   [[ Northstar legacy product code. ]]
+   type LegacySku inherits String
+   [[ Customer name in Northstar. ]]
+   type LegacyCustomerName inherits String
+   type LegacyMigrationCompleted inherits Boolean
+   type LegacyMigrationAt inherits Instant
+   type LegacyMigrationTarget inherits String
+   [[ Northstar order date. ]]
+   type LegacyOrderDate inherits Date
+   [[ Northstar order state. ]]
+   type LegacyOrderStatus inherits String
+   [[ Northstar return reason. ]]
+   type LegacyReturnReason inherits String
+   [[ Northstar invoice number. ]]
+   type LegacyInvoiceNumber inherits String
+   [[ Northstar invoice date. ]]
+   type LegacyInvoiceDate inherits Date
+   [[ Northstar invoice state, as held in the Northstar ledger. ]]
+   type LegacyInvoiceStatus inherits String
+   [[ Date a payment was received into Northstar. ]]
+   type LegacyInvoicePaidDate inherits Date
+}
+
+namespace com.acme.analytics {
+   [[ Operational/customer signal identifier. ]]
+   type SignalId inherits String
+   [[ Normalised analytics score. ]]
+   type SignalScore inherits Decimal
+   [[ Type of customer analytics signal. ]]
+   type CustomerSignalType inherits String
+   [[ Timestamp a customer signal was observed. ]]
+   type CustomerSignalObservedAt inherits Instant
+   [[ Type of analytical order event. ]]
+   type OrderEventType inherits String
+   [[ Timestamp of an analytical order event. ]]
+   type OrderEventAt inherits Instant
+   [[ Analytical order-event detail. ]]
+   type OrderEventDetail inherits String
+   [[ Date of a product-demand snapshot. ]]
+   type DemandSnapshotDate inherits Date
+   [[ Timestamp account health was calculated. ]]
+   type AccountHealthCalculatedAt inherits Instant
+   [[ Explanation of an account-health score. ]]
+   type AccountHealthExplanation inherits String
+   [[ Date of a finance credit review. ]]
+   type FinanceReviewDate inherits Date
+   [[ Finance credit-review note. ]]
+   type FinanceReviewNote inherits String
+   [[ Date an invoice dispute was opened. ]]
+   type DisputeOpenedDate inherits Date
+   [[ Invoice dispute status. ]]
+   type DisputeStatus inherits String
+}

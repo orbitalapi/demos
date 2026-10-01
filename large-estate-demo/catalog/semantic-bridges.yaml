@@ -1,0 +1,39 @@
+# Deliberate graph edges which connect the otherwise independent systems.
+# The shared facts below are what let Orbital link data across systems.
+bridges:
+  - fact: com.acme.shared.CompanyRegistrationNumber
+    systems: [crm, billing, identity, contracts-db, legacy]
+    purpose: legal-entity resolution without equating system-native customer IDs
+  - fact: com.acme.shared.EmailAddress
+    systems: [crm, identity, support]
+    purpose: person/contact resolution across customer-facing systems
+  - fact: com.acme.orders.OrderId
+    systems: [orders, logistics, billing, returns, warehouse, analytics]
+    purpose: order-centric operational fan-out
+  - fact: com.acme.billing.InvoiceNumber
+    systems: [billing, payments, finance-db]
+    purpose: finance/payment reconciliation
+  - fact: com.acme.catalog.ProductSku
+    systems: [catalog, orders, inventory-db, analytics]
+    purpose: commercial product identity
+  - fact: com.acme.warehouse.WarehouseSku
+    systems: [inventory-db, warehouse]
+    purpose: warehouse translation boundary
+  - fact: com.acme.supplier.SupplierPartNumber
+    systems: [inventory-db, procurement, supplier, analytics]
+    purpose: supplier/procurement translation boundary
+  - fact: com.acme.legacy.LegacySku
+    systems: [inventory-db, legacy]
+    purpose: acquired-system product translation boundary
+  - fact: com.acme.contracts.AgreementId
+    systems: [contracts-db, pricing]
+    purpose: contract-renewal workflow
+
+non_equivalences:
+  - [com.acme.crm.AccountId, com.acme.erp.DebtorCode]
+  - [com.acme.crm.AccountId, com.acme.identity.OrganisationId]
+  - [com.acme.erp.DebtorCode, com.acme.legacy.LegacyCustomerId]
+  - [com.acme.catalog.ProductSku, com.acme.warehouse.WarehouseSku]
+  - [com.acme.catalog.ProductSku, com.acme.supplier.SupplierPartNumber]
+  - [com.acme.catalog.ProductSku, com.acme.legacy.LegacySku]
+  - [com.acme.shared.MoneyAmount, com.acme.payments.MinorUnitAmount]

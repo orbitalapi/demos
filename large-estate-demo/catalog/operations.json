@@ -1,0 +1,1154 @@
+[
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/credit-notes",
+    "operationId": "listCreditNotesForInvoice",
+    "summary": "List credit notes for invoice",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "POST",
+    "path": "/billing/credit-notes",
+    "operationId": "createCreditNote",
+    "summary": "Issue credit note",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/credit/{debtorCode}",
+    "operationId": "getCreditPosition",
+    "summary": "Get customer credit position",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/debtors/by-company/{companyNumber}",
+    "operationId": "getDebtorByCompany",
+    "summary": "Resolve company registration to ERP debtor",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/debtors/{debtorCode}",
+    "operationId": "getDebtor",
+    "summary": "Get ERP debtor",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/invoices",
+    "operationId": "listInvoicesForDebtor",
+    "summary": "List invoices for ERP debtor",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/invoices/{invoiceNumber}",
+    "operationId": "getInvoice",
+    "summary": "Get invoice",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/opening-balances",
+    "operationId": "listOpeningBalancesForDebtor",
+    "summary": "List migrated opening balances for ERP debtor",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "billing",
+    "method": "GET",
+    "path": "/billing/opening-balances/by-legacy-invoice/{legacyInvoiceNo}",
+    "operationId": "listOpeningBalancesForLegacyInvoice",
+    "summary": "Find opening balances created from a Northstar invoice",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/categories/{categoryId}",
+    "operationId": "getCategory",
+    "summary": "Get catalogue category",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/legacy-code/{legacySku}",
+    "operationId": "resolveLegacyProductCode",
+    "summary": "Resolve acquired Northstar product code",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "POST",
+    "path": "/catalog/product-equivalents/search",
+    "operationId": "searchProductEquivalents",
+    "summary": "Search product equivalents",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/products",
+    "operationId": "searchProducts",
+    "summary": "Search products",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/products/by-ean/{ean}",
+    "operationId": "getProductByEan",
+    "summary": "Resolve EAN to product",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/products/{sku}",
+    "operationId": "getProduct",
+    "summary": "Get product by commercial SKU",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/products/{sku}/alternates",
+    "operationId": "listProductAlternates",
+    "summary": "List approved substitute products",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "catalog",
+    "method": "GET",
+    "path": "/catalog/products/{sku}/supplier-links",
+    "operationId": "getSupplierLinks",
+    "summary": "Get supplier references for product",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/accounts",
+    "operationId": "searchAccounts",
+    "summary": "Search CRM accounts by display name",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/accounts/by-company/{companyNumber}",
+    "operationId": "getAccountByCompanyNumber",
+    "summary": "Resolve legal company number to CRM account",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/accounts/{accountId}",
+    "operationId": "getAccount",
+    "summary": "Get CRM account",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "PATCH",
+    "path": "/crm/accounts/{accountId}",
+    "operationId": "updateAccount",
+    "summary": "Update account attributes",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/accounts/{accountId}/contacts",
+    "operationId": "listAccountContacts",
+    "summary": "List contacts for a CRM account",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/accounts/{accountId}/owner",
+    "operationId": "getAccountOwner",
+    "summary": "Get account manager",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "POST",
+    "path": "/crm/activities",
+    "operationId": "createActivity",
+    "summary": "Record CRM account activity",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/contacts",
+    "operationId": "searchContacts",
+    "summary": "Search CRM contacts by name",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "crm",
+    "method": "GET",
+    "path": "/crm/contacts/by-email",
+    "operationId": "findContactByEmail",
+    "summary": "Find CRM contact by email",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "GET",
+    "path": "/identity/organisations/by-company/{companyNumber}",
+    "operationId": "getOrganisationByCompany",
+    "summary": "Resolve company number to portal organisation",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "GET",
+    "path": "/identity/organisations/{orgId}",
+    "operationId": "getOrganisation",
+    "summary": "Get portal organisation",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "GET",
+    "path": "/identity/organisations/{orgId}/users",
+    "operationId": "listOrganisationUsers",
+    "summary": "List users in portal organisation",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "GET",
+    "path": "/identity/users/by-email",
+    "operationId": "getIdentityUserByEmail",
+    "summary": "Resolve email to portal user",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "GET",
+    "path": "/identity/users/{userId}",
+    "operationId": "getIdentityUser",
+    "summary": "Get portal user",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "identity",
+    "method": "PATCH",
+    "path": "/identity/users/{userId}/roles",
+    "operationId": "updateUserRoles",
+    "summary": "Change portal roles",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/customers/by-company/{companyNumber}",
+    "operationId": "getLegacyCustomerByCompany",
+    "summary": "Resolve company number to Northstar customer",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/customers/{legacyCustomerId}",
+    "operationId": "getLegacyCustomer",
+    "summary": "Get Northstar legacy customer",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/migration-status/{legacyCustomerId}",
+    "operationId": "getMigrationStatus",
+    "summary": "Get Northstar migration status",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/orders",
+    "operationId": "listLegacyOrders",
+    "summary": "List legacy orders for Northstar customer",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/orders/{legacyOrderId}",
+    "operationId": "getLegacyOrder",
+    "summary": "Get Northstar legacy order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "POST",
+    "path": "/legacy/returns",
+    "operationId": "createLegacyReturn",
+    "summary": "Create return in Northstar system",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/stock/{legacySku}",
+    "operationId": "getLegacyStock",
+    "summary": "Get legacy stock record",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/invoices",
+    "operationId": "listLegacyInvoices",
+    "summary": "List Northstar invoices for a legacy customer",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "legacy",
+    "method": "GET",
+    "path": "/legacy/invoices/{legacyInvoiceNo}",
+    "operationId": "getLegacyInvoice",
+    "summary": "Get Northstar invoice",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "GET",
+    "path": "/logistics/depots/{depotCode}",
+    "operationId": "getDepot",
+    "summary": "Get depot details",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "POST",
+    "path": "/logistics/estimates",
+    "operationId": "estimateDelivery",
+    "summary": "Estimate delivery from a depot",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "GET",
+    "path": "/logistics/shipments/by-order/{orderId}",
+    "operationId": "getShipmentsByOrder",
+    "summary": "Find shipments for order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "GET",
+    "path": "/logistics/shipments/{shipmentId}",
+    "operationId": "getShipment",
+    "summary": "Get shipment",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "POST",
+    "path": "/logistics/shipments/{shipmentId}/hold",
+    "operationId": "holdShipment",
+    "summary": "Place shipment on hold",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "POST",
+    "path": "/logistics/shipments/{shipmentId}/reroute",
+    "operationId": "rerouteShipment",
+    "summary": "Reroute shipment",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "logistics",
+    "method": "GET",
+    "path": "/logistics/tracking/{trackingNumber}",
+    "operationId": "getTracking",
+    "summary": "Get carrier tracking status",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "GET",
+    "path": "/orders/orders",
+    "operationId": "listOrdersForDebtor",
+    "summary": "List orders for ERP debtor",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "POST",
+    "path": "/orders/orders",
+    "operationId": "createOrder",
+    "summary": "Create order",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "GET",
+    "path": "/orders/orders/by-contact/{userId}",
+    "operationId": "listOrdersByPortalUser",
+    "summary": "List orders placed by portal user",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "GET",
+    "path": "/orders/orders/{orderId}",
+    "operationId": "getOrder",
+    "summary": "Get order header",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "POST",
+    "path": "/orders/orders/{orderId}/cancel-lines",
+    "operationId": "cancelOrderLines",
+    "summary": "Cancel eligible unshipped lines",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "PATCH",
+    "path": "/orders/orders/{orderId}/delivery",
+    "operationId": "changeRequestedDelivery",
+    "summary": "Change requested delivery date",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "POST",
+    "path": "/orders/orders/{orderId}/hold",
+    "operationId": "placeOrderOnHold",
+    "summary": "Place order on operational hold",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "GET",
+    "path": "/orders/orders/{orderId}/lines",
+    "operationId": "getOrderLines",
+    "summary": "Get order lines",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "orders",
+    "method": "GET",
+    "path": "/orders/orders/{orderId}/status",
+    "operationId": "getOrderStatus",
+    "summary": "Get current order state",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "POST",
+    "path": "/payments/amount-conversions/to-minor",
+    "operationId": "convertMajorToMinor",
+    "summary": "Convert major-unit amount to provider minor units",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "GET",
+    "path": "/payments/methods/{debtorCode}",
+    "operationId": "listPaymentMethods",
+    "summary": "List stored payment methods",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "POST",
+    "path": "/payments/payment-intents",
+    "operationId": "createPaymentIntent",
+    "summary": "Create payment intent",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "GET",
+    "path": "/payments/payments",
+    "operationId": "listPaymentsForInvoice",
+    "summary": "List payment transactions for invoice",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "POST",
+    "path": "/payments/refunds",
+    "operationId": "createRefund",
+    "summary": "Create refund",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "GET",
+    "path": "/payments/refunds/{refundId}",
+    "operationId": "getRefund",
+    "summary": "Get refund status",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "payments",
+    "method": "GET",
+    "path": "/payments/transactions/{transactionId}",
+    "operationId": "getPaymentTransaction",
+    "summary": "Get payment transaction",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/contract-price/{agreementId}/{sku}",
+    "operationId": "getContractPrice",
+    "summary": "Get price from commercial agreement",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/customer-price/{debtorCode}/{sku}",
+    "operationId": "getCustomerPrice",
+    "summary": "Get effective customer price",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/discounts/{debtorCode}",
+    "operationId": "getDiscounts",
+    "summary": "Get account discount rules",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/fx/{pair}",
+    "operationId": "getFxRate",
+    "summary": "Get FX conversion rate",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/list-price/{sku}",
+    "operationId": "getListPrice",
+    "summary": "Get catalogue list price",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "GET",
+    "path": "/pricing/price-calculations/{agreementId}/{sku}",
+    "operationId": "calculateUpliftedPrice",
+    "summary": "Calculate an uplifted contract price",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "pricing",
+    "method": "POST",
+    "path": "/pricing/quotes",
+    "operationId": "createQuote",
+    "summary": "Calculate customer quote",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "GET",
+    "path": "/procurement/inbound/by-warehouse/{warehouseCode}",
+    "operationId": "getInboundForWarehouse",
+    "summary": "List expected inbound POs",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "GET",
+    "path": "/procurement/purchase-orders",
+    "operationId": "searchPurchaseOrders",
+    "summary": "Search POs by supplier or supplier part",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "POST",
+    "path": "/procurement/purchase-orders",
+    "operationId": "createPurchaseOrder",
+    "summary": "Create supplier PO",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "GET",
+    "path": "/procurement/purchase-orders/{poId}",
+    "operationId": "getPurchaseOrder",
+    "summary": "Get supplier purchase order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "PATCH",
+    "path": "/procurement/purchase-orders/{poId}/expedite",
+    "operationId": "expeditePurchaseOrder",
+    "summary": "Request supplier expedition",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "GET",
+    "path": "/procurement/purchase-orders/{poId}/lines",
+    "operationId": "getPurchaseOrderLines",
+    "summary": "Get PO lines",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "procurement",
+    "method": "GET",
+    "path": "/procurement/receipts/by-po/{poId}",
+    "operationId": "getReceiptsByPurchaseOrder",
+    "summary": "Get goods receipts",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "GET",
+    "path": "/returns/eligibility/{orderId}/{lineId}",
+    "operationId": "getReturnEligibility",
+    "summary": "Check line return eligibility",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "GET",
+    "path": "/returns/rmas",
+    "operationId": "listRmasForOrder",
+    "summary": "List returns for order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "POST",
+    "path": "/returns/rmas",
+    "operationId": "createRma",
+    "summary": "Create return authorisation",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "GET",
+    "path": "/returns/rmas/{rmaId}",
+    "operationId": "getRma",
+    "summary": "Get return authorisation",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "POST",
+    "path": "/returns/rmas/{rmaId}/approve",
+    "operationId": "approveReturnCredit",
+    "summary": "Approve return credit",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "returns",
+    "method": "POST",
+    "path": "/returns/rmas/{rmaId}/receive",
+    "operationId": "receiveReturn",
+    "summary": "Record warehouse receipt of return",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "GET",
+    "path": "/supplier/lead-times/{supplierId}/{supplierPart}",
+    "operationId": "getSupplierLeadTime",
+    "summary": "Get current supplier lead time",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "POST",
+    "path": "/supplier/supplier-products/search",
+    "operationId": "searchSupplierProducts",
+    "summary": "Search supplier catalogue",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "GET",
+    "path": "/supplier/suppliers/by-vat/{vatNumber}",
+    "operationId": "getSupplierByVat",
+    "summary": "Resolve VAT number to supplier",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "GET",
+    "path": "/supplier/suppliers/{supplierId}",
+    "operationId": "getSupplier",
+    "summary": "Get supplier",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "GET",
+    "path": "/supplier/suppliers/{supplierId}/catalog/{supplierPart}",
+    "operationId": "getSupplierProduct",
+    "summary": "Get supplier catalogue item",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "supplier",
+    "method": "GET",
+    "path": "/supplier/suppliers/{supplierId}/contacts",
+    "operationId": "getSupplierContacts",
+    "summary": "Get supplier contacts",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "GET",
+    "path": "/support/slas/{tier}",
+    "operationId": "getSla",
+    "summary": "Get SLA definition",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "GET",
+    "path": "/support/tickets",
+    "operationId": "listTicketsForAccount",
+    "summary": "List tickets for CRM account",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "GET",
+    "path": "/support/tickets/by-email",
+    "operationId": "listTicketsByRequesterEmail",
+    "summary": "List tickets by requester email",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "GET",
+    "path": "/support/tickets/{ticketId}",
+    "operationId": "getSupportTicket",
+    "summary": "Get support ticket",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "PATCH",
+    "path": "/support/tickets/{ticketId}",
+    "operationId": "updateTicket",
+    "summary": "Update support ticket",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "support",
+    "method": "POST",
+    "path": "/support/tickets/{ticketId}/comments",
+    "operationId": "addTicketComment",
+    "summary": "Add support comment",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "GET",
+    "path": "/warehouse/availability/{warehouseSku}",
+    "operationId": "getNetworkAvailability",
+    "summary": "Get stock across all warehouses",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "GET",
+    "path": "/warehouse/inventory/{warehouseCode}/{warehouseSku}",
+    "operationId": "getWarehouseStock",
+    "summary": "Get stock at one warehouse",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "GET",
+    "path": "/warehouse/picks",
+    "operationId": "getPicksForOrder",
+    "summary": "Get picks for order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "POST",
+    "path": "/warehouse/picks/{pickId}/expedite",
+    "operationId": "expeditePick",
+    "summary": "Mark warehouse pick as urgent",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "GET",
+    "path": "/warehouse/reservations",
+    "operationId": "getReservationsForOrder",
+    "summary": "Get reservations for order",
+    "write": false
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "POST",
+    "path": "/warehouse/reservations/release",
+    "operationId": "releaseReservation",
+    "summary": "Release allocated inventory",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "POST",
+    "path": "/warehouse/transfers",
+    "operationId": "createWarehouseTransfer",
+    "summary": "Create inter-warehouse stock transfer",
+    "write": true
+  },
+  {
+    "kind": "http",
+    "system": "warehouse",
+    "method": "GET",
+    "path": "/warehouse/transfers/{transferId}",
+    "operationId": "getWarehouseTransfer",
+    "summary": "Get transfer state",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_account_health",
+    "operationId": "query_analytics_account_health",
+    "summary": "Query analytics_account_health table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_customer_signal",
+    "operationId": "query_analytics_customer_signal",
+    "summary": "Query analytics_customer_signal table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_order_event",
+    "operationId": "query_analytics_order_event",
+    "summary": "Query analytics_order_event table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_product_demand",
+    "operationId": "query_analytics_product_demand",
+    "summary": "Query analytics_product_demand table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_service_case_signal",
+    "operationId": "query_analytics_service_case_signal",
+    "summary": "Query analytics_service_case_signal table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:analytics",
+    "method": "TABLE",
+    "path": "analytics_supplier_performance",
+    "operationId": "query_analytics_supplier_performance",
+    "summary": "Query analytics_supplier_performance table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:contracts",
+    "method": "TABLE",
+    "path": "contracts_account_terms",
+    "operationId": "query_contracts_account_terms",
+    "summary": "Query contracts_account_terms table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:contracts",
+    "method": "TABLE",
+    "path": "contracts_agreement",
+    "operationId": "query_contracts_agreement",
+    "summary": "Query contracts_agreement table",
+    "write": false
+  },
+  {
+    "kind": "database-write",
+    "system": "db:contracts",
+    "method": "UPSERT",
+    "path": "contracts_agreement",
+    "operationId": "saveAgreement",
+    "summary": "Upsert commercial agreement",
+    "write": true
+  },
+  {
+    "kind": "database-table",
+    "system": "db:contracts",
+    "method": "TABLE",
+    "path": "contracts_entitlement",
+    "operationId": "query_contracts_entitlement",
+    "summary": "Query contracts_entitlement table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:contracts",
+    "method": "TABLE",
+    "path": "contracts_price_rule",
+    "operationId": "query_contracts_price_rule",
+    "summary": "Query contracts_price_rule table",
+    "write": false
+  },
+  {
+    "kind": "database-write",
+    "system": "db:contracts",
+    "method": "UPSERT",
+    "path": "contracts_price_rule",
+    "operationId": "savePriceRule",
+    "summary": "Upsert contract price rule",
+    "write": true
+  },
+  {
+    "kind": "database-table",
+    "system": "db:contracts",
+    "method": "TABLE",
+    "path": "contracts_renewal_audit",
+    "operationId": "query_contracts_renewal_audit",
+    "summary": "Query contracts_renewal_audit table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:finance",
+    "method": "TABLE",
+    "path": "finance_cash_application",
+    "operationId": "query_finance_cash_application",
+    "summary": "Query finance_cash_application table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:finance",
+    "method": "TABLE",
+    "path": "finance_credit_note_ledger",
+    "operationId": "query_finance_credit_note_ledger",
+    "summary": "Query finance_credit_note_ledger table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:finance",
+    "method": "TABLE",
+    "path": "finance_credit_review",
+    "operationId": "query_finance_credit_review",
+    "summary": "Query finance_credit_review table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:finance",
+    "method": "TABLE",
+    "path": "finance_dispute",
+    "operationId": "query_finance_dispute",
+    "summary": "Query finance_dispute table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:finance",
+    "method": "TABLE",
+    "path": "finance_payment_terms",
+    "operationId": "query_finance_payment_terms",
+    "summary": "Query finance_payment_terms table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_cycle_count",
+    "operationId": "query_inventory_cycle_count",
+    "summary": "Query inventory_cycle_count table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_reorder_policy",
+    "operationId": "query_inventory_reorder_policy",
+    "summary": "Query inventory_reorder_policy table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_reservation_ledger",
+    "operationId": "query_inventory_reservation_ledger",
+    "summary": "Query inventory_reservation_ledger table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_sku_map",
+    "operationId": "query_inventory_sku_map",
+    "summary": "Query inventory_sku_map table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_stock_snapshot",
+    "operationId": "query_inventory_stock_snapshot",
+    "summary": "Query inventory_stock_snapshot table",
+    "write": false
+  },
+  {
+    "kind": "database-table",
+    "system": "db:inventory",
+    "method": "TABLE",
+    "path": "inventory_warehouse",
+    "operationId": "query_inventory_warehouse",
+    "summary": "Query inventory_warehouse table",
+    "write": false
+  }
+]

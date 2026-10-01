@@ -1,0 +1,378 @@
+openapi: 3.0.3
+info:
+  title: Warehouse Management API
+  version: 1.0.0
+  description: Warehouse system. Uses warehouse-specific item codes and locations; translation from commercial SKU lives elsewhere.
+servers:
+- url: https://acmeApi/warehouse
+paths:
+  /inventory/{warehouseCode}/{warehouseSku}:
+    get:
+      operationId: getWarehouseStock
+      summary: Get stock at one warehouse
+      parameters:
+      - name: warehouseCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+        description: Warehouse/location code.
+      - name: warehouseSku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+        description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+      description: Get stock at one warehouse. This is the warehouse system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /availability/{warehouseSku}:
+    get:
+      operationId: getNetworkAvailability
+      summary: Get stock across all warehouses
+      parameters:
+      - name: warehouseSku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+        description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stock'
+      description: Return free/allocated stock across warehouses for a warehouse-management SKU. A catalogue SKU is not a
+        valid substitute.
+  /reservations:
+    get:
+      operationId: getReservationsForOrder
+      summary: Get reservations for order
+      parameters:
+      - name: orderId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+      description: Return warehouse reservations tied to an order. Reservations expose warehouse SKU, warehouse, line and
+        allocated quantity.
+  /picks:
+    get:
+      operationId: getPicksForOrder
+      summary: Get picks for order
+      parameters:
+      - name: orderId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pick'
+      description: Return warehouse picks tied to an order, including block state/reason.
+  /transfers:
+    post:
+      operationId: createWarehouseTransfer
+      summary: Create inter-warehouse stock transfer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+      description: Create inter-warehouse stock transfer. This is the warehouse system's native contract; system-specific
+        identifiers are not interchangeable unless an explicit business fact or mapping connects them.
+  /transfers/{transferId}:
+    get:
+      operationId: getWarehouseTransfer
+      summary: Get transfer state
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.TransferId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+      description: Get transfer state. This is the warehouse system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /reservations/release:
+    post:
+      operationId: releaseReservation
+      summary: Release allocated inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Release'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+      description: Release allocated inventory. This is the warehouse system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /picks/{pickId}/expedite:
+    post:
+      operationId: expeditePick
+      summary: Mark warehouse pick as urgent
+      parameters:
+      - name: pickId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.PickId
+        description: Warehouse pick ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pick'
+      description: Mark warehouse pick as urgent. This is the warehouse system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Stock:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.StockPosition
+      properties:
+        warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        item_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+          description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+        on_hand:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        reserved:
+          type: integer
+          x-taxi-type:
+            name: com.acme.warehouse.ReservedQuantity
+        available:
+          type: integer
+          x-taxi-type:
+            name: com.acme.warehouse.AvailableQuantity
+      required:
+      - warehouse
+      - item_code
+      - available
+    Reservation:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.Reservation
+      properties:
+        reservation_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.ReservationId
+          description: Warehouse reservation ID.
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        line_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderLineId
+          description: Order-management line ID within an order.
+        warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        item_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+          description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        state:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.ReservationStatus
+      required:
+      - reservation_id
+      - order_ref
+      - item_code
+    Pick:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.Pick
+      properties:
+        pick_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.PickId
+          description: Warehouse pick ID.
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        state:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.PickStatus
+        blocked_reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.PickBlockReason
+      required:
+      - pick_id
+      - order_ref
+      - state
+    TransferRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.TransferRequest
+      properties:
+        item_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+          description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+        from_warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        to_warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - item_code
+      - from_warehouse
+      - to_warehouse
+      - qty
+    Transfer:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.Transfer
+      properties:
+        transfer_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.TransferId
+        item_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseSku
+          description: Warehouse-management item code. Not interchangeable with the commercial catalogue SKU.
+        from_warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        to_warehouse:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        state:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.TransferStatus
+      required:
+      - transfer_id
+      - item_code
+      - state
+    Release:
+      type: object
+      x-taxi-type:
+        name: com.acme.warehouse.ReleaseRequest
+      properties:
+        reservation_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.ReservationId
+          description: Warehouse reservation ID.
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.ReservationReleaseReason
+      required:
+      - reservation_id

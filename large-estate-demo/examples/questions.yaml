@@ -1,0 +1,860 @@
+questions:
+- id: C01
+  level: 1
+  mode: read
+  question: What is the current delivery status of order ORD-38291?
+  answer: The order is only partially allocated; a carrier label exists but the parcel has not been handed over.
+  sources:
+  - orders.getOrderStatus
+  - logistics.getShipmentsByOrder
+  - logistics.getTracking
+  semantic_path:
+  - OrderId
+  - OrderStatus
+  - ShipmentId + TrackingNumber
+  - ShipmentStatus + TrackingStatus
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.OrderStatusResponse } as {
+       orderId : com.acme.orders.OrderId
+       orderStatus : com.acme.orders.OrderStatus
+       holdReason : com.acme.orders.OrderHoldReason?
+       shipments : com.acme.logistics.Shipment[] as {
+          shipmentId : com.acme.logistics.ShipmentId
+          shipmentStatus : com.acme.logistics.ShipmentStatus
+          trackingNumber : com.acme.logistics.TrackingNumber
+          tracking : com.acme.logistics.Tracking as {
+             trackingStatus : com.acme.logistics.TrackingStatus
+             lastEventAt : com.acme.logistics.TrackingEventAt
+             detail : com.acme.logistics.TrackingDetail
+          }
+       }[]
+    }
+- id: C02
+  level: 3
+  mode: read
+  question: Who is the account manager for the customer who placed order ORD-38291?
+  answer: Emily Carter.
+  sources:
+  - orders.getOrder
+  - billing.getDebtor
+  - crm.getAccountByCompanyNumber
+  - crm.getAccountOwner
+  semantic_path:
+  - OrderId
+  - DebtorCode
+  - CompanyRegistrationNumber
+  - AccountId
+  - CRM UserId
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.Order } as {
+       orderId : com.acme.orders.OrderId
+       debtorCode : com.acme.erp.DebtorCode
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       crmAccountId : com.acme.crm.AccountId
+       accountManager : com.acme.crm.AccountOwner as {
+          userId : com.acme.crm.UserId
+          name : com.acme.shared.PersonName
+          email : com.acme.shared.EmailAddress
+       }
+    }
+- id: C03
+  level: 4
+  mode: fanout
+  question: Sarah Jones is on the phone. Show her open orders, unpaid invoices, and outstanding support tickets.
+  answer: Open order ORD-38291; unpaid invoices include overdue INV-88014 and open INV-88291; open support ticket TCK-7788.
+  sources:
+  - crm.searchContacts
+  - identity.getIdentityUserByEmail
+  - identity.getOrganisation
+  - billing.getDebtorByCompany
+  - orders.listOrdersByPortalUser
+  - billing.listInvoicesForDebtor
+  - crm.getAccountByCompanyNumber
+  - support.listTicketsForAccount
+  semantic_path:
+  - PersonName
+  - EmailAddress
+  - Identity UserId + OrganisationId
+  - CompanyRegistrationNumber
+  - DebtorCode + AccountId
+  - Orders + Invoices + Tickets
+  taxiql:
+  - |-
+    given {
+       personName : com.acme.shared.PersonName = 'Sarah Jones'
+    }
+    find { com.acme.crm.Contact[] } as {
+       personName : com.acme.shared.PersonName
+       email : com.acme.shared.EmailAddress
+       identityUserId : com.acme.identity.UserId
+       organisationId : com.acme.identity.OrganisationId
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       debtorCode : com.acme.erp.DebtorCode
+       crmAccountId : com.acme.crm.AccountId
+       openOrders : com.acme.orders.Order[].filter(
+          (order: com.acme.orders.Order) -> order::com.acme.orders.OrderStatus != 'DELIVERED'
+       ) as {
+          orderId : com.acme.orders.OrderId
+          status : com.acme.orders.OrderStatus
+          requestedDelivery : com.acme.orders.RequestedDeliveryDate
+       }[]
+       unpaidInvoices : com.acme.billing.Invoice[].filter(
+          (invoice: com.acme.billing.Invoice) -> invoice::com.acme.billing.InvoiceStatus != 'PAID'
+       ) as {
+          invoiceNumber : com.acme.billing.InvoiceNumber
+          status : com.acme.billing.InvoiceStatus
+          amount : com.acme.shared.MoneyAmount
+          dueDate : com.acme.billing.InvoiceDueDate
+       }[]
+       outstandingTickets : com.acme.support.Ticket[].filter(
+          (ticket: com.acme.support.Ticket) -> ticket::com.acme.support.TicketStatus != 'CLOSED'
+       ) as {
+          ticketId : com.acme.support.TicketId
+          subject : com.acme.support.TicketSubject
+          status : com.acme.support.TicketStatus
+       }[]
+    }[]
+- id: C04
+  level: 5
+  mode: diagnostic
+  question: Why has order ORD-38291 not shipped, and when can it move?
+  answer: Line L-20 for ACM-7710-X is short at BHX. Only 20 are allocated there; 40 are free in Rotterdam. The pick is blocked
+    by full-order-ship policy. PO-90077 brings 200 units to BHX on 11 Aug; supplier lead time is 7 days.
+  sources:
+  - orders.getOrderLines
+  - db.inventory.inventory_sku_map
+  - warehouse.getNetworkAvailability
+  - warehouse.getReservationsForOrder
+  - warehouse.getPicksForOrder
+  - procurement.getInboundForWarehouse
+  - procurement.getPurchaseOrderLines
+  - supplier.getSupplierLeadTime
+  semantic_path:
+  - OrderId
+  - ProductSku
+  - WarehouseSku + SupplierPartNumber
+  - Stock/Reservation/Pick
+  - PurchaseOrderId
+  - LeadTimeDays
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.Order } as {
+       orderId : com.acme.orders.OrderId
+       orderStatus : com.acme.orders.OrderStatus
+       holdReason : com.acme.orders.OrderHoldReason
+       reservations : com.acme.warehouse.Reservation[] as {
+          reservationId : com.acme.warehouse.ReservationId
+          lineId : com.acme.orders.OrderLineId
+          warehouse : com.acme.warehouse.WarehouseCode
+          warehouseSku : com.acme.warehouse.WarehouseSku
+          reservedQuantity : com.acme.shared.Quantity
+          status : com.acme.warehouse.ReservationStatus
+       }[]
+       picks : com.acme.warehouse.Pick[] as {
+          pickId : com.acme.warehouse.PickId
+          warehouse : com.acme.warehouse.WarehouseCode
+          status : com.acme.warehouse.PickStatus
+          blockedReason : com.acme.warehouse.PickBlockReason?
+       }[]
+       lines : com.acme.orders.OrderLine[] as {
+          lineId : com.acme.orders.OrderLineId
+          productSku : com.acme.catalog.ProductSku
+          orderedQuantity : com.acme.shared.Quantity
+          mappings : com.acme.db.inventory.InventorySkuMapRow[] as {
+             warehouseSku : com.acme.warehouse.WarehouseSku
+             supplierId : com.acme.supplier.SupplierId
+             supplierPart : com.acme.supplier.SupplierPartNumber
+             availability : com.acme.warehouse.StockPosition[] as {
+                warehouse : com.acme.warehouse.WarehouseCode
+                onHand : com.acme.shared.Quantity
+                reserved : com.acme.warehouse.ReservedQuantity
+                available : com.acme.warehouse.AvailableQuantity
+                inbound : com.acme.procurement.PurchaseOrder[] as {
+                   purchaseOrderId : com.acme.procurement.PurchaseOrderId
+                   expectedReceipt : com.acme.procurement.ExpectedReceiptDate
+                   status : com.acme.procurement.PurchaseOrderStatus
+                }[]
+             }[]
+             supplierLeadTime : com.acme.supplier.LeadTime as {
+                leadTimeDays : com.acme.supplier.LeadTimeDays
+                asOf : com.acme.supplier.LeadTimeAsOfDate
+             }
+          }[]
+       }[]
+    }
+- id: C05
+  level: 5
+  mode: planning
+  question: Northbridge needs 200 ACM-7710-X units by Monday, 10 Aug 2026. Can we fulfil that without waiting for the supplier?
+  answer: No. Current network free stock is only 40 units (Rotterdam); BHX and Glasgow have no free stock. An approved alternate
+    exists, but its inventory would need checking separately.
+  sources:
+  - crm.searchAccounts
+  - billing.getDebtorByCompany
+  - db.inventory.inventory_sku_map
+  - warehouse.getNetworkAvailability
+  - catalog.listProductAlternates
+  - logistics.estimateDelivery
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - ProductSku
+  - WarehouseSku
+  - AvailableQuantity
+  - Alternate ProductSku
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+       productSku : com.acme.catalog.ProductSku = 'ACM-7710-X'
+       requiredQuantity : com.acme.shared.Quantity = 200
+       requiredBy : com.acme.shared.BusinessDate = '2026-08-10'
+    }
+    find { com.acme.catalog.Product } as {
+       productSku : com.acme.catalog.ProductSku
+       mappings : com.acme.db.inventory.InventorySkuMapRow[] as {
+          warehouseSku : com.acme.warehouse.WarehouseSku
+          availability : com.acme.warehouse.StockPosition[] as {
+             warehouse : com.acme.warehouse.WarehouseCode
+             available : com.acme.warehouse.AvailableQuantity
+          }[]
+       }[]
+       approvedAlternates : com.acme.catalog.ProductAlternate[] as {
+          alternateSku : com.acme.catalog.ProductSku
+          reason : com.acme.catalog.AlternateReason
+       }[]
+    }
+- id: C06
+  level: 4
+  mode: aggregate
+  question: How much did Northbridge Rail Engineering spend with us in Q2 2026, net of credit notes?
+  answer: 'GBP 13,240 net invoiced spend: GBP 8,240 + GBP 5,120 - GBP 120 credit note.'
+  sources:
+  - crm.searchAccounts
+  - billing.getDebtorByCompany
+  - billing.listInvoicesForDebtor
+  - db.finance.finance_credit_note_ledger
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - DebtorCode
+  - InvoiceNumber
+  - MoneyAmount
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+       from : com.acme.shared.BusinessDate = '2026-04-01'
+       to : com.acme.shared.BusinessDate = '2026-06-30'
+    }
+    find { com.acme.crm.Account[] } as {
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       debtorCode : com.acme.erp.DebtorCode
+       invoices : com.acme.billing.Invoice[] as {
+          invoiceNumber : com.acme.billing.InvoiceNumber
+          issuedOn : com.acme.billing.InvoiceIssuedDate
+          amount : com.acme.shared.MoneyAmount
+          currency : com.acme.shared.CurrencyCode
+          creditNotes : com.acme.db.finance.FinanceCreditNoteLedgerRow[] as {
+             creditNoteNumber : com.acme.billing.CreditNoteNumber
+             amount : com.acme.shared.MoneyAmount
+             issuedOn : com.acme.billing.CreditNoteIssuedDate
+          }[]
+       }[]
+    }[]
+- id: C07
+  level: 3
+  mode: read
+  question: What credit does Northbridge Rail Engineering currently have available?
+  answer: GBP 38,531.50 available from a GBP 50,000 limit.
+  sources:
+  - crm.searchAccounts
+  - billing.getDebtorByCompany
+  - billing.getCreditPosition
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - DebtorCode
+  - AvailableCredit
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+    }
+    find { com.acme.crm.Account[] } as {
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       debtorCode : com.acme.erp.DebtorCode
+       credit : com.acme.billing.CreditPosition as {
+          limit : com.acme.billing.CreditLimit
+          outstanding : com.acme.billing.OutstandingBalance
+          available : com.acme.billing.AvailableCredit
+          currency : com.acme.shared.CurrencyCode
+       }
+    }[]
+- id: C08
+  level: 5
+  mode: diagnostic
+  question: What is going wrong with Northbridge Rail Engineering right now?
+  answer: Operationally, ORD-38291 is delayed by stock allocation/full-order shipping. There is also an overdue disputed invoice,
+    while payment-risk analytics remain moderate.
+  sources:
+  - crm.searchAccounts
+  - db.analytics.analytics_customer_signal
+  - db.analytics.analytics_account_health
+  - orders.listOrdersForDebtor
+  - support.listTicketsForAccount
+  - db.finance.finance_dispute
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - Signals + Orders + Tickets + Invoice dispute
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+    }
+    find { com.acme.crm.Account[] } as {
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       crmAccountId : com.acme.crm.AccountId
+       debtorCode : com.acme.erp.DebtorCode
+       health : com.acme.db.analytics.AnalyticsAccountHealthRow as {
+          score : com.acme.analytics.SignalScore
+          calculatedAt : com.acme.analytics.AccountHealthCalculatedAt
+          explanation : com.acme.analytics.AccountHealthExplanation
+       }
+       signals : com.acme.db.analytics.AnalyticsCustomerSignalRow[] as {
+          type : com.acme.analytics.CustomerSignalType
+          score : com.acme.analytics.SignalScore
+          observedAt : com.acme.analytics.CustomerSignalObservedAt
+       }[]
+       orders : com.acme.orders.Order[] as {
+          orderId : com.acme.orders.OrderId
+          status : com.acme.orders.OrderStatus
+          holdReason : com.acme.orders.OrderHoldReason?
+       }[]
+       tickets : com.acme.support.Ticket[] as {
+          ticketId : com.acme.support.TicketId
+          subject : com.acme.support.TicketSubject
+          status : com.acme.support.TicketStatus
+       }[]
+       invoices : com.acme.billing.Invoice[] as {
+          invoiceNumber : com.acme.billing.InvoiceNumber
+          invoiceStatus : com.acme.billing.InvoiceStatus
+          amount : com.acme.shared.MoneyAmount
+          disputes : com.acme.db.finance.FinanceDisputeRow[] as {
+             disputeStatus : com.acme.analytics.DisputeStatus
+             disputeAmount : com.acme.shared.MoneyAmount
+             openedOn : com.acme.analytics.DisputeOpenedDate
+          }[]
+       }[]
+    }[]
+- id: C09
+  level: 6
+  mode: write
+  question: Cancel line L-20 on ORD-38291 and refund the customer for that line.
+  answer: L-20 is 60 x GBP 41.20 = GBP 2,472.00. Cancel the line, release its reservation, issue a GBP 2,472.00 credit note,
+    convert that amount to 247,200 minor units, and refund TX-88292.
+  sources:
+  - orders.getOrderLines
+  - warehouse.getReservationsForOrder
+  - warehouse.getPicksForOrder
+  - orders.cancelOrderLines
+  - warehouse.releaseReservation
+  - billing.listInvoicesForDebtor
+  - payments.listPaymentsForInvoice
+  - billing.createCreditNote
+  - payments.convertMajorToMinor
+  - payments.createRefund
+  semantic_path:
+  - OrderId
+  - OrderLineId
+  - Quantity
+  - InvoiceNumber
+  - TransactionId
+  - MoneyAmount
+  - MinorUnitAmount
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+       lineId : com.acme.orders.OrderLineId = 'L-20'
+       cancellationReason : com.acme.orders.CancellationReason = 'CUSTOMER_REQUEST'
+    }
+    find {
+       com.acme.orders.OrderLine(
+          com.acme.orders.OrderId == orderId &&
+          com.acme.orders.OrderLineId == lineId
+       )
+    } as {
+       orderId : com.acme.orders.OrderId = orderId
+       request : com.acme.orders.CancelLinesRequest = {
+          line_refs: [lineId],
+          reason: cancellationReason
+       }
+    }
+    call com.acme.orders.OrdersOrderIdCancel_linesService::cancelOrderLines
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+       lineId : com.acme.orders.OrderLineId = 'L-20'
+       releaseReason : com.acme.warehouse.ReservationReleaseReason = 'ORDER_LINE_CANCELLED'
+    }
+    find {
+       com.acme.warehouse.Reservation(
+          com.acme.orders.OrderId == orderId &&
+          com.acme.orders.OrderLineId == lineId
+       )
+    } as {
+       request : com.acme.warehouse.ReleaseRequest = {
+          reservation_id: com.acme.warehouse.ReservationId,
+          reason: releaseReason
+       }
+    }
+    call com.acme.warehouse.ReservationsReleaseService::releaseReservation
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+       lineId : com.acme.orders.OrderLineId = 'L-20'
+       creditReason : com.acme.billing.CreditNoteReason = 'ORDER_LINE_CANCELLED'
+    }
+    find {
+       com.acme.billing.Invoice(com.acme.orders.OrderId == orderId)
+    } as {
+       request : com.acme.billing.CreditNoteRequest = {
+          invoice_no: com.acme.billing.InvoiceNumber,
+          amount: com.acme.orders.OrderLine(
+             com.acme.orders.OrderLineId == lineId
+          )::com.acme.orders.OrderLineNetAmount,
+          currency: com.acme.shared.CurrencyCode,
+          reason: creditReason
+       }
+    }
+    call com.acme.billing.Credit_notesService::createCreditNote
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+       lineId : com.acme.orders.OrderLineId = 'L-20'
+       refundReason : com.acme.payments.RefundReason = 'ORDER_LINE_CANCELLED'
+    }
+    find {
+       com.acme.orders.OrderLine(
+          com.acme.orders.OrderId == orderId &&
+          com.acme.orders.OrderLineId == lineId
+       )
+    } as {
+       request : com.acme.payments.RefundRequest = {
+          transaction_ref: com.acme.payments.TransactionId,
+          amount_minor: com.acme.payments.MinorUnitAmount,
+          reason_code: refundReason
+       }
+    }
+    call com.acme.payments.RefundsService::createRefund
+- id: C10
+  level: 5
+  mode: write
+  question: Sarah says 2 units of ACM-7710-X from order ORD-37900 arrived damaged. Start the return and prepare the credit.
+  answer: Resolve Sarah, verify ORD-37900 and line L-20, create the RMA, receive/approve 2 units for GBP 82.40, then prepare
+    the matching ERP credit against INV-88014.
+  sources:
+  - crm.searchContacts
+  - identity.getIdentityUserByEmail
+  - orders.getOrder
+  - orders.getOrderLines
+  - returns.getReturnEligibility
+  - returns.createRma
+  - returns.receiveReturn
+  - returns.approveReturnCredit
+  - billing.listInvoicesForDebtor
+  - billing.createCreditNote
+  semantic_path:
+  - PersonName
+  - EmailAddress
+  - Identity UserId
+  - OrderId
+  - OrderLineId
+  - RmaId
+  - InvoiceNumber
+  taxiql:
+  - |-
+    given {
+       personName : com.acme.shared.PersonName = 'Sarah Jones'
+       orderId : com.acme.orders.OrderId = 'ORD-37900'
+       lineId : com.acme.orders.OrderLineId = 'L-20'
+       returnQuantity : com.acme.shared.Quantity = 2
+       returnReason : com.acme.returns.ReturnReason = 'DAMAGED'
+    }
+    find {
+       com.acme.returns.Eligibility(
+          com.acme.orders.OrderId == orderId &&
+          com.acme.orders.OrderLineId == lineId
+       )
+    } as com.acme.returns.RmaRequest
+    call com.acme.returns.RmasService::createRma
+  - |-
+    given {
+       rmaId : com.acme.returns.RmaId = 'RMA-6001'
+       receivedQuantity : com.acme.shared.Quantity = 2
+    }
+    find {
+       com.acme.returns.Rma(com.acme.returns.RmaId == rmaId)
+    } as {
+       rmaId : com.acme.returns.RmaId = rmaId
+       request : com.acme.returns.ReceiveRequest = {
+          received_qty: receivedQuantity
+       }
+    }
+    call com.acme.returns.RmasRmaIdReceiveService::receiveReturn
+  - |-
+    given {
+       rmaId : com.acme.returns.RmaId = 'RMA-6001'
+       approvedAmount : com.acme.shared.MoneyAmount = 82.40
+    }
+    find {
+       com.acme.returns.Rma(com.acme.returns.RmaId == rmaId)
+    } as {
+       rmaId : com.acme.returns.RmaId = rmaId
+       request : com.acme.returns.ApproveRequest = {
+          approved_amount: approvedAmount
+       }
+    }
+    call com.acme.returns.RmasRmaIdApproveService::approveReturnCredit
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-37900'
+       creditAmount : com.acme.shared.MoneyAmount = 82.40
+       creditReason : com.acme.billing.CreditNoteReason = 'DAMAGED_RETURN'
+    }
+    find {
+       com.acme.billing.Invoice(com.acme.orders.OrderId == orderId)
+    } as {
+       request : com.acme.billing.CreditNoteRequest = {
+          invoice_no: com.acme.billing.InvoiceNumber,
+          amount: creditAmount,
+          currency: com.acme.shared.CurrencyCode,
+          reason: creditReason
+       }
+    }
+    call com.acme.billing.Credit_notesService::createCreditNote
+- id: C11
+  level: 6
+  mode: write
+  question: Northbridge’s agreement expired last week. Renew it for twelve months on the same terms with a 4% price uplift.
+  answer: Agreement AGR-44018 expired 31 Jul 2026. Read existing price rules, calculate 4% uplift, then upsert the renewed
+    agreement/pricing records.
+  sources:
+  - crm.searchAccounts
+  - db.contracts.contracts_agreement
+  - db.contracts.contracts_price_rule
+  - pricing.calculateUpliftedPrice
+  - db.contracts.saveAgreement
+  - db.contracts.savePriceRule
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - AgreementId
+  - ContractUnitPrice
+  - Percentage
+  - Agreement write
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+       renewalStart : com.acme.contracts.ContractStartDate = '2026-08-01'
+       renewalEnd : com.acme.contracts.ContractEndDate = '2027-07-31'
+       activeStatus : com.acme.contracts.AgreementStatus = 'ACTIVE'
+    }
+    find {
+       com.acme.db.contracts.ContractsAgreementRow(
+          com.acme.shared.CustomerName == customerName
+       )
+    } as {
+       agreement_id : com.acme.contracts.AgreementId
+       company_no : com.acme.shared.CompanyRegistrationNumber
+       debtor_code : com.acme.erp.DebtorCode
+       starts_on : com.acme.contracts.ContractStartDate = renewalStart
+       ends_on : com.acme.contracts.ContractEndDate = renewalEnd
+       currency : com.acme.shared.CurrencyCode
+       status : com.acme.contracts.AgreementStatus = activeStatus
+    }
+    call com.acme.db.contracts.ContractsDatabase::saveAgreement
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+       uplift : com.acme.shared.Percentage = 4.0
+    }
+    find {
+       com.acme.db.contracts.ContractsPriceRuleRow[](
+          com.acme.shared.CustomerName == customerName
+       )
+    } as (calculation: com.acme.pricing.PriceCalculation) -> {
+       rule_id : com.acme.contracts.PriceRuleId
+       agreement_id : com.acme.contracts.AgreementId
+       product_sku : com.acme.catalog.ProductSku
+       unit_price : com.acme.pricing.ContractUnitPrice = calculation.result_amount
+       discount_pct : com.acme.pricing.DiscountPercentage
+    }[]
+    call com.acme.db.contracts.ContractsDatabase::savePriceRule
+- id: C12
+  level: 5
+  mode: legacy
+  question: Did Northbridge have any orders before we migrated them off Northstar, and do we still have stock under the old
+    product codes?
+  answer: Northbridge maps to legacy customer NSC-441; legacy order NO-9912 exists. Legacy SKU NX7710 has 12 free units in
+    GLA.
+  sources:
+  - crm.searchAccounts
+  - legacy.getLegacyCustomerByCompany
+  - legacy.listLegacyOrders
+  - db.inventory.inventory_sku_map
+  - legacy.getLegacyStock
+  semantic_path:
+  - CustomerName
+  - CompanyRegistrationNumber
+  - LegacyCustomerId
+  - LegacyOrderId
+  - LegacySku
+  taxiql:
+  - |-
+    given {
+       customerName : com.acme.shared.CustomerName = 'Northbridge Rail Engineering'
+    }
+    find { com.acme.crm.Account[] } as {
+       companyNumber : com.acme.shared.CompanyRegistrationNumber
+       legacyCustomer : com.acme.legacy.LegacyCustomer as {
+          legacyCustomerId : com.acme.legacy.LegacyCustomerId
+          migratedDebtor : com.acme.erp.DebtorCode
+          orders : com.acme.legacy.LegacyOrder[] as {
+             legacyOrderId : com.acme.legacy.LegacyOrderId
+             orderDate : com.acme.legacy.LegacyOrderDate
+             status : com.acme.legacy.LegacyOrderStatus
+          }[]
+       }
+       legacyMappings : com.acme.db.inventory.InventorySkuMapRow[].filter(
+          (mapping: com.acme.db.inventory.InventorySkuMapRow) -> mapping::com.acme.legacy.LegacySku != null
+       ) as {
+          productSku : com.acme.catalog.ProductSku
+          legacySku : com.acme.legacy.LegacySku
+          legacyStock : com.acme.legacy.LegacyStock as {
+             freeQuantity : com.acme.shared.Quantity
+             warehouse : com.acme.warehouse.WarehouseCode
+          }
+       }[]
+    }[]
+- id: C13
+  level: 5
+  mode: diagnostic
+  question: Which supplier is responsible for the part delaying ORD-38291, and how reliable have they been?
+  answer: Supplier SUP-42 / Quazar Controls GmbH supplies QZ-7710/UK. Current lead time is 7 days; analytics show 71% OTIF
+    and 3.4 average delay days.
+  sources:
+  - orders.getOrderLines
+  - db.inventory.inventory_sku_map
+  - supplier.getSupplier
+  - supplier.getSupplierLeadTime
+  - db.analytics.analytics_supplier_performance
+  semantic_path:
+  - OrderId
+  - ProductSku
+  - SupplierId + SupplierPartNumber
+  - LeadTimeDays
+  - Supplier performance
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.Order } as {
+       lines : com.acme.orders.OrderLine[] as {
+          lineId : com.acme.orders.OrderLineId
+          productSku : com.acme.catalog.ProductSku
+          mapping : com.acme.db.inventory.InventorySkuMapRow[] as {
+             supplierId : com.acme.supplier.SupplierId
+             supplierPart : com.acme.supplier.SupplierPartNumber
+             supplier : com.acme.supplier.Supplier as {
+                name : com.acme.supplier.SupplierName
+             }
+             leadTime : com.acme.supplier.LeadTime as {
+                days : com.acme.supplier.LeadTimeDays
+             }
+             performance : com.acme.db.analytics.AnalyticsSupplierPerformanceRow as {
+                onTimeInFull : com.acme.shared.Percentage
+                averageDelayDays : com.acme.supplier.AverageDelayDays
+             }
+          }[]
+       }[]
+    }
+- id: C14
+  level: 6
+  mode: write
+  question: Do what you can to expedite ORD-38291 without substituting the product.
+  answer: Potential actions are an RTM→BHX stock transfer, supplier PO expedition and pick expedition after stock becomes
+    available.
+  sources:
+  - orders.getOrderLines
+  - db.inventory.inventory_sku_map
+  - warehouse.getNetworkAvailability
+  - warehouse.createWarehouseTransfer
+  - procurement.searchPurchaseOrders
+  - procurement.expeditePurchaseOrder
+  - warehouse.getPicksForOrder
+  - warehouse.expeditePick
+  semantic_path:
+  - OrderId
+  - ProductSku
+  - WarehouseSku
+  - WarehouseCode
+  - PurchaseOrderId
+  - PickId
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.Order } as {
+       lines : com.acme.orders.OrderLine[] as {
+          lineId : com.acme.orders.OrderLineId
+          productSku : com.acme.catalog.ProductSku
+          mapping : com.acme.db.inventory.InventorySkuMapRow[] as {
+             warehouseSku : com.acme.warehouse.WarehouseSku
+             availability : com.acme.warehouse.StockPosition[] as {
+                warehouse : com.acme.warehouse.WarehouseCode
+                available : com.acme.warehouse.AvailableQuantity
+             }[]
+             purchaseOrders : com.acme.procurement.PurchaseOrder[] as {
+                purchaseOrderId : com.acme.procurement.PurchaseOrderId
+                expectedReceipt : com.acme.procurement.ExpectedReceiptDate
+                status : com.acme.procurement.PurchaseOrderStatus
+             }[]
+          }[]
+       }[]
+       picks : com.acme.warehouse.Pick[] as {
+          pickId : com.acme.warehouse.PickId
+          warehouse : com.acme.warehouse.WarehouseCode
+          status : com.acme.warehouse.PickStatus
+          blockedReason : com.acme.warehouse.PickBlockReason?
+       }[]
+    }
+  - |-
+    given {
+       productSku : com.acme.catalog.ProductSku = 'ACM-7710-X'
+       sourceWarehouse : com.acme.warehouse.WarehouseCode = 'RTM'
+       targetWarehouse : com.acme.warehouse.WarehouseCode = 'BHX'
+       transferQuantity : com.acme.shared.Quantity = 40
+    }
+    find {
+       com.acme.db.inventory.InventorySkuMapRow(
+          com.acme.catalog.ProductSku == productSku
+       )
+    } as {
+       request : com.acme.warehouse.TransferRequest = {
+          item_code: com.acme.warehouse.WarehouseSku,
+          from_warehouse: sourceWarehouse,
+          to_warehouse: targetWarehouse,
+          qty: transferQuantity
+       }
+    }
+    call com.acme.warehouse.TransfersService::createWarehouseTransfer
+  - |-
+    given {
+       purchaseOrderId : com.acme.procurement.PurchaseOrderId = 'PO-90077'
+       requiredBy : com.acme.procurement.RequiredByDate = '2026-08-10'
+       expediteReason : com.acme.procurement.ExpediteReason = 'CUSTOMER_DELIVERY_AT_RISK'
+    }
+    find {
+       com.acme.procurement.PurchaseOrder(
+          com.acme.procurement.PurchaseOrderId == purchaseOrderId
+       )
+    } as {
+       purchaseOrderId : com.acme.procurement.PurchaseOrderId = purchaseOrderId
+       request : com.acme.procurement.ExpediteRequest = {
+          reason: expediteReason,
+          required_by: requiredBy
+       }
+    }
+    call com.acme.procurement.Purchase_ordersPoIdExpediteService::expeditePurchaseOrder
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find {
+       com.acme.warehouse.Pick(com.acme.orders.OrderId == orderId)
+    } as {
+       pickId : com.acme.warehouse.PickId
+    }
+    call com.acme.warehouse.PicksPickIdExpediteService::expeditePick
+- id: C15
+  level: 4
+  mode: read
+  question: Is Northbridge’s delivery problem primarily a carrier problem, warehouse problem, or supplier problem?
+  answer: Primarily inventory/warehouse availability, with supplier replenishment timing contributing. The carrier has not
+    yet received the parcel.
+  sources:
+  - logistics.getTracking
+  - warehouse.getPicksForOrder
+  - warehouse.getReservationsForOrder
+  - procurement.getPurchaseOrder
+  - supplier.getSupplierLeadTime
+  semantic_path:
+  - OrderId
+  - Tracking status
+  - Pick status
+  - Reservation
+  - PurchaseOrder
+  - LeadTime
+  taxiql:
+  - |-
+    given {
+       orderId : com.acme.orders.OrderId = 'ORD-38291'
+    }
+    find { com.acme.orders.Order } as {
+       shipments : com.acme.logistics.Shipment[] as {
+          shipmentStatus : com.acme.logistics.ShipmentStatus
+          tracking : com.acme.logistics.Tracking as {
+             trackingStatus : com.acme.logistics.TrackingStatus
+             detail : com.acme.logistics.TrackingDetail
+          }
+       }[]
+       reservations : com.acme.warehouse.Reservation[] as {
+          lineId : com.acme.orders.OrderLineId
+          warehouse : com.acme.warehouse.WarehouseCode
+          reservedQuantity : com.acme.shared.Quantity
+          status : com.acme.warehouse.ReservationStatus
+       }[]
+       picks : com.acme.warehouse.Pick[] as {
+          pickId : com.acme.warehouse.PickId
+          status : com.acme.warehouse.PickStatus
+          blockedReason : com.acme.warehouse.PickBlockReason?
+       }[]
+       lines : com.acme.orders.OrderLine[] as {
+          productSku : com.acme.catalog.ProductSku
+          mapping : com.acme.db.inventory.InventorySkuMapRow[] as {
+             supplierId : com.acme.supplier.SupplierId
+             supplierPart : com.acme.supplier.SupplierPartNumber
+             purchaseOrders : com.acme.procurement.PurchaseOrder[] as {
+                purchaseOrderId : com.acme.procurement.PurchaseOrderId
+                expectedReceipt : com.acme.procurement.ExpectedReceiptDate
+                status : com.acme.procurement.PurchaseOrderStatus
+             }[]
+             leadTime : com.acme.supplier.LeadTime as {
+                days : com.acme.supplier.LeadTimeDays
+             }
+          }[]
+       }[]
+    }
+source_semantics: sources is one known route through the estate; other routes can produce the same answer
+taxiql_semantics: 'Read queries deliberately avoid pinning sources, so Orbital discovers the path through the estate.
+  Write examples use TaxiQL query-mutate statements: each statement resolves and projects the data one write operation
+  needs, then `call`s it. TaxiQL allows one mutation per query, so workflows needing several mutations use several
+  statements. Values produced by an earlier mutation (such as an RMA ID) appear as literals in later statements because the
+  Nebula stub responses are deterministic.'

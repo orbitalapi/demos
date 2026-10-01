@@ -1,0 +1,223 @@
+openapi: 3.0.3
+info:
+  title: Customer Identity API
+  version: 1.0.0
+  description: Customer portal identity service. Organisation IDs are not CRM account IDs or ERP debtor codes.
+servers:
+- url: https://acmeApi/identity
+paths:
+  /organisations/{orgId}:
+    get:
+      operationId: getOrganisation
+      summary: Get portal organisation
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.OrganisationId
+        description: Customer identity-platform organisation ID. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+      description: Get an identity-platform organisation by its identity-native organisation ID; the response includes the
+        legal company-registration number.
+  /organisations/by-company/{companyNumber}:
+    get:
+      operationId: getOrganisationByCompany
+      summary: Resolve company number to portal organisation
+      parameters:
+      - name: companyNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+        description: Legal company-registration number used as a cross-system legal-entity fact.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+      description: Resolve company number to portal organisation. This is the identity system's native contract; system-specific
+        identifiers are not interchangeable unless an explicit business fact or mapping connects them.
+  /users/{userId}:
+    get:
+      operationId: getIdentityUser
+      summary: Get portal user
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+        description: Customer portal identity user ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      description: Get portal user. This is the identity system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /users/by-email:
+    get:
+      operationId: getIdentityUserByEmail
+      summary: Resolve email to portal user
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+        description: Email address; can bridge contact records where the same address is actually present.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      description: Resolve an email address to a portal identity user and its owning organisation.
+  /organisations/{orgId}/users:
+    get:
+      operationId: listOrganisationUsers
+      summary: List users in portal organisation
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.OrganisationId
+        description: Customer identity-platform organisation ID. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      description: List users in portal organisation. This is the identity system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /users/{userId}/roles:
+    patch:
+      operationId: updateUserRoles
+      summary: Change portal roles
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+        description: Customer portal identity user ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolesPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      description: Change portal roles. This is the identity system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Organisation:
+      type: object
+      x-taxi-type:
+        name: com.acme.identity.Organisation
+      properties:
+        org_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.OrganisationId
+          description: Customer identity-platform organisation ID. Not a CRM account ID.
+        legal_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.OrganisationName
+        registered_company:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+          description: Legal company-registration number used as a cross-system legal-entity fact.
+        primary_domain:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.PrimaryDomain
+      required:
+      - org_id
+      - legal_name
+    User:
+      type: object
+      x-taxi-type:
+        name: com.acme.identity.User
+      properties:
+        user_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+          description: Customer portal identity user ID.
+        org_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.OrganisationId
+          description: Customer identity-platform organisation ID. Not a CRM account ID.
+        email:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+          description: Email address; can bridge contact records where the same address is actually present.
+        name:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PersonName
+          description: Human person name.
+        role_codes:
+          type: array
+          items:
+            type: string
+            x-taxi-type:
+              name: com.acme.identity.RoleCode
+      required:
+      - user_id
+      - org_id
+      - email
+    RolesPatch:
+      type: object
+      x-taxi-type:
+        name: com.acme.identity.RolesPatch
+      properties:
+        role_codes:
+          type: array
+          items:
+            type: string
+            x-taxi-type:
+              name: com.acme.identity.RoleCode
+      required:
+      - role_codes

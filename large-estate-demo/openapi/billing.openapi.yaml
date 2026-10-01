@@ -1,0 +1,433 @@
+openapi: 3.0.3
+info:
+  title: ERP Billing API
+  version: 1.0.0
+  description: Finance-facing ERP API. Debtor code is the customer identifier; company registration provides the bridge back
+    to CRM/identity.
+servers:
+- url: https://acmeApi/billing
+paths:
+  /debtors/{debtorCode}:
+    get:
+      operationId: getDebtor
+      summary: Get ERP debtor
+      parameters:
+      - name: debtorCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debtor'
+      description: Get the ERP debtor/customer record for an ERP debtor code. The response exposes the legal company-registration
+        number needed to resolve into systems that do not use debtor codes.
+  /debtors/by-company/{companyNumber}:
+    get:
+      operationId: getDebtorByCompany
+      summary: Resolve company registration to ERP debtor
+      parameters:
+      - name: companyNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+        description: Legal company-registration number used as a cross-system legal-entity fact.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debtor'
+      description: Resolve a legal company-registration number to the ERP debtor/customer record.
+  /invoices/{invoiceNumber}:
+    get:
+      operationId: getInvoice
+      summary: Get invoice
+      parameters:
+      - name: invoiceNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+        description: ERP invoice number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+      description: Get invoice. This is the billing system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /invoices:
+    get:
+      operationId: listInvoicesForDebtor
+      summary: List invoices for ERP debtor
+      parameters:
+      - name: debtorCode
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.shared.BusinessDate
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.shared.BusinessDate
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+      description: List ERP invoices for an ERP debtor, optionally date bounded. Invoice amounts are major-unit decimals.
+  /credit/{debtorCode}:
+    get:
+      operationId: getCreditPosition
+      summary: Get customer credit position
+      parameters:
+      - name: debtorCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditPosition'
+      description: Get current ERP credit limit, outstanding balance and available credit for a debtor.
+  /credit-notes:
+    get:
+      operationId: listCreditNotesForInvoice
+      summary: List credit notes for invoice
+      parameters:
+      - name: invoiceNumber
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+        description: ERP invoice number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditNote'
+      description: List credit notes for invoice. This is the billing system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+    post:
+      operationId: createCreditNote
+      summary: Issue credit note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditNoteRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditNote'
+      description: Issue credit note. This is the billing system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /opening-balances:
+    get:
+      operationId: listOpeningBalancesForDebtor
+      summary: List migrated opening balances for ERP debtor
+      parameters:
+      - name: debtorCode
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpeningBalance'
+      description: List opening balances loaded into the ERP when a customer was migrated from an acquired system. Each
+        opening balance carries the reference of the source-system invoice it was created from.
+  /opening-balances/by-legacy-invoice/{legacyInvoiceNo}:
+    get:
+      operationId: listOpeningBalancesForLegacyInvoice
+      summary: Find opening balances created from a Northstar invoice
+      parameters:
+      - name: legacyInvoiceNo
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceNumber
+        description: Northstar invoice number the opening balance was migrated from.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpeningBalance'
+      description: Find the ERP opening balances that were created from a given Northstar invoice during migration.
+components:
+  schemas:
+    Debtor:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.Debtor
+      properties:
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        legal_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.DebtorLegalName
+        registration_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+          description: Legal company-registration number used as a cross-system legal-entity fact.
+        payment_terms:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.PaymentTermsCode
+      required:
+      - debtor_code
+      - legal_name
+    Invoice:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.Invoice
+      properties:
+        invoice_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+          description: ERP invoice number.
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        issued_on:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.billing.InvoiceIssuedDate
+        due_on:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.billing.InvoiceDueDate
+        gross_amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        currency_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceStatus
+      required:
+      - invoice_no
+      - debtor_code
+      - issued_on
+      - gross_amount
+    CreditPosition:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.CreditPosition
+      properties:
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        limit:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.billing.CreditLimit
+        outstanding:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.billing.OutstandingBalance
+        available:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.billing.AvailableCredit
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - debtor_code
+      - available
+    CreditNote:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.CreditNote
+      properties:
+        credit_note_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.CreditNoteNumber
+        invoice_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+          description: ERP invoice number.
+        amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.CreditNoteReason
+      required:
+      - credit_note_no
+      - invoice_no
+      - amount
+    CreditNoteRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.CreditNoteRequest
+      properties:
+        invoice_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+          description: ERP invoice number.
+        amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.CreditNoteReason
+      required:
+      - invoice_no
+      - amount
+      - reason
+    OpeningBalance:
+      type: object
+      x-taxi-type:
+        name: com.acme.billing.OpeningBalance
+      properties:
+        ob_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.OpeningBalanceReference
+          description: ERP opening-balance document reference.
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        legacy_invoice_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceNumber
+          description: Northstar invoice number this opening balance was migrated from.
+        migrated_on:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.billing.OpeningBalanceMigratedDate
+        amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.OpeningBalanceStatus
+          description: ERP status of the opening balance (OPEN or PAID).
+      required:
+      - ob_ref
+      - debtor_code
+      - legacy_invoice_ref
+      - amount

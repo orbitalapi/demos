@@ -1,0 +1,322 @@
+openapi: 3.0.3
+info:
+  title: Logistics API
+  version: 1.0.0
+  description: Outbound logistics and carrier tracking. Shipment links to orders, not directly to customers.
+servers:
+- url: https://acmeApi/logistics
+paths:
+  /shipments/by-order/{orderId}:
+    get:
+      operationId: getShipmentsByOrder
+      summary: Find shipments for order
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shipment'
+      description: Find shipments for order. This is the logistics system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /shipments/{shipmentId}:
+    get:
+      operationId: getShipment
+      summary: Get shipment
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentId
+        description: Outbound shipment ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+      description: Get shipment. This is the logistics system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /tracking/{trackingNumber}:
+    get:
+      operationId: getTracking
+      summary: Get carrier tracking status
+      parameters:
+      - name: trackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.TrackingNumber
+        description: Carrier tracking number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tracking'
+      description: Get carrier tracking status. This is the logistics system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /estimates:
+    post:
+      operationId: estimateDelivery
+      summary: Estimate delivery from a depot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimateRequest'
+      x-taxi-operation-kind: read
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estimate'
+      description: Estimate delivery from a depot. This is the logistics system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /shipments/{shipmentId}/reroute:
+    post:
+      operationId: rerouteShipment
+      summary: Reroute shipment
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentId
+        description: Outbound shipment ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reroute'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+      description: Reroute shipment. This is the logistics system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /shipments/{shipmentId}/hold:
+    post:
+      operationId: holdShipment
+      summary: Place shipment on hold
+      parameters:
+      - name: shipmentId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentId
+        description: Outbound shipment ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hold'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+      description: Place shipment on hold. This is the logistics system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /depots/{depotCode}:
+    get:
+      operationId: getDepot
+      summary: Get depot details
+      parameters:
+      - name: depotCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.DepotCode
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Depot'
+      description: Get depot details. This is the logistics system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Shipment:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.Shipment
+      properties:
+        shipment_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentId
+          description: Outbound shipment ID.
+        order_reference:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        tracking_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.TrackingNumber
+          description: Carrier tracking number.
+        origin_depot:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.DepotCode
+        destination:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PostalAddress
+        status_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentStatus
+        eta:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.logistics.DeliveryEstimate
+      required:
+      - shipment_id
+      - order_reference
+      - status_code
+    Tracking:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.Tracking
+      properties:
+        tracking_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.TrackingNumber
+          description: Carrier tracking number.
+        shipment_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentId
+          description: Outbound shipment ID.
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.TrackingStatus
+        last_event_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.logistics.TrackingEventAt
+        detail:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.TrackingDetail
+      required:
+      - tracking_no
+      - status
+    EstimateRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.EstimateRequest
+      properties:
+        from_depot:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.DepotCode
+        destination:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PostalAddress
+        ready_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.logistics.DeliveryReadyDate
+      required:
+      - from_depot
+      - destination
+    Estimate:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.Estimate
+      properties:
+        delivery_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.logistics.DeliveryEstimate
+        service:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.DeliveryServiceName
+      required:
+      - delivery_at
+    Reroute:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.RerouteRequest
+      properties:
+        destination:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PostalAddress
+      required:
+      - destination
+    Hold:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.HoldRequest
+      properties:
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.ShipmentHoldReason
+      required:
+      - reason
+    Depot:
+      type: object
+      x-taxi-type:
+        name: com.acme.logistics.Depot
+      properties:
+        depot_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.logistics.DepotCode
+        address:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PostalAddress
+      required:
+      - depot_code
+      - address

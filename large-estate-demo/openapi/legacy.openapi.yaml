@@ -1,0 +1,389 @@
+openapi: 3.0.3
+info:
+  title: Northstar Legacy API
+  version: 1.0.0
+  description: Acquired Northstar Components service. Keeps legacy customer/order/SKU identifiers and date/field conventions.
+servers:
+- url: https://acmeApi/legacy
+paths:
+  /customers/{legacyCustomerId}:
+    get:
+      operationId: getLegacyCustomer
+      summary: Get Northstar legacy customer
+      parameters:
+      - name: legacyCustomerId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+        description: Northstar legacy customer number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyCustomer'
+      description: Get Northstar legacy customer. This is the legacy system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /customers/by-company/{companyNumber}:
+    get:
+      operationId: getLegacyCustomerByCompany
+      summary: Resolve company number to Northstar customer
+      parameters:
+      - name: companyNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+        description: Legal company-registration number used as a cross-system legal-entity fact.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyCustomer'
+      description: Resolve a legal company-registration number into the acquired Northstar customer namespace.
+  /orders/{legacyOrderId}:
+    get:
+      operationId: getLegacyOrder
+      summary: Get Northstar legacy order
+      parameters:
+      - name: legacyOrderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderId
+        description: Northstar legacy order number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyOrder'
+      description: Get Northstar legacy order. This is the legacy system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /orders:
+    get:
+      operationId: listLegacyOrders
+      summary: List legacy orders for Northstar customer
+      parameters:
+      - name: legacyCustomerId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+        description: Northstar legacy customer number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegacyOrder'
+      description: List legacy orders for Northstar customer. This is the legacy system's native contract; system-specific
+        identifiers are not interchangeable unless an explicit business fact or mapping connects them.
+  /stock/{legacySku}:
+    get:
+      operationId: getLegacyStock
+      summary: Get legacy stock record
+      parameters:
+      - name: legacySku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacySku
+        description: Northstar legacy product code.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyStock'
+      description: Get legacy stock record. This is the legacy system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /returns:
+    post:
+      operationId: createLegacyReturn
+      summary: Create return in Northstar system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyReturn'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyReturn'
+      description: Create return in Northstar system. This is the legacy system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /migration-status/{legacyCustomerId}:
+    get:
+      operationId: getMigrationStatus
+      summary: Get Northstar migration status
+      description: Reports whether a Northstar customer has completed migration. It deliberately does not expose modern CRM,
+        ERP or identity identifiers.
+      parameters:
+      - name: legacyCustomerId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+        description: Northstar legacy customer number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationStatus'
+  /invoices:
+    get:
+      operationId: listLegacyInvoices
+      summary: List Northstar invoices for a legacy customer
+      parameters:
+      - name: legacyCustomerId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+        description: Northstar legacy customer number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegacyInvoice'
+      description: List invoices raised in the Northstar system for a legacy customer, including invoices raised before
+        the customer was migrated to the Acme core platform. Northstar keeps receivables in its own ledger; migrated open
+        balances are carried in the ERP as opening balances.
+  /invoices/{legacyInvoiceNo}:
+    get:
+      operationId: getLegacyInvoice
+      summary: Get Northstar invoice
+      parameters:
+      - name: legacyInvoiceNo
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceNumber
+        description: Northstar invoice number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyInvoice'
+      description: Get a single Northstar invoice by its Northstar invoice number.
+components:
+  schemas:
+    LegacyCustomer:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.LegacyCustomer
+      properties:
+        cust_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+          description: Northstar legacy customer number.
+        company_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerName
+        co_reg:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+          description: Legal company-registration number used as a cross-system legal-entity fact.
+        migrated_debtor:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+      required:
+      - cust_no
+      - company_name
+    LegacyOrder:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.LegacyOrder
+      properties:
+        legacy_order_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderId
+          description: Northstar legacy order number.
+        cust_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+          description: Northstar legacy customer number.
+        ordered_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderDate
+        state_txt:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderStatus
+        modern_order_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+      required:
+      - legacy_order_no
+      - cust_no
+    LegacyStock:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.LegacyStock
+      properties:
+        partcode:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacySku
+          description: Northstar legacy product code.
+        free_stock:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        site:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+      required:
+      - partcode
+      - free_stock
+    LegacyReturn:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.LegacyReturn
+      properties:
+        legacy_order_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderId
+          description: Northstar legacy order number.
+        partcode:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacySku
+          description: Northstar legacy product code.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyReturnReason
+      required:
+      - legacy_order_no
+      - partcode
+      - qty
+    MigrationStatus:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.MigrationStatus
+      properties:
+        legacy_customer:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+          description: Northstar legacy customer number.
+        migrated:
+          type: boolean
+          x-taxi-type:
+            name: com.acme.legacy.LegacyMigrationCompleted
+        migrated_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.legacy.LegacyMigrationAt
+        target_platform:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyMigrationTarget
+      required:
+      - legacy_customer
+      - migrated
+    LegacyInvoice:
+      type: object
+      x-taxi-type:
+        name: com.acme.legacy.LegacyInvoice
+      properties:
+        inv_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceNumber
+          description: Northstar invoice number.
+        cust_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyCustomerId
+          description: Northstar legacy customer number.
+        ord_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyOrderId
+          description: Northstar legacy order number.
+        inv_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceDate
+        total_gbp:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Invoice total in GBP major units (pounds).
+        state_txt:
+          type: string
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoiceStatus
+          description: Northstar invoice state (OPEN or PAID) as held in the Northstar ledger.
+        paid_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.legacy.LegacyInvoicePaidDate
+          description: Date the payment was received into Northstar, if paid.
+      required:
+      - inv_no
+      - cust_no
+      - total_gbp
+      - state_txt

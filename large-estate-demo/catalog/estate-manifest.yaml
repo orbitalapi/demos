@@ -1,0 +1,102 @@
+company: Acme Industrial
+estate:
+  http_apis: 14
+  http_operations: 104
+  database_domains: 4
+  database_tables: 22
+  database_writes: 2
+  total_capabilities: 128
+systems:
+- name: crm
+  kind: HTTP API
+  operations: 9
+  description: Modern CRM. Uses CRM-native account identifiers; legal company number is the deliberate bridge to ERP and identity
+    systems.
+- name: identity
+  kind: HTTP API
+  operations: 6
+  description: Customer portal identity service. Organisation IDs are not CRM account IDs or ERP debtor codes.
+- name: catalog
+  kind: HTTP API
+  operations: 8
+  description: Commercial catalogue. Product SKU differs from warehouse SKU, supplier part number and acquired Northstar legacy
+    SKU.
+- name: pricing
+  kind: HTTP API
+  operations: 7
+  description: Pricing system. Uses ERP debtor codes for customer-specific pricing and contract agreement IDs for negotiated
+    prices.
+- name: orders
+  kind: HTTP API
+  operations: 9
+  description: Modern order-management system. Orders carry an ERP debtor code and portal user ID but deliberately do not
+    carry CRM account IDs or warehouse SKUs.
+- name: warehouse
+  kind: HTTP API
+  operations: 8
+  description: Warehouse system. Uses warehouse-specific item codes and locations; translation from commercial SKU lives elsewhere.
+- name: logistics
+  kind: HTTP API
+  operations: 7
+  description: Outbound logistics and carrier tracking. Shipment links to orders, not directly to customers.
+- name: procurement
+  kind: HTTP API
+  operations: 7
+  description: Purchase-order system. PO lines use supplier part numbers, requiring product/supplier mappings for order-level
+    diagnosis.
+- name: supplier
+  kind: HTTP API
+  operations: 6
+  description: Supplier master and supplier catalogue. Supplier part numbers differ from commercial and warehouse SKUs.
+- name: billing
+  kind: HTTP API
+  operations: 9
+  description: Finance-facing ERP API. Debtor code is the customer identifier; company registration provides the bridge back
+    to CRM/identity.
+- name: payments
+  kind: HTTP API
+  operations: 7
+  description: Payment provider adapter. Amounts are intentionally represented in minor units here while billing uses major
+    decimal units.
+- name: returns
+  kind: HTTP API
+  operations: 6
+  description: Returns/RMA service. Works in order and order-line identifiers and deliberately does not know billing or payment
+    identifiers.
+- name: support
+  kind: HTTP API
+  operations: 6
+  description: Support platform keyed primarily by CRM account ID and requester email, creating alternate resolution routes.
+- name: legacy
+  kind: HTTP API
+  operations: 9
+  description: Acquired Northstar Components service. Keeps legacy customer/order/SKU identifiers and date/field conventions.
+- name: db:contracts
+  kind: Postgres tables
+  operations: 5
+  description: Contracts database area
+- name: db:inventory
+  kind: Postgres tables
+  operations: 6
+  description: Inventory database area
+- name: db:finance
+  kind: Postgres tables
+  operations: 5
+  description: Finance database area
+- name: db:analytics
+  kind: Postgres tables
+  operations: 6
+  description: Analytics database area
+core_entities:
+  companyNumber: 08392811
+  crmAccount: ACC-23918
+  erpDebtor: D001922
+  portalOrg: ORG-881
+  portalUser: U-104
+  legacyCustomer: NSC-441
+  order: ORD-38291
+  problemProduct: ACM-7710-X
+  warehouseSku: 7710X
+  supplier: SUP-42
+  supplierPart: QZ-7710/UK
+  inboundPo: PO-90077

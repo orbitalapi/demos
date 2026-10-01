@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: Pricing API
+  version: 1.0.0
+  description: Pricing system. Uses ERP debtor codes for customer-specific pricing and contract agreement IDs for negotiated
+    prices.
+servers:
+- url: https://acmeApi/pricing
+paths:
+  /list-price/{sku}:
+    get:
+      operationId: getListPrice
+      summary: Get catalogue list price
+      parameters:
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Price'
+      description: Get catalogue list price. This is the pricing system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /customer-price/{debtorCode}/{sku}:
+    get:
+      operationId: getCustomerPrice
+      summary: Get effective customer price
+      parameters:
+      - name: debtorCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerPrice'
+      description: Get effective customer price. This is the pricing system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /quotes:
+    post:
+      operationId: createQuote
+      summary: Calculate customer quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      x-taxi-operation-kind: read
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+      description: Calculate customer quote. This is the pricing system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /discounts/{debtorCode}:
+    get:
+      operationId: getDiscounts
+      summary: Get account discount rules
+      parameters:
+      - name: debtorCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+      description: Get account discount rules. This is the pricing system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /contract-price/{agreementId}/{sku}:
+    get:
+      operationId: getContractPrice
+      summary: Get price from commercial agreement
+      parameters:
+      - name: agreementId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.contracts.AgreementId
+        description: Commercial contract/agreement ID.
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Price'
+      description: Get price from commercial agreement. This is the pricing system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /fx/{pair}:
+    get:
+      operationId: getFxRate
+      summary: Get FX conversion rate
+      parameters:
+      - name: pair
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.pricing.FxPair
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fx'
+      description: Get FX conversion rate. This is the pricing system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /price-calculations/{agreementId}/{sku}:
+    get:
+      operationId: calculateUpliftedPrice
+      summary: Calculate an uplifted contract price
+      parameters:
+      - name: agreementId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.contracts.AgreementId
+        description: Commercial contract/agreement ID.
+      - name: sku
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+        description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+      - name: upliftPct
+        in: query
+        required: true
+        schema:
+          type: number
+          x-taxi-type:
+            name: com.acme.shared.Percentage
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceCalculation'
+      description: Calculate a price from an existing agreement/product price plus an uplift percentage; this is a read-only
+        calculation despite being workflow-oriented.
+components:
+  schemas:
+    Price:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.Price
+      properties:
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        unit_price:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.UnitPrice
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - sku
+      - unit_price
+      - currency
+    CustomerPrice:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.CustomerPrice
+      properties:
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        price:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.ContractUnitPrice
+        currency_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        source_rule:
+          type: string
+          x-taxi-type:
+            name: com.acme.contracts.PriceRuleId
+      required:
+      - debtor_code
+      - sku
+      - price
+    Discount:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.Discount
+      properties:
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        category_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.CategoryId
+        discount_pct:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.DiscountPercentage
+      required:
+      - debtor_code
+      - discount_pct
+    QuoteRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.QuoteRequest
+      properties:
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - debtor_code
+      - sku
+      - qty
+    Quote:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.Quote
+      properties:
+        quote_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.pricing.QuoteId
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        quantity:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        net_unit_price:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.UnitPrice
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - quote_id
+      - net_unit_price
+    Fx:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.FxRateResponse
+      properties:
+        pair:
+          type: string
+          x-taxi-type:
+            name: com.acme.pricing.FxPair
+        rate:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.FxRate
+      required:
+      - pair
+      - rate
+    PriceCalculation:
+      type: object
+      x-taxi-type:
+        name: com.acme.pricing.PriceCalculation
+      properties:
+        base_amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.ContractUnitPrice
+        uplift_pct:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.shared.Percentage
+        result_amount:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.ContractUnitPrice
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - base_amount
+      - uplift_pct
+      - result_amount

@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: Customer Support API
+  version: 1.0.0
+  description: Support platform keyed primarily by CRM account ID and requester email, creating alternate resolution routes.
+servers:
+- url: https://acmeApi/support
+paths:
+  /tickets/{ticketId}:
+    get:
+      operationId: getSupportTicket
+      summary: Get support ticket
+      parameters:
+      - name: ticketId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketId
+        description: Support-platform ticket ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+      description: Get support ticket. This is the support system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+    patch:
+      operationId: updateTicket
+      summary: Update support ticket
+      parameters:
+      - name: ticketId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketId
+        description: Support-platform ticket ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+      description: Update support ticket. This is the support system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /tickets:
+    get:
+      operationId: listTicketsForAccount
+      summary: List tickets for CRM account
+      parameters:
+      - name: accountId
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+        description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+      description: List tickets for CRM account. This is the support system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /tickets/by-email:
+    get:
+      operationId: listTicketsByRequesterEmail
+      summary: List tickets by requester email
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+        description: Email address; can bridge contact records where the same address is actually present.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+      description: List tickets by requester email. This is the support system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /slas/{tier}:
+    get:
+      operationId: getSla
+      summary: Get SLA definition
+      parameters:
+      - name: tier
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.SlaTier
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sla'
+      description: Get SLA definition. This is the support system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /tickets/{ticketId}/comments:
+    post:
+      operationId: addTicketComment
+      summary: Add support comment
+      parameters:
+      - name: ticketId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketId
+        description: Support-platform ticket ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+      description: Add support comment. This is the support system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Ticket:
+      type: object
+      x-taxi-type:
+        name: com.acme.support.Ticket
+      properties:
+        ticket_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketId
+          description: Support-platform ticket ID.
+        crm_account_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+          description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+        requester_email:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+          description: Email address; can bridge contact records where the same address is actually present.
+        subject:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketSubject
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketStatus
+        sla_tier:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.SlaTier
+        opened_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.support.TicketOpenedAt
+      required:
+      - ticket_id
+      - requester_email
+      - status
+    Sla:
+      type: object
+      x-taxi-type:
+        name: com.acme.support.Sla
+      properties:
+        tier:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.SlaTier
+        response_minutes:
+          type: integer
+          x-taxi-type:
+            name: com.acme.support.SlaResponseMinutes
+      required:
+      - tier
+      - response_minutes
+    CommentRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.support.CommentRequest
+      properties:
+        comment:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketComment
+      required:
+      - comment
+    TicketPatch:
+      type: object
+      x-taxi-type:
+        name: com.acme.support.TicketPatch
+      properties:
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketStatus
+        owner:
+          type: string
+          x-taxi-type:
+            name: com.acme.support.TicketOwner

@@ -1,0 +1,361 @@
+openapi: 3.0.3
+info:
+  title: Acme CRM API
+  version: 1.0.0
+  description: Modern CRM. Uses CRM-native account identifiers; legal company number is the deliberate bridge to ERP and identity
+    systems.
+servers:
+- url: https://acmeApi/crm
+paths:
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      summary: Get CRM account
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+        description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      description: Get CRM account. This is the crm system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+    patch:
+      operationId: updateAccount
+      summary: Update account attributes
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+        description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      description: Update account attributes. This is the crm system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /accounts:
+    get:
+      operationId: searchAccounts
+      summary: Search CRM accounts by display name
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CustomerName
+        description: Customer/company name search text supplied by the user.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+      description: Search CRM accounts by display name. This is the crm system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /accounts/by-company/{companyNumber}:
+    get:
+      operationId: getAccountByCompanyNumber
+      summary: Resolve legal company number to CRM account
+      parameters:
+      - name: companyNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+        description: Legal company-registration number used as a cross-system legal-entity fact.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+      description: Resolve a legal company-registration number to the corresponding CRM account. This is a legitimate bridge
+        into the CRM identifier space.
+  /accounts/{accountId}/contacts:
+    get:
+      operationId: listAccountContacts
+      summary: List contacts for a CRM account
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+        description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+      description: List contacts for a CRM account. This is the crm system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /contacts/by-email:
+    get:
+      operationId: findContactByEmail
+      summary: Find CRM contact by email
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+        description: Email address; can bridge contact records where the same address is actually present.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+      description: Find CRM contact by email. This is the crm system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /contacts:
+    get:
+      operationId: searchContacts
+      summary: Search CRM contacts by name
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PersonName
+        description: Human person name.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+      description: Search CRM contacts by name. This is the crm system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /accounts/{accountId}/owner:
+    get:
+      operationId: getAccountOwner
+      summary: Get account manager
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+        description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+      description: Get account manager. This is the crm system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /activities:
+    post:
+      operationId: createActivity
+      summary: Record CRM account activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+      description: Record CRM account activity. This is the crm system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Account:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.Account
+      properties:
+        id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+          description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+        display_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountDisplayName
+        company_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CompanyRegistrationNumber
+          description: Legal company-registration number used as a cross-system legal-entity fact.
+        owner_user_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.UserId
+          description: CRM user/account-owner ID.
+        tier:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountTier
+      required:
+      - id
+      - display_name
+      - owner_user_id
+    Contact:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.Contact
+      properties:
+        contact_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.ContactId
+        account_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+          description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+        full_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PersonName
+          description: Human person name.
+        email_address:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+          description: Email address; can bridge contact records where the same address is actually present.
+        telephone:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PhoneNumber
+      required:
+      - contact_id
+      - account_id
+      - full_name
+      - email_address
+    Owner:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.AccountOwner
+      properties:
+        user_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.UserId
+          description: CRM user/account-owner ID.
+        name:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PersonName
+          description: Human person name.
+        email:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+          description: Email address; can bridge contact records where the same address is actually present.
+      required:
+      - user_id
+      - name
+    AccountPatch:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.AccountPatch
+      properties:
+        display_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountDisplayName
+        tier:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountTier
+    ActivityRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.ActivityRequest
+      properties:
+        account_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+          description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+        note:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.ActivityNote
+        occurred_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.crm.ActivityOccurredAt
+      required:
+      - account_id
+      - note
+    Activity:
+      type: object
+      x-taxi-type:
+        name: com.acme.crm.Activity
+      properties:
+        activity_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.ActivityId
+        account_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.AccountId
+          description: CRM-native account ID. Do not substitute an ERP debtor code or identity organisation ID.
+        note:
+          type: string
+          x-taxi-type:
+            name: com.acme.crm.ActivityNote
+      required:
+      - activity_id
+      - account_id

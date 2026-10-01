@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: Procurement API
+  version: 1.0.0
+  description: Purchase-order system. PO lines use supplier part numbers, requiring product/supplier mappings for order-level
+    diagnosis.
+servers:
+- url: https://acmeApi/procurement
+paths:
+  /purchase-orders/{poId}:
+    get:
+      operationId: getPurchaseOrder
+      summary: Get supplier purchase order
+      parameters:
+      - name: poId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+        description: Procurement purchase-order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+      description: Get supplier purchase order. This is the procurement system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /purchase-orders:
+    get:
+      operationId: searchPurchaseOrders
+      summary: Search POs by supplier or supplier part
+      parameters:
+      - name: supplierId
+        in: query
+        required: false
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+        description: Supplier-master ID.
+      - name: supplierPart
+        in: query
+        required: false
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+        description: Supplier-native part number. Not a catalogue or warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchaseOrder'
+      description: Search POs by supplier or supplier part. This is the procurement system's native contract; system-specific
+        identifiers are not interchangeable unless an explicit business fact or mapping connects them.
+    post:
+      operationId: createPurchaseOrder
+      summary: Create supplier PO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PoRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+      description: Create supplier PO. This is the procurement system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /purchase-orders/{poId}/lines:
+    get:
+      operationId: getPurchaseOrderLines
+      summary: Get PO lines
+      parameters:
+      - name: poId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+        description: Procurement purchase-order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PoLine'
+      description: Get procurement PO lines. Product identity is the supplier-native part number.
+  /inbound/by-warehouse/{warehouseCode}:
+    get:
+      operationId: getInboundForWarehouse
+      summary: List expected inbound POs
+      parameters:
+      - name: warehouseCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+        description: Warehouse/location code.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchaseOrder'
+      description: List inbound purchase orders expected at a warehouse.
+  /purchase-orders/{poId}/expedite:
+    patch:
+      operationId: expeditePurchaseOrder
+      summary: Request supplier expedition
+      parameters:
+      - name: poId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+        description: Procurement purchase-order ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expedite'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+      description: Request supplier expedition. This is the procurement system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /receipts/by-po/{poId}:
+    get:
+      operationId: getReceiptsByPurchaseOrder
+      summary: Get goods receipts
+      parameters:
+      - name: poId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+        description: Procurement purchase-order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Receipt'
+      description: Get goods receipts. This is the procurement system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    PurchaseOrder:
+      type: object
+      x-taxi-type:
+        name: com.acme.procurement.PurchaseOrder
+      properties:
+        po_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+          description: Procurement purchase-order ID.
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        deliver_to:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        expected_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.procurement.ExpectedReceiptDate
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderStatus
+      required:
+      - po_no
+      - supplier_id
+      - deliver_to
+    PoLine:
+      type: object
+      x-taxi-type:
+        name: com.acme.procurement.PurchaseOrderLine
+      properties:
+        po_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+          description: Procurement purchase-order ID.
+        supplier_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+          description: Supplier-native part number. Not a catalogue or warehouse SKU.
+        qty_ordered:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        qty_received:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - po_no
+      - supplier_part
+      - qty_ordered
+    PoRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.procurement.NewPurchaseOrder
+      properties:
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        deliver_to:
+          type: string
+          x-taxi-type:
+            name: com.acme.warehouse.WarehouseCode
+          description: Warehouse/location code.
+        expected_date:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.procurement.ExpectedReceiptDate
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PoLine'
+      required:
+      - supplier_id
+      - deliver_to
+      - lines
+    Expedite:
+      type: object
+      x-taxi-type:
+        name: com.acme.procurement.ExpediteRequest
+      properties:
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.ExpediteReason
+        required_by:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.procurement.RequiredByDate
+      required:
+      - reason
+    Receipt:
+      type: object
+      x-taxi-type:
+        name: com.acme.procurement.GoodsReceipt
+      properties:
+        receipt_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.GoodsReceiptId
+        po_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.procurement.PurchaseOrderId
+          description: Procurement purchase-order ID.
+        received_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.procurement.GoodsReceivedAt
+        qty_received:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - receipt_id
+      - po_no

@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: Payments API
+  version: 1.0.0
+  description: Payment provider adapter. Amounts are intentionally represented in minor units here while billing uses major
+    decimal units.
+servers:
+- url: https://acmeApi/payments
+paths:
+  /payments:
+    get:
+      operationId: listPaymentsForInvoice
+      summary: List payment transactions for invoice
+      parameters:
+      - name: invoiceNumber
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+        description: ERP invoice number.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+      description: List payment-provider transactions associated with an ERP invoice number. Payment amounts are minor units.
+  /transactions/{transactionId}:
+    get:
+      operationId: getPaymentTransaction
+      summary: Get payment transaction
+      parameters:
+      - name: transactionId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.TransactionId
+        description: Payment-provider transaction ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+      description: Get payment transaction. This is the payments system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+  /methods/{debtorCode}:
+    get:
+      operationId: listPaymentMethods
+      summary: List stored payment methods
+      parameters:
+      - name: debtorCode
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethod'
+      description: List stored payment methods. This is the payments system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /refunds:
+    post:
+      operationId: createRefund
+      summary: Create refund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+      description: Create a payment-provider refund. The amount is in minor currency units.
+  /refunds/{refundId}:
+    get:
+      operationId: getRefund
+      summary: Get refund status
+      parameters:
+      - name: refundId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.RefundId
+        description: Payment-provider refund ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+      description: Get refund status. This is the payments system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /payment-intents:
+    post:
+      operationId: createPaymentIntent
+      summary: Create payment intent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentIntent'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+      description: Create payment intent. This is the payments system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /amount-conversions/to-minor:
+    post:
+      operationId: convertMajorToMinor
+      summary: Convert major-unit amount to provider minor units
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MajorAmountRequest'
+      x-taxi-operation-kind: read
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinorAmount'
+      description: Convert a major-unit currency amount to the payment provider minor-unit representation required by refund/payment
+        writes.
+components:
+  schemas:
+    Transaction:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.Transaction
+      properties:
+        transaction_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.TransactionId
+          description: Payment-provider transaction ID.
+        invoice_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+          description: ERP invoice number.
+        amount_minor:
+          type: integer
+          x-taxi-type:
+            name: com.acme.payments.MinorUnitAmount
+          description: Currency minor-unit amount (for GBP, pence), not a major-unit decimal amount.
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.TransactionStatus
+        method_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.PaymentMethodId
+      required:
+      - transaction_ref
+      - invoice_ref
+      - amount_minor
+    PaymentMethod:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.PaymentMethod
+      properties:
+        method_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.PaymentMethodId
+        debtor_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        type:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.PaymentMethodType
+        last4:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.MaskedCardDigits
+      required:
+      - method_id
+      - debtor_code
+    RefundRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.RefundRequest
+      properties:
+        transaction_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.TransactionId
+          description: Payment-provider transaction ID.
+        amount_minor:
+          type: integer
+          x-taxi-type:
+            name: com.acme.payments.MinorUnitAmount
+          description: Currency minor-unit amount (for GBP, pence), not a major-unit decimal amount.
+        reason_code:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.RefundReason
+      required:
+      - transaction_ref
+      - amount_minor
+      - reason_code
+    Refund:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.Refund
+      properties:
+        refund_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.RefundId
+          description: Payment-provider refund ID.
+        transaction_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.TransactionId
+          description: Payment-provider transaction ID.
+        amount_minor:
+          type: integer
+          x-taxi-type:
+            name: com.acme.payments.MinorUnitAmount
+          description: Currency minor-unit amount (for GBP, pence), not a major-unit decimal amount.
+        status:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.RefundStatus
+      required:
+      - refund_id
+      - transaction_ref
+      - amount_minor
+    PaymentIntent:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.PaymentIntent
+      properties:
+        invoice_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.billing.InvoiceNumber
+          description: ERP invoice number.
+        method_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.payments.PaymentMethodId
+        amount_minor:
+          type: integer
+          x-taxi-type:
+            name: com.acme.payments.MinorUnitAmount
+          description: Currency minor-unit amount (for GBP, pence), not a major-unit decimal amount.
+      required:
+      - invoice_ref
+      - method_id
+      - amount_minor
+    MajorAmountRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.MajorAmountRequest
+      properties:
+        amount_major:
+          type: number
+          x-taxi-type:
+            name: com.acme.shared.MoneyAmount
+          description: Currency amount in major units (for GBP, pounds).
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - amount_major
+      - currency
+    MinorAmount:
+      type: object
+      x-taxi-type:
+        name: com.acme.payments.MinorAmount
+      properties:
+        amount_minor:
+          type: integer
+          x-taxi-type:
+            name: com.acme.payments.MinorUnitAmount
+          description: Currency minor-unit amount (for GBP, pence), not a major-unit decimal amount.
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+      required:
+      - amount_minor
+      - currency

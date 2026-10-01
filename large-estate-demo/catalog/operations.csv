@@ -1,0 +1,129 @@
+kind,system,method,path,operationId,summary,write
+http,billing,GET,/billing/credit-notes,listCreditNotesForInvoice,List credit notes for invoice,False
+http,billing,POST,/billing/credit-notes,createCreditNote,Issue credit note,True
+http,billing,GET,/billing/credit/{debtorCode},getCreditPosition,Get customer credit position,False
+http,billing,GET,/billing/debtors/by-company/{companyNumber},getDebtorByCompany,Resolve company registration to ERP debtor,False
+http,billing,GET,/billing/debtors/{debtorCode},getDebtor,Get ERP debtor,False
+http,billing,GET,/billing/invoices,listInvoicesForDebtor,List invoices for ERP debtor,False
+http,billing,GET,/billing/invoices/{invoiceNumber},getInvoice,Get invoice,False
+http,billing,GET,/billing/opening-balances,listOpeningBalancesForDebtor,List migrated opening balances for ERP debtor,False
+http,billing,GET,/billing/opening-balances/by-legacy-invoice/{legacyInvoiceNo},listOpeningBalancesForLegacyInvoice,Find opening balances created from a Northstar invoice,False
+http,catalog,GET,/catalog/categories/{categoryId},getCategory,Get catalogue category,False
+http,catalog,GET,/catalog/legacy-code/{legacySku},resolveLegacyProductCode,Resolve acquired Northstar product code,False
+http,catalog,POST,/catalog/product-equivalents/search,searchProductEquivalents,Search product equivalents,False
+http,catalog,GET,/catalog/products,searchProducts,Search products,False
+http,catalog,GET,/catalog/products/by-ean/{ean},getProductByEan,Resolve EAN to product,False
+http,catalog,GET,/catalog/products/{sku},getProduct,Get product by commercial SKU,False
+http,catalog,GET,/catalog/products/{sku}/alternates,listProductAlternates,List approved substitute products,False
+http,catalog,GET,/catalog/products/{sku}/supplier-links,getSupplierLinks,Get supplier references for product,False
+http,crm,GET,/crm/accounts,searchAccounts,Search CRM accounts by display name,False
+http,crm,GET,/crm/accounts/by-company/{companyNumber},getAccountByCompanyNumber,Resolve legal company number to CRM account,False
+http,crm,GET,/crm/accounts/{accountId},getAccount,Get CRM account,False
+http,crm,PATCH,/crm/accounts/{accountId},updateAccount,Update account attributes,True
+http,crm,GET,/crm/accounts/{accountId}/contacts,listAccountContacts,List contacts for a CRM account,False
+http,crm,GET,/crm/accounts/{accountId}/owner,getAccountOwner,Get account manager,False
+http,crm,POST,/crm/activities,createActivity,Record CRM account activity,True
+http,crm,GET,/crm/contacts,searchContacts,Search CRM contacts by name,False
+http,crm,GET,/crm/contacts/by-email,findContactByEmail,Find CRM contact by email,False
+http,identity,GET,/identity/organisations/by-company/{companyNumber},getOrganisationByCompany,Resolve company number to portal organisation,False
+http,identity,GET,/identity/organisations/{orgId},getOrganisation,Get portal organisation,False
+http,identity,GET,/identity/organisations/{orgId}/users,listOrganisationUsers,List users in portal organisation,False
+http,identity,GET,/identity/users/by-email,getIdentityUserByEmail,Resolve email to portal user,False
+http,identity,GET,/identity/users/{userId},getIdentityUser,Get portal user,False
+http,identity,PATCH,/identity/users/{userId}/roles,updateUserRoles,Change portal roles,True
+http,legacy,GET,/legacy/customers/by-company/{companyNumber},getLegacyCustomerByCompany,Resolve company number to Northstar customer,False
+http,legacy,GET,/legacy/customers/{legacyCustomerId},getLegacyCustomer,Get Northstar legacy customer,False
+http,legacy,GET,/legacy/migration-status/{legacyCustomerId},getMigrationStatus,Get Northstar migration status,False
+http,legacy,GET,/legacy/orders,listLegacyOrders,List legacy orders for Northstar customer,False
+http,legacy,GET,/legacy/orders/{legacyOrderId},getLegacyOrder,Get Northstar legacy order,False
+http,legacy,POST,/legacy/returns,createLegacyReturn,Create return in Northstar system,True
+http,legacy,GET,/legacy/stock/{legacySku},getLegacyStock,Get legacy stock record,False
+http,legacy,GET,/legacy/invoices,listLegacyInvoices,List Northstar invoices for a legacy customer,False
+http,legacy,GET,/legacy/invoices/{legacyInvoiceNo},getLegacyInvoice,Get Northstar invoice,False
+http,logistics,GET,/logistics/depots/{depotCode},getDepot,Get depot details,False
+http,logistics,POST,/logistics/estimates,estimateDelivery,Estimate delivery from a depot,False
+http,logistics,GET,/logistics/shipments/by-order/{orderId},getShipmentsByOrder,Find shipments for order,False
+http,logistics,GET,/logistics/shipments/{shipmentId},getShipment,Get shipment,False
+http,logistics,POST,/logistics/shipments/{shipmentId}/hold,holdShipment,Place shipment on hold,True
+http,logistics,POST,/logistics/shipments/{shipmentId}/reroute,rerouteShipment,Reroute shipment,True
+http,logistics,GET,/logistics/tracking/{trackingNumber},getTracking,Get carrier tracking status,False
+http,orders,GET,/orders/orders,listOrdersForDebtor,List orders for ERP debtor,False
+http,orders,POST,/orders/orders,createOrder,Create order,True
+http,orders,GET,/orders/orders/by-contact/{userId},listOrdersByPortalUser,List orders placed by portal user,False
+http,orders,GET,/orders/orders/{orderId},getOrder,Get order header,False
+http,orders,POST,/orders/orders/{orderId}/cancel-lines,cancelOrderLines,Cancel eligible unshipped lines,True
+http,orders,PATCH,/orders/orders/{orderId}/delivery,changeRequestedDelivery,Change requested delivery date,True
+http,orders,POST,/orders/orders/{orderId}/hold,placeOrderOnHold,Place order on operational hold,True
+http,orders,GET,/orders/orders/{orderId}/lines,getOrderLines,Get order lines,False
+http,orders,GET,/orders/orders/{orderId}/status,getOrderStatus,Get current order state,False
+http,payments,POST,/payments/amount-conversions/to-minor,convertMajorToMinor,Convert major-unit amount to provider minor units,False
+http,payments,GET,/payments/methods/{debtorCode},listPaymentMethods,List stored payment methods,False
+http,payments,POST,/payments/payment-intents,createPaymentIntent,Create payment intent,True
+http,payments,GET,/payments/payments,listPaymentsForInvoice,List payment transactions for invoice,False
+http,payments,POST,/payments/refunds,createRefund,Create refund,True
+http,payments,GET,/payments/refunds/{refundId},getRefund,Get refund status,False
+http,payments,GET,/payments/transactions/{transactionId},getPaymentTransaction,Get payment transaction,False
+http,pricing,GET,/pricing/contract-price/{agreementId}/{sku},getContractPrice,Get price from commercial agreement,False
+http,pricing,GET,/pricing/customer-price/{debtorCode}/{sku},getCustomerPrice,Get effective customer price,False
+http,pricing,GET,/pricing/discounts/{debtorCode},getDiscounts,Get account discount rules,False
+http,pricing,GET,/pricing/fx/{pair},getFxRate,Get FX conversion rate,False
+http,pricing,GET,/pricing/list-price/{sku},getListPrice,Get catalogue list price,False
+http,pricing,GET,/pricing/price-calculations/{agreementId}/{sku},calculateUpliftedPrice,Calculate an uplifted contract price,False
+http,pricing,POST,/pricing/quotes,createQuote,Calculate customer quote,False
+http,procurement,GET,/procurement/inbound/by-warehouse/{warehouseCode},getInboundForWarehouse,List expected inbound POs,False
+http,procurement,GET,/procurement/purchase-orders,searchPurchaseOrders,Search POs by supplier or supplier part,False
+http,procurement,POST,/procurement/purchase-orders,createPurchaseOrder,Create supplier PO,True
+http,procurement,GET,/procurement/purchase-orders/{poId},getPurchaseOrder,Get supplier purchase order,False
+http,procurement,PATCH,/procurement/purchase-orders/{poId}/expedite,expeditePurchaseOrder,Request supplier expedition,True
+http,procurement,GET,/procurement/purchase-orders/{poId}/lines,getPurchaseOrderLines,Get PO lines,False
+http,procurement,GET,/procurement/receipts/by-po/{poId},getReceiptsByPurchaseOrder,Get goods receipts,False
+http,returns,GET,/returns/eligibility/{orderId}/{lineId},getReturnEligibility,Check line return eligibility,False
+http,returns,GET,/returns/rmas,listRmasForOrder,List returns for order,False
+http,returns,POST,/returns/rmas,createRma,Create return authorisation,True
+http,returns,GET,/returns/rmas/{rmaId},getRma,Get return authorisation,False
+http,returns,POST,/returns/rmas/{rmaId}/approve,approveReturnCredit,Approve return credit,True
+http,returns,POST,/returns/rmas/{rmaId}/receive,receiveReturn,Record warehouse receipt of return,True
+http,supplier,GET,/supplier/lead-times/{supplierId}/{supplierPart},getSupplierLeadTime,Get current supplier lead time,False
+http,supplier,POST,/supplier/supplier-products/search,searchSupplierProducts,Search supplier catalogue,False
+http,supplier,GET,/supplier/suppliers/by-vat/{vatNumber},getSupplierByVat,Resolve VAT number to supplier,False
+http,supplier,GET,/supplier/suppliers/{supplierId},getSupplier,Get supplier,False
+http,supplier,GET,/supplier/suppliers/{supplierId}/catalog/{supplierPart},getSupplierProduct,Get supplier catalogue item,False
+http,supplier,GET,/supplier/suppliers/{supplierId}/contacts,getSupplierContacts,Get supplier contacts,False
+http,support,GET,/support/slas/{tier},getSla,Get SLA definition,False
+http,support,GET,/support/tickets,listTicketsForAccount,List tickets for CRM account,False
+http,support,GET,/support/tickets/by-email,listTicketsByRequesterEmail,List tickets by requester email,False
+http,support,GET,/support/tickets/{ticketId},getSupportTicket,Get support ticket,False
+http,support,PATCH,/support/tickets/{ticketId},updateTicket,Update support ticket,True
+http,support,POST,/support/tickets/{ticketId}/comments,addTicketComment,Add support comment,True
+http,warehouse,GET,/warehouse/availability/{warehouseSku},getNetworkAvailability,Get stock across all warehouses,False
+http,warehouse,GET,/warehouse/inventory/{warehouseCode}/{warehouseSku},getWarehouseStock,Get stock at one warehouse,False
+http,warehouse,GET,/warehouse/picks,getPicksForOrder,Get picks for order,False
+http,warehouse,POST,/warehouse/picks/{pickId}/expedite,expeditePick,Mark warehouse pick as urgent,True
+http,warehouse,GET,/warehouse/reservations,getReservationsForOrder,Get reservations for order,False
+http,warehouse,POST,/warehouse/reservations/release,releaseReservation,Release allocated inventory,True
+http,warehouse,POST,/warehouse/transfers,createWarehouseTransfer,Create inter-warehouse stock transfer,True
+http,warehouse,GET,/warehouse/transfers/{transferId},getWarehouseTransfer,Get transfer state,False
+database-table,db:analytics,TABLE,analytics_account_health,query_analytics_account_health,Query analytics_account_health table,False
+database-table,db:analytics,TABLE,analytics_customer_signal,query_analytics_customer_signal,Query analytics_customer_signal table,False
+database-table,db:analytics,TABLE,analytics_order_event,query_analytics_order_event,Query analytics_order_event table,False
+database-table,db:analytics,TABLE,analytics_product_demand,query_analytics_product_demand,Query analytics_product_demand table,False
+database-table,db:analytics,TABLE,analytics_service_case_signal,query_analytics_service_case_signal,Query analytics_service_case_signal table,False
+database-table,db:analytics,TABLE,analytics_supplier_performance,query_analytics_supplier_performance,Query analytics_supplier_performance table,False
+database-table,db:contracts,TABLE,contracts_account_terms,query_contracts_account_terms,Query contracts_account_terms table,False
+database-table,db:contracts,TABLE,contracts_agreement,query_contracts_agreement,Query contracts_agreement table,False
+database-write,db:contracts,UPSERT,contracts_agreement,saveAgreement,Upsert commercial agreement,True
+database-table,db:contracts,TABLE,contracts_entitlement,query_contracts_entitlement,Query contracts_entitlement table,False
+database-table,db:contracts,TABLE,contracts_price_rule,query_contracts_price_rule,Query contracts_price_rule table,False
+database-write,db:contracts,UPSERT,contracts_price_rule,savePriceRule,Upsert contract price rule,True
+database-table,db:contracts,TABLE,contracts_renewal_audit,query_contracts_renewal_audit,Query contracts_renewal_audit table,False
+database-table,db:finance,TABLE,finance_cash_application,query_finance_cash_application,Query finance_cash_application table,False
+database-table,db:finance,TABLE,finance_credit_note_ledger,query_finance_credit_note_ledger,Query finance_credit_note_ledger table,False
+database-table,db:finance,TABLE,finance_credit_review,query_finance_credit_review,Query finance_credit_review table,False
+database-table,db:finance,TABLE,finance_dispute,query_finance_dispute,Query finance_dispute table,False
+database-table,db:finance,TABLE,finance_payment_terms,query_finance_payment_terms,Query finance_payment_terms table,False
+database-table,db:inventory,TABLE,inventory_cycle_count,query_inventory_cycle_count,Query inventory_cycle_count table,False
+database-table,db:inventory,TABLE,inventory_reorder_policy,query_inventory_reorder_policy,Query inventory_reorder_policy table,False
+database-table,db:inventory,TABLE,inventory_reservation_ledger,query_inventory_reservation_ledger,Query inventory_reservation_ledger table,False
+database-table,db:inventory,TABLE,inventory_sku_map,query_inventory_sku_map,Query inventory_sku_map table,False
+database-table,db:inventory,TABLE,inventory_stock_snapshot,query_inventory_stock_snapshot,Query inventory_stock_snapshot table,False
+database-table,db:inventory,TABLE,inventory_warehouse,query_inventory_warehouse,Query inventory_warehouse table,False

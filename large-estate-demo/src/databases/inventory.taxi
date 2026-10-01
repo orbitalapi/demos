@@ -1,0 +1,69 @@
+import com.orbitalhq.jdbc.Table
+import com.orbitalhq.jdbc.DatabaseService
+
+namespace com.acme.db.inventory {
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_sku_map")
+   closed model InventorySkuMapRow {
+      @Id product_sku: com.acme.catalog.ProductSku
+      @Id warehouse_sku: com.acme.warehouse.WarehouseSku
+      supplier_id: com.acme.supplier.SupplierId
+      supplier_part: com.acme.supplier.SupplierPartNumber
+      legacy_sku: com.acme.legacy.LegacySku?
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_stock_snapshot")
+   closed model InventoryStockSnapshotRow {
+      @Id warehouse_sku: com.acme.warehouse.WarehouseSku
+      @Id warehouse_code: com.acme.warehouse.WarehouseCode
+      on_hand: com.acme.shared.Quantity
+      reserved_qty: com.acme.warehouse.ReservedQuantity
+      snapshot_at: com.acme.warehouse.InventorySnapshotAt
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_reservation_ledger")
+   closed model InventoryReservationLedgerRow {
+      @Id reservation_id: com.acme.warehouse.ReservationId
+      order_id: com.acme.orders.OrderId
+      order_line_id: com.acme.orders.OrderLineId
+      warehouse_sku: com.acme.warehouse.WarehouseSku
+      warehouse_code: com.acme.warehouse.WarehouseCode
+      reserved_qty: com.acme.shared.Quantity
+      state: com.acme.warehouse.ReservationStatus
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_warehouse")
+   closed model InventoryWarehouseRow {
+      @Id warehouse_code: com.acme.warehouse.WarehouseCode
+      name: com.acme.warehouse.WarehouseName
+      address: com.acme.shared.PostalAddress
+      country_code: com.acme.shared.CountryCode
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_cycle_count")
+   closed model InventoryCycleCountRow {
+      @Id count_id: com.acme.analytics.SignalId
+      warehouse_sku: com.acme.warehouse.WarehouseSku
+      warehouse_code: com.acme.warehouse.WarehouseCode
+      counted_qty: com.acme.shared.Quantity
+      counted_at: com.acme.warehouse.CycleCountAt
+   }
+
+   @Table(connection = "acme-db", schema = "public", table = "inventory_reorder_policy")
+   closed model InventoryReorderPolicyRow {
+      @Id warehouse_sku: com.acme.warehouse.WarehouseSku
+      @Id warehouse_code: com.acme.warehouse.WarehouseCode
+      reorder_point: com.acme.shared.Quantity
+      target_stock: com.acme.shared.Quantity
+   }
+
+   @DatabaseService(connection = "acme-db")
+   service InventoryDatabase {
+      table inventory_sku_map: InventorySkuMapRow[]
+      table inventory_stock_snapshot: InventoryStockSnapshotRow[]
+      table inventory_reservation_ledger: InventoryReservationLedgerRow[]
+      table inventory_warehouse: InventoryWarehouseRow[]
+      table inventory_cycle_count: InventoryCycleCountRow[]
+      table inventory_reorder_policy: InventoryReorderPolicyRow[]
+   }
+}

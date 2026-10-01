@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: Supplier Master API
+  version: 1.0.0
+  description: Supplier master and supplier catalogue. Supplier part numbers differ from commercial and warehouse SKUs.
+servers:
+- url: https://acmeApi/supplier
+paths:
+  /suppliers/{supplierId}:
+    get:
+      operationId: getSupplier
+      summary: Get supplier
+      parameters:
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+        description: Supplier-master ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+      description: Get supplier. This is the supplier system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /suppliers/by-vat/{vatNumber}:
+    get:
+      operationId: getSupplierByVat
+      summary: Resolve VAT number to supplier
+      parameters:
+      - name: vatNumber
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.VatNumber
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+      description: Resolve VAT number to supplier. This is the supplier system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /suppliers/{supplierId}/contacts:
+    get:
+      operationId: getSupplierContacts
+      summary: Get supplier contacts
+      parameters:
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+        description: Supplier-master ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupplierContact'
+      description: Get supplier contacts. This is the supplier system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /suppliers/{supplierId}/catalog/{supplierPart}:
+    get:
+      operationId: getSupplierProduct
+      summary: Get supplier catalogue item
+      parameters:
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+        description: Supplier-master ID.
+      - name: supplierPart
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+        description: Supplier-native part number. Not a catalogue or warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierProduct'
+      description: Get supplier catalogue item. This is the supplier system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /lead-times/{supplierId}/{supplierPart}:
+    get:
+      operationId: getSupplierLeadTime
+      summary: Get current supplier lead time
+      parameters:
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+        description: Supplier-master ID.
+      - name: supplierPart
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+        description: Supplier-native part number. Not a catalogue or warehouse SKU.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadTime'
+      description: Get current lead time for an exact supplier + supplier-part combination.
+  /supplier-products/search:
+    post:
+      operationId: searchSupplierProducts
+      summary: Search supplier catalogue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierProductSearch'
+      x-taxi-operation-kind: read
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupplierProduct'
+      description: Search supplier catalogue. This is the supplier system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Supplier:
+      type: object
+      x-taxi-type:
+        name: com.acme.supplier.Supplier
+      properties:
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        legal_name:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierName
+        vat_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.VatNumber
+        country:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CountryCode
+      required:
+      - supplier_id
+      - legal_name
+    SupplierContact:
+      type: object
+      x-taxi-type:
+        name: com.acme.supplier.SupplierContact
+      properties:
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        name:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.PersonName
+          description: Human person name.
+        email:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.EmailAddress
+          description: Email address; can bridge contact records where the same address is actually present.
+      required:
+      - supplier_id
+      - email
+    SupplierProduct:
+      type: object
+      x-taxi-type:
+        name: com.acme.supplier.SupplierProduct
+      properties:
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        supplier_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+          description: Supplier-native part number. Not a catalogue or warehouse SKU.
+        description:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierProductDescription
+        min_order_qty:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+      required:
+      - supplier_id
+      - supplier_part
+    LeadTime:
+      type: object
+      x-taxi-type:
+        name: com.acme.supplier.LeadTime
+      properties:
+        supplier_id:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierId
+          description: Supplier-master ID.
+        supplier_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+          description: Supplier-native part number. Not a catalogue or warehouse SKU.
+        lead_time_days:
+          type: integer
+          x-taxi-type:
+            name: com.acme.supplier.LeadTimeDays
+        as_of:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.supplier.LeadTimeAsOfDate
+      required:
+      - supplier_id
+      - supplier_part
+      - lead_time_days
+    SupplierProductSearch:
+      type: object
+      x-taxi-type:
+        name: com.acme.supplier.SupplierProductSearch
+      properties:
+        description:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierProductDescription
+        supplier_part:
+          type: string
+          x-taxi-type:
+            name: com.acme.supplier.SupplierPartNumber
+          description: Supplier-native part number. Not a catalogue or warehouse SKU.

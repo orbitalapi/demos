@@ -1,0 +1,409 @@
+openapi: 3.0.3
+info:
+  title: Order Management API
+  version: 1.0.0
+  description: Modern order-management system. Orders carry an ERP debtor code and portal user ID but deliberately do not
+    carry CRM account IDs or warehouse SKUs.
+servers:
+- url: https://acmeApi/orders
+paths:
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      summary: Get order header
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      description: Get an order by order-management ID. The order carries an ERP debtor code and portal user ID, not a CRM
+        account ID.
+  /orders:
+    get:
+      operationId: listOrdersForDebtor
+      summary: List orders for ERP debtor
+      parameters:
+      - name: debtorCode
+        in: query
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+        description: ERP/billing customer debtor code. Not a CRM account ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+      description: List orders for ERP debtor. This is the orders system's native contract; system-specific identifiers are
+        not interchangeable unless an explicit business fact or mapping connects them.
+    post:
+      operationId: createOrder
+      summary: Create order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewOrder'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      description: Create order. This is the orders system's native contract; system-specific identifiers are not interchangeable
+        unless an explicit business fact or mapping connects them.
+  /orders/by-contact/{userId}:
+    get:
+      operationId: listOrdersByPortalUser
+      summary: List orders placed by portal user
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+        description: Customer portal identity user ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+      description: List orders placed by portal user. This is the orders system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /orders/{orderId}/lines:
+    get:
+      operationId: getOrderLines
+      summary: Get order lines
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderLine'
+      description: Get commercial order lines. Line products are expressed as catalogue SKUs, not warehouse or supplier part
+        numbers.
+  /orders/{orderId}/status:
+    get:
+      operationId: getOrderStatus
+      summary: Get current order state
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatus'
+      description: Get current order state. This is the orders system's native contract; system-specific identifiers are not
+        interchangeable unless an explicit business fact or mapping connects them.
+  /orders/{orderId}/cancel-lines:
+    post:
+      operationId: cancelOrderLines
+      summary: Cancel eligible unshipped lines
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelLines'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatus'
+      description: Cancel eligible unshipped lines. This is the orders system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /orders/{orderId}/delivery:
+    patch:
+      operationId: changeRequestedDelivery
+      summary: Change requested delivery date
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryPatch'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      description: Change requested delivery date. This is the orders system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+  /orders/{orderId}/hold:
+    post:
+      operationId: placeOrderOnHold
+      summary: Place order on operational hold
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+        description: Modern order-management order ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatus'
+      description: Place order on operational hold. This is the orders system's native contract; system-specific identifiers
+        are not interchangeable unless an explicit business fact or mapping connects them.
+components:
+  schemas:
+    Order:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.Order
+      properties:
+        order_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        bill_to:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        ordered_by_user:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+          description: Customer portal identity user ID.
+        placed_at:
+          type: string
+          format: date-time
+          x-taxi-type:
+            name: com.acme.orders.OrderPlacedAt
+        requested_delivery:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.orders.RequestedDeliveryDate
+        state:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderStatus
+        currency:
+          type: string
+          x-taxi-type:
+            name: com.acme.shared.CurrencyCode
+        gross_total:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.orders.OrderGrossAmount
+      required:
+      - order_no
+      - bill_to
+      - placed_at
+      - state
+    OrderLine:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.OrderLine
+      properties:
+        line_ref:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderLineId
+          description: Order-management line ID within an order.
+        order_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        catalog_sku:
+          type: string
+          x-taxi-type:
+            name: com.acme.catalog.ProductSku
+          description: Commercial catalogue SKU. Do not pass directly to warehouse endpoints that require a warehouse SKU.
+        qty_ordered:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        qty_cancelled:
+          type: integer
+          x-taxi-type:
+            name: com.acme.shared.Quantity
+        unit_net:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.pricing.UnitPrice
+        line_net:
+          type: number
+          format: double
+          x-taxi-type:
+            name: com.acme.orders.OrderLineNetAmount
+      required:
+      - line_ref
+      - order_no
+      - catalog_sku
+      - qty_ordered
+    OrderStatus:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.OrderStatusResponse
+      properties:
+        order_no:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderId
+          description: Modern order-management order ID.
+        state:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderStatus
+        hold_reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderHoldReason
+      required:
+      - order_no
+      - state
+    NewOrder:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.NewOrder
+      properties:
+        bill_to:
+          type: string
+          x-taxi-type:
+            name: com.acme.erp.DebtorCode
+          description: ERP/billing customer debtor code. Not a CRM account ID.
+        ordered_by_user:
+          type: string
+          x-taxi-type:
+            name: com.acme.identity.UserId
+          description: Customer portal identity user ID.
+        requested_delivery:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.orders.RequestedDeliveryDate
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLine'
+      required:
+      - bill_to
+      - lines
+    CancelLines:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.CancelLinesRequest
+      properties:
+        line_refs:
+          type: array
+          items:
+            type: string
+            x-taxi-type:
+              name: com.acme.orders.OrderLineId
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.CancellationReason
+      required:
+      - line_refs
+      - reason
+    DeliveryPatch:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.DeliveryPatch
+      properties:
+        requested_delivery:
+          type: string
+          format: date
+          x-taxi-type:
+            name: com.acme.orders.RequestedDeliveryDate
+      required:
+      - requested_delivery
+    HoldRequest:
+      type: object
+      x-taxi-type:
+        name: com.acme.orders.HoldRequest
+      properties:
+        reason:
+          type: string
+          x-taxi-type:
+            name: com.acme.orders.OrderHoldReason
+      required:
+      - reason
