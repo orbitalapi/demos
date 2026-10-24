@@ -1,49 +1,74 @@
-version: "3.3"
-
+## Composing APIs and a database - demo stack
+##
+## This follows the layout of the Orbital start script (https://start.orbitalhq.com):
+## Orbital keeps everything it writes under ./orbital_data, which is also where this demo's
+## projects live (see README.md). Orbital is configured through --orbital.* options; the older
+## --vyne.* names still work but log a deprecation warning.
+##
+## Launch:   docker compose up -d        then open http://localhost:9022
+## Stop:     docker compose down         (add -v to also delete the Postgres volume)
+##
+## Orbital runs as your user so files it writes into ./orbital_data are editable. On Linux, put
+## your ids in a .env file next to this one if they aren't 1000:
+##   printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
 services:
+
+   # The Spring Boot app from ./services: reviews, streaming providers and id lookups.
+   # NOTE: this image is currently published for linux/amd64 only. On Apple Silicon, Docker Desktop
+   # runs it under emulation, which is slower to start but works. Rebuilding it multi-arch is
+   # tracked in ORB-1251; see BUILDING.md to build it locally for your own architecture.
    demo-services:
       image: ghcr.io/orbitalapi/demos-composing-apis
+      platform: linux/amd64
       ports:
          - "7033:7033"
 
    orbital:
       image: orbitalhq/orbital:${ORBITAL_VERSION:-next}
+      user: "${UID:-1000}:${GID:-1000}"
       environment:
          JAVA_OPTS: >-
-            -Xms256m
-            -Xmx2048m
+            -XX:MaxRAMPercentage=75.0
+            -XX:InitialRAMPercentage=50.0
          OPTIONS: >-
-            --vyne.analytics.persistRemoteCallResponses=true
-            --vyne.analytics.persistResults=true
-            --vyne.db.username=orbital
-            --vyne.db.password=changeme
-            --vyne.db.host=postgres
-            --vyne.workspace.config-file=/opt/service/workspace/workspace.conf
+            --orbital.app.data.path=/opt/service/orbital_data
+            --orbital.db.username=orbital
+            --orbital.db.password=changeme
+            --orbital.db.host=postgres
+            --orbital.toggles.workspace-mode=OrgAndWorkspace
+            --orbital.history.persist-remote-call-responses=true
+            --orbital.history.persist-results=true
       ports:
-         - "9022:9022" # http
-         - "7655:7655" # rsocket
+         - "9022:9022"
       volumes:
-         - ./workspace:/opt/service/workspace
+         # Organisations, workspaces and projects (checked in), plus the license, search
+         # indexes and history queues Orbital writes at runtime (git-ignored).
+         - ./orbital_data:/opt/service/orbital_data
+         # Optional: a downloaded license.json in ~/.orbital/license/ is shared between stacks.
+         - ~/.orbital/license/:/opt/var/orbital/license/
       depends_on:
          - postgres
       deploy:
          resources:
             limits:
-               memory:  1500mb
+               memory: 1500mb
+
+   # Holds the Pagila sample database the demo queries, and doubles as Orbital's own database
+   # (the "orbital" user and database are created by db/orbital-user.sql).
+   # Mapped to 35432 on the host so it doesn't clash with a start-script stack, which uses 25432.
    postgres:
       image: postgres:15
-      expose:
-         - 5432
       ports:
-         - "25432:5432"
+         - "35432:5432"
       environment:
          POSTGRES_DB: pagila
          POSTGRES_USER: root
          POSTGRES_PASSWORD: admin
       volumes:
          - postgres_data:/var/lib/postgresql/data
-         ## Mount the db, to initalize the demo script and create the orbital user
-         - ./db:/docker-entrypoint-initdb.d
+         # init.sql loads the Pagila dumps and orbital-user.sql creates Orbital's user.
+         # Mounted read-only; nothing in here needs to be executable.
+         - ./db:/docker-entrypoint-initdb.d:ro
 
 volumes:
    postgres_data:

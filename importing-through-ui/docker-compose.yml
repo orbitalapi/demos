@@ -1,25 +1,46 @@
-version: "3.3"
-
+## APIs, databases and Kafka - demo stack for https://orbitalhq.com/docs/guides/apis-databases-kafka
+##
+## This follows the layout of the Orbital start script (https://start.orbitalhq.com): Orbital keeps
+## everything it writes - including the project you create in the guide - under ./orbital_data, and
+## is configured through --orbital.* options (the older --vyne.* names still work, with a warning).
+##
+## Launch:
+##   mkdir -p orbital_data      # create it yourself, so it's owned by you rather than root
+##   docker compose up -d       # then open http://localhost:9022
+## Stop:  docker compose down   # add -v to also delete the volumes
+##
+## Orbital runs as your user so files it writes into ./orbital_data are editable. On Linux, put your
+## ids in a .env file next to this one if they aren't 1000:1000:
+##   printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
+##
+## Apple Silicon: Orbital runs natively. The demo images (pg-pagila, films-api) and the pinned
+## Confluent 7.3.1 images are published for linux/amd64 only, so they carry platform: linux/amd64 and
+## Docker Desktop runs them under emulation. They start more slowly but work.
 services:
    orbital:
       image: orbitalhq/orbital:${ORBITAL_VERSION:-next}
+      user: "${UID:-1000}:${GID:-1000}"
       environment:
          JAVA_OPTS: >-
-            -Xms256m
-            -Xmx2048m
+            -XX:MaxRAMPercentage=75.0
+            -XX:InitialRAMPercentage=50.0
          OPTIONS: >-
-            --vyne.analytics.persistRemoteCallResponses=true
-            --vyne.analytics.persistResults=true
-            --vyne.workspace.config-file=/opt/service/workspace/workspace.conf
-            --vyne.db.username=orbital
-            --vyne.db.password=changeme
-            --vyne.db.host=pg-pagila
+            --orbital.app.data.path=/opt/service/orbital_data
+            --orbital.db.username=orbital
+            --orbital.db.password=changeme
+            --orbital.db.host=pg-pagila
+            --orbital.toggles.workspace-mode=OrgAndWorkspace
+            --orbital.history.persist-remote-call-responses=true
+            --orbital.history.persist-results=true
       ports:
          - "9022:9022"
-      expose:
-         - 9022
       volumes:
-         - .:/opt/service/workspace
+         # Organisations, workspaces and projects (the one the guide creates lands under
+         # orbital_data/orgs/workspaces/default/default/orbital/workspace/projects/), plus the
+         # license, search indexes and history queues.
+         - ./orbital_data:/opt/service/orbital_data
+         # Optional: a downloaded license.json in ~/.orbital/license/ is shared between stacks.
+         - ~/.orbital/license/:/opt/var/orbital/license/
       depends_on:
          - pg-pagila
       deploy:
@@ -33,6 +54,7 @@ services:
       # Docker image contains the pagila demo db built in,
       # plus doubles as the orbital db
       image: ghcr.io/orbitalapi/demos-films-pagila:latest
+      platform: linux/amd64   # amd64-only image; emulated on Apple Silicon
       expose:
          - 5432
       ports:
@@ -44,6 +66,7 @@ services:
 
    films-api:
       image: ghcr.io/orbitalapi/demos-films-ui-importing-listings-api:latest
+      platform: linux/amd64   # amd64-only image; emulated on Apple Silicon
       expose:
          - 80
       ports:
@@ -60,7 +83,7 @@ services:
 
    zookeeper:
       image: confluentinc/cp-zookeeper:7.3.1
-      platform: linux/x86_64
+      platform: linux/amd64   # 7.3.1 has no arm64 build; emulated on Apple Silicon
       environment:
          ZOOKEEPER_CLIENT_PORT: 2181
          ZOOKEEPER_TICK_TIME: 2000
@@ -69,7 +92,7 @@ services:
 
    kafka:
       image: confluentinc/cp-kafka:7.3.1
-      platform: linux/x86_64
+      platform: linux/amd64   # 7.3.1 has no arm64 build; emulated on Apple Silicon
       depends_on:
          - zookeeper
       ports:
@@ -82,6 +105,3 @@ services:
          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_NETWORK:PLAINTEXT,LISTENER_DOCKER_TO_LOCAL:PLAINTEXT
          KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_NETWORK
          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-volumes:
-   postgres_data:

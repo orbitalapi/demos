@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>com.orbitalhq.demos</groupId>
+      <artifactId>publishing-from-apps</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </parent>
+
+   <!--
+      Kotlin type aliases for the semantic types shared by the services (FilmId, ReviewText, ...).
+
+      Each alias is annotated @DataType(..., imported = true), so the Taxi generated from a service
+      *refers to* the type rather than declaring it: the types themselves are declared once, in the
+      Taxi project at ../taxi. That's the "share types, not models" split described at the end of the
+      guide. Taxi's Kotlin plugin can generate a module like this from the Taxi project (taxi build);
+      it's checked in here so the demo builds without the Taxi CLI.
+   -->
+   <artifactId>films-taxonomy</artifactId>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.taxilang</groupId>
+         <artifactId>taxi-annotations</artifactId>
+         <version>${taxi.version}</version>
+      </dependency>
+   </dependencies>
+</project>

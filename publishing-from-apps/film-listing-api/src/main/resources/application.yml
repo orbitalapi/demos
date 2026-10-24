@@ -12,25 +12,17 @@ spring:
       value-deserializer:  org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: latest
       group-id: films-producer
-  cloud:
-    config:
-      enabled: false
   application:
     name: films-service
 
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-  endpoint:
-    prometheus:
-      enabled: true
-    health:
-      show-components: always
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: prometheus,metrics,info,health,loggers
-
+# Where the schema-publisher starter sends the Taxi it generates from this app's controllers.
+orbital:
+  schema:
+    publisher:
+      # ws:// (rather than http://) keeps a connection open, so the schema is re-published
+      # automatically if Orbital restarts.
+      orbital-url: ws://localhost:9022
+      # The base url Orbital will call this application on.
+      base-url: http://localhost:9981
+      # The id of the published project, in the form organisation/name/version.
+      package-id: io.petflix.demos/films-listings/1.0.0

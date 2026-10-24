@@ -1,6 +1,6 @@
 import film.Film
 namespace film {
-   @io.vyne.jdbc.DatabaseService(connection = "films")
+   @com.orbitalhq.jdbc.DatabaseService(connection = "films")
       service FilmService {
          table film : lang.taxi.Array<film.Film>
       }

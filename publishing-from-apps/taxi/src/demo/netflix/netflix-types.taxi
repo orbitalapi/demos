@@ -1,0 +1,4 @@
+namespace demo.netflix
+
+[[ The id Netflix uses for a film, as announced on the new-releases Kafka topic ]]
+type NetflixFilmId inherits Int

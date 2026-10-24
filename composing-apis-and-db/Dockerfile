@@ -8,7 +8,7 @@ RUN ls /opt/m2/repository
 # .flattended-pom.xml is created by running start.sh
 COPY target/.flattened-pom.xml ./pom.xml
 COPY services services/
-COPY taxi taxi/
+COPY taxonomy taxonomy/
 
 # Build a release artifact.
 RUN mvn package -DskipTests -Dmaven.repo.local=/opt/m2/repository

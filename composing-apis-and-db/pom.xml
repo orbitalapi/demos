@@ -13,10 +13,13 @@
    <packaging>pom</packaging>
    <modules>
       <module>services</module>
-      <module>taxi/dist</module>
+      <module>taxonomy</module>
    </modules>
 
    <properties>
+      <!-- taxi-annotations 1.73 is compiled with Kotlin 2.2, so this needs a 2.x compiler (the root pom is on 1.7) -->
+      <kotlin.version>2.2.21</kotlin.version>
+      <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
       <maven.compiler.source>17</maven.compiler.source>
       <maven.compiler.target>17</maven.compiler.target>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -12,30 +12,35 @@
     <artifactId>id-resolution-service</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>demo.vyne</groupId>
-            <artifactId>films-taxonomy</artifactId>
-            <version>0.1.0</version>
-        </dependency>
+       <!-- Generates Taxi from the @RestControllers in this app and publishes it to Orbital on
+            startup. Configured in src/main/resources/application.yml (orbital.schema.publisher). -->
+       <dependency>
+          <groupId>com.orbitalhq</groupId>
+          <artifactId>schema-publisher-spring-boot-starter</artifactId>
+          <version>${orbital.version}</version>
+       </dependency>
+       <!-- The shared semantic types (FilmId etc.) as Kotlin type aliases -->
+       <dependency>
+          <groupId>com.orbitalhq.demos</groupId>
+          <artifactId>films-taxonomy</artifactId>
+          <version>${project.version}</version>
+       </dependency>
 
        <dependency>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-starter-web</artifactId>
        </dependency>
        <dependency>
-          <groupId>com.orbitalhq</groupId>
-          <artifactId>schema-rsocket-publisher</artifactId>
-          <version>${orbital.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.taxilang</groupId>
-          <artifactId>java2taxi</artifactId>
-          <version>${taxi.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.taxilang</groupId>
-          <artifactId>java-spring-taxi</artifactId>
-          <version>${taxi.version}</version>
+          <groupId>tools.jackson.module</groupId>
+          <artifactId>jackson-module-kotlin</artifactId>
        </dependency>
     </dependencies>
+    <build>
+       <plugins>
+          <plugin>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-maven-plugin</artifactId>
+          </plugin>
+       </plugins>
+    </build>
 </project>
