@@ -1,4 +1,4 @@
-import film.types.FilmId
+import films.FilmId
 import film.types.Title
 import film.types.Description
 import film.types.ReleaseYear
@@ -10,12 +10,13 @@ import film.types.ReplacementCost
 import film.types.Rating
 import film.types.LastUpdate
 import film.types.Fulltext
-import io.vyne.jdbc.Table
+import com.orbitalhq.jdbc.Table
 import film.types.SpecialFeatures
 namespace film {
-   @io.vyne.jdbc.Table(table = "film" , schema = "public" , connection = "films")
+   @com.orbitalhq.jdbc.Table(table = "film" , schema = "public" , connection = "films")
       model Film {
-         @Id film_id : film.types.FilmId
+         // The same FilmId the services use, so Orbital can pass a row's id to them
+         @Id film_id : films.FilmId
          title : film.types.Title
          description : film.types.Description?
          release_year : film.types.ReleaseYear?

@@ -1,32 +1,32 @@
 package com.petflix.v2.listings
 
-import io.vyne.PackageMetadata
-import io.vyne.schema.publisher.SchemaPublisherService
-import io.vyne.schema.publisher.rsocket.RSocketSchemaPublisherTransport
-import io.vyne.schema.rsocket.TcpAddress
-import lang.taxi.generators.java.TaxiGenerator
-import lang.taxi.generators.java.spring.SpringMvcExtension
 import lang.taxi.generators.kotlin.TypeAliasRegister
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.info.GitProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.stereotype.Component
 
+/**
+ * Publishing to Orbital is handled by schema-publisher-spring-boot-starter: on startup it generates
+ * Taxi for the @RestControllers in this package and sends it to Orbital. Where Orbital is, and what
+ * the published project is called, is configured under orbital.schema.publisher in application.yml.
+ */
 @SpringBootApplication
 @EnableScheduling
-open class FilmListingsApp {
+class FilmListingsApp {
 
    companion object {
-      val logger = LoggerFactory.getLogger(this::class.java)
+      val logger = LoggerFactory.getLogger(FilmListingsApp::class.java)
 
       @JvmStatic
       fun main(args: Array<String>) {
+         // The generator only resolves Kotlin type aliases (FilmId, StreamingProviderName, ...) in
+         // packages it has been told about. Without this, the published Taxi would say Int / String.
+         TypeAliasRegister.registerPackage("films")
+         TypeAliasRegister.registerPackage("films.reviews")
+         TypeAliasRegister.registerPackage("demo.netflix")
          SpringApplication.run(FilmListingsApp::class.java, *args)
       }
    }
@@ -35,44 +35,5 @@ open class FilmListingsApp {
    fun logInfo(@Autowired(required = false) buildInfo: GitProperties? = null) {
       val commit = buildInfo?.shortCommitId ?: "Unknown"
       logger.info("Films API built on commit $commit")
-   }
-}
-
-
-@Configuration
-open class OrbitalConfig {
-
-
-   @Value("\${spring.application.name}")
-   private val appName: String? = null
-
-   init {
-      TypeAliasRegister.registerPackage("films")
-   }
-
-   @Bean
-   open fun schemaPublisher(): SchemaPublisherService =
-      SchemaPublisherService(
-         appName!!,
-         RSocketSchemaPublisherTransport(
-            TcpAddress("localhost", 7655)
-         )
-      )
-
-}
-
-@Component
-class RegisterSchemaTask(
-   publisher: SchemaPublisherService,
-   @Value("\${server.port}") private val serverPort: String
-) {
-   init {
-      publisher.publish(
-         PackageMetadata.from("io.petflix.demos", "films-listings"),
-         TaxiGenerator()
-            .forPackage(StreamingMoviesProvider::class.java)
-            .addExtension(SpringMvcExtension.forBaseUrl("http://localhost:${serverPort}"))
-            .generate()
-      ).subscribe()
    }
 }

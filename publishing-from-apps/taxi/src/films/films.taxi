@@ -1,0 +1,10 @@
+namespace films
+
+[[ The internal id of a film - the primary key in the films database ]]
+type FilmId inherits Int
+
+[[ The name of a streaming service where people can watch a movie ]]
+type StreamingProviderName inherits String
+
+[[ The monthly subscription cost of a streaming service where people can watch movies ]]
+type StreamingProviderPrice inherits Decimal
