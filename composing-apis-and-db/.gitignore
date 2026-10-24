@@ -1,0 +1,10 @@
+# Orbital's own runtime state, written under orbital_data when the stack runs.
+# Only the organisations / workspace config and the demo projects are checked in.
+orbital_data/historyPersistenceQueue/
+orbital_data/search/
+orbital_data/secrets-store/
+orbital_data/roles.conf
+orbital_data/services.conf
+orbital_data/*license*.json
+.taxi/
+.env
