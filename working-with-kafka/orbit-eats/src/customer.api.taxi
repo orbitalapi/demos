@@ -12,8 +12,6 @@ closed model Customer {
    name: CustomerName
    email: CustomerEmail inherits String
    country: CountryCode
-
-   de: CustomerId
 }
 
 service CustomerService {

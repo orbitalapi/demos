@@ -4,6 +4,19 @@ This demo walks through a standard ETL task: ingesting stock reports from two wa
 
 The two feeds have real-world messiness: different column names, different date formats, and different product identifier schemes. We'll use [TaxiQL](https://orbitalhq.com/docs/querying/taxiql) and [semantic types](https://orbitalhq.com/docs/taxi/semantic-types) to resolve all of this automatically, then enrich the data with product names from a REST API and apply business logic to derive calculated fields.
 
+## Running the demo
+
+1. In Orbital, create a workspace (or use an empty one), choose **Play with a demo**, and pick **Normalizing and enriching external data**.
+2. Orbital loads this project and asks [Nebula](https://nebula.orbitalhq.com) to start the demo's infrastructure:
+   * an S3 bucket (LocalStack) holding the two warehouse CSV files
+   * a Postgres database to write the normalized results to
+   * an HTTP server for the SKU lookup and product APIs
+3. Open the [Local environments](/stubs) page and wait until all three components show as running.
+4. Work through the steps below. Each query has a **Run query** button, which opens it in a side panel. Click **Run** there.
+
+You don't need to configure anything. Connection details are read from variables that Nebula publishes once the
+containers are up. See [`connections.conf`](/projects/com.orbitz:warehouse:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf).
+
 ## The raw data
 
 The two feeds cover the same domain but are structurally different. Run each query to see the raw data:
@@ -14,8 +27,8 @@ find { SydneyWarehouseStockReport[] }
 ```
 | itemId | count | price  | location | reorderPoint | minOrder | timestamp              | lastDelivery |
 |--------|-------|--------|----------|--------------|----------|------------------------|--------------|
-| 1001   | 132   | 305.99 | Z-101    | 95           | 45       | 12-15-2024 02:32:15 pm | 12-10-2024   |
-| 1002   | 82    | 915.99 | Y-205    | 75           | 20       | 12-15-2024 02:32:15 pm | 12-08-2024   |
+| 1001   | 132   | 305.99 | Z-101    | 95           | 45       | 12-15-2024 02:32:15 PM | 12-10-2024   |
+| 1002   | 82    | 915.99 | Y-205    | 75           | 20       | 12-15-2024 02:32:15 PM | 12-08-2024   |
 
 **London warehouse report:**
 ```taxiql
@@ -95,7 +108,7 @@ A few things worth noting in these queries:
 The output shape is identical for both queries, so we can factor it out into a named model to avoid duplication:
 
 ```taxi
-model StandardWarehouseReport {
+parameter model StandardWarehouseReport {
     sku: SKU
     stockLevel: StockLevel
     reorderLevel: ReorderLevel
@@ -127,7 +140,7 @@ Orbital resolves the mapping from each source to `StandardWarehouseReport` autom
 
 ## Persisting to a database
 
-We have a Postgres-backed model and service defined for persistence. The `@Table` annotation tells Orbital which table to write to, and `@UpsertOperation` means re-running the query will update existing records rather than creating duplicates:
+We have a Postgres-backed model and service defined for persistence. The `@Table` annotation tells Orbital which table to write to, and `@UpsertOperation` writes each record, updating it if a record with the same `@Id` already exists:
 
 ```taxi
 @Table(connection = "my-postgres-db", schema = "public", table = "warehouseReport")
@@ -158,6 +171,10 @@ service MyPostgresService {
 ```
 
 Orbital will create the table automatically on first run if it doesn't already exist.
+
+> [!NOTE]
+> Here the `@Id` is a `recordId` that the database generates, so every write creates a new record.
+> Running an ingestion twice stores the warehouse's rows twice.
 
 ### Writing data
 
@@ -220,6 +237,32 @@ query GetWarehouseReport {
 }
 ```
 
-```bash
-curl -X GET "http://localhost:9022/api/q/warehouseReport"
+## Calling the endpoints
+
+Orbital serves endpoints inside your workspace, so the full URL includes your organisation and workspace names:
+
 ```
+POST http://localhost:9022/api/<organisation>/<workspace>/q/updateLondonWarehouse
+POST http://localhost:9022/api/<organisation>/<workspace>/q/updateSydneyWarehouse
+GET  http://localhost:9022/api/<organisation>/<workspace>/q/warehouseReport
+```
+
+The [Endpoints page](/endpoints) shows the exact URL of each one for your workspace.
+
+> [!NOTE]
+> If your Orbital asks you to sign in, its endpoints need that sign-in too, so a plain `curl` call gets a `401`.
+> You can open the `GET` endpoint in the browser you're signed in with. From `curl`, pass an API key or access token with
+> `-H 'Authorization: Bearer <token>'`. If your Orbital doesn't require sign-in, `curl` works directly:
+>
+> ```bash
+> curl -X POST "http://localhost:9022/api/<organisation>/<workspace>/q/updateLondonWarehouse"
+> curl "http://localhost:9022/api/<organisation>/<workspace>/q/warehouseReport" | jq
+> ```
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| `Failed to initialize pool` or `Connection refused` when writing | The Postgres container is still starting, or failed to start. Check the [Local environments](/stubs) page. |
+| The raw data queries return nothing | The S3 bucket isn't ready yet. Check the [Local environments](/stubs) page. |
+| `401` when calling an endpoint with `curl` | Your Orbital needs sign-in. See [Calling the endpoints](#calling-the-endpoints). |

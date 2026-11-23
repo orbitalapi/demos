@@ -5,7 +5,6 @@ import com.orbitz.stock.WarehouseLocation
 type RemainingBeforeReorder = StockLevel - ReorderLevel
 
 parameter model StandardWarehouseReport {
-    location: WarehouseLocation
     sku: SKU
     stockLevel: StockLevel
     reorderLevel: ReorderLevel

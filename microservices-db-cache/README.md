@@ -6,6 +6,18 @@ The core idea: each field in your query is a [semantic type](https://taxilang.or
 
 By the end of this demo, you'll have a live HTTP endpoint that returns account details, balances, transactions, and spending insights in a single call — assembled from four different data sources.
 
+## Running the demo
+
+1. In Orbital, create a workspace (or use an empty one), choose **Play with a demo**, and pick **Aggregating microservices**.
+2. Orbital loads this project and asks [Nebula](https://nebula.orbitalhq.com) to start the demo's infrastructure:
+   a Postgres database, a Hazelcast cache and an HTTP server for the two REST APIs. This takes a few seconds the first time,
+   while Docker pulls the images.
+3. Open the [Local environments](/stubs) page and wait until all three components show as running.
+4. Open the **Code editor**, paste in each query below and click **Run**.
+
+You don't need to configure anything. Connection details (hosts, ports and credentials) are read from variables
+that Nebula publishes once the containers are up. See [`connections.conf`](/projects/com.lunarbank:insights-portal:0.1.0/source?selectedFile=orbital%2Fconfig%2Fconnections.conf).
+
 ## Key Services
 
 ```schemaDiagram
@@ -26,7 +38,7 @@ The demo uses:
 
 > [!NOTE]
 > This demo deploys Docker containers with a Postgres database, a Hazelcast cache, and an HTTP server,
-> powered by [Nebula](https://nebula.orbitalhq.com). Check the [stubs](/stubs) page to confirm everything
+> powered by [Nebula](https://nebula.orbitalhq.com). Check the [Local environments](/stubs) page to confirm everything
 > is running. For setup help, see the [Nebula docs](https://orbitalhq.com/docs/testing/stubbing-services)
 > or the [`stack.nebula.kts`](/projects/com.lunarbank:insights-portal:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts) source.
 
@@ -164,9 +176,25 @@ query PortalQuery(@PathVariable("accountId") accountId: AccountId) {
 }
 ```
 
-```bash
-curl -X GET "http://localhost:9022/api/q/spendingInsights/ACC-2" | jq
+### Calling the endpoint
+
+Orbital serves the endpoint inside your workspace, so the full URL includes your organisation and workspace names:
+
 ```
+http://localhost:9022/api/<organisation>/<workspace>/q/spendingInsights/ACC-2
+```
+
+The [endpoint page](/endpoints/PortalQuery) shows the exact URL for your workspace, with a button to copy it.
+
+> [!NOTE]
+> If your Orbital asks you to sign in, its endpoints need that sign-in too, so a plain `curl` call gets a `401`.
+> The easiest way to try the endpoint is to open the URL in the browser you're signed in with.
+> From `curl`, pass an API key or access token with `-H 'Authorization: Bearer <token>'`.
+> If your Orbital doesn't require sign-in, `curl` works directly:
+>
+> ```bash
+> curl "http://localhost:9022/api/<organisation>/<workspace>/q/spendingInsights/ACC-2" | jq
+> ```
 
 ## Adding a cache
 
@@ -187,9 +215,22 @@ query CachingPortalQuery(@PathVariable("accountId") accountId: AccountId) {
 }
 ```
 
-```bash
-curl -X GET "http://localhost:9022/api/q/spendingInsightsCache/ACC-2" | jq
+Call it the same way as the first endpoint:
+
 ```
+http://localhost:9022/api/<organisation>/<workspace>/q/spendingInsightsCache/ACC-2
+```
+
+The first call goes to the services. Call it again and the response comes back much faster, because the
+operation results are now served from Hazelcast.
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| `Failed to connect to 'my-postgres-db'` or `Connection refused` | The Nebula containers are still starting, or failed to start. Check the [Local environments](/stubs) page. |
+| The cached endpoint returns `Unable to build an OperationCacheProvider` | The Hazelcast connection isn't healthy yet. Check its status on the **Data sources** page, and wait for Hazelcast to start. |
+| `401` when calling an endpoint with `curl` | Your Orbital needs sign-in. See [Calling the endpoint](#calling-the-endpoint). |
 
 ## Video walkthrough
 
