@@ -18,7 +18,7 @@ closed model VenueTicketSales {
    cinemaName: CinemaName by column("Cinema name")
    cinemaId: CinemaId by column("Cinema Id")
    tickets: TicketsSold by column("Tickets sold")
-   revnue: TicketRevenue by column("Revenue")
+   revenue: TicketRevenue by column("Revenue")
 }
 
 @S3Service(connectionName = "my-aws-account")

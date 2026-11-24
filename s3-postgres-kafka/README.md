@@ -12,8 +12,17 @@ We'll use fictitious cinema ticket sales data to walk through:
 
 At each step, Orbital detects what transformation is needed between source and target types, and handles it automatically.
 
-> [!NOTE]
-> This demo runs stub services via [Nebula](https://nebula.orbitalhq.com). Check the [stubs panel](/stubs) to confirm everything is running. If stubs haven't started automatically, see the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs). The stub configuration lives in [`stack.nebula.kts`](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
+## Running the demo
+
+1. In Orbital, create a workspace (or use an empty one), choose **Play with a demo**, and pick **Read from S3, enrich against API and write to Kafka**.
+2. Orbital loads this project and asks [Nebula](https://nebula.orbitalhq.com) to start the demo's infrastructure:
+   an S3 bucket (LocalStack) holding `ticket-sales.csv` (250 rows), a Postgres database, a Kafka broker, and an HTTP server for the ticket prices API.
+   The stub configuration lives in [`stack.nebula.kts`](/projects/com.petflix:s3-postgres-kafka:0.1.0/source?selectedFile=orbital%2Fnebula%2Fstack.nebula.kts).
+3. Open the [Local environments](/stubs) page and wait until all four components show as running. The Kafka image is large, so the first
+   start can take a minute. If nothing starts, see the docs on [enabling stubs](https://orbitalhq.com/docs/testing/stubbing-services#enabling-stubs).
+4. Open the **Code editor** and run the queries below, in order.
+
+You don't need to configure anything. Connection details are read from variables that Nebula publishes once the containers are up.
 
 ## Key services
 
@@ -110,6 +119,16 @@ closed parameter model VenueTicketSalesRecord {
 Orbital detects the type mismatch between source and target, automatically enriches the data by calling the `TicketPricesApi`, and transforms the result into the `VenueTicketSalesRecord` shape before writing. No mapping code required.
 
 > [!NOTE]
+> The record's `@Id` is a `recordId` that the database generates, so every write creates a new row. Running the ingestion
+> query twice stores the 250 rows twice.
+
+To read back what was written:
+
+```taxiql
+find { VenueTicketSalesRecord[] }
+```
+
+> [!NOTE]
 > This demo doesn't use a pre-existing database schema, so Orbital creates the table on first run. If you're working with an existing schema, see the [database docs](https://orbitalhq.com/docs/describing-data-sources/databases#describing-tables-in-taxi).
 
 ## Publishing to Kafka
@@ -145,6 +164,14 @@ stream { VenueTicketSalesMessage }
 ```
 
 Orbital connects to the `ticket-sales` topic and streams messages as they arrive, deserialising from JSON into `VenueTicketSalesMessage` automatically.
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| `Failed to initialize pool` or `Connection refused` when writing to Postgres | The Postgres container is still starting, or failed to start. Check the [Local environments](/stubs) page. |
+| `find { VenueTicketSales[] }` returns nothing or errors | The S3 bucket (LocalStack) isn't ready yet. Check the [Local environments](/stubs) page. |
+| `stream { VenueTicketSalesMessage }` shows nothing | Nothing has been published yet. Run the [Publishing to Kafka](#publishing-to-kafka) query first. The stream reads from the start of the topic. |
 
 ## What's next
 

@@ -10,7 +10,7 @@ import com.orbitEats.orders.OrderItem
 import com.orbitEats.OrderId
 import com.orbitalhq.mongo.UniqueIndex
 
-// Define a schema for the object we're writing to Hazelcast
+// Define a schema for the object we're writing to Mongo
 @Collection(connection = "orbit-eats-mongo", collection = "order-updates")
 parameter model OrderDeliveryStatusMongoRecord {
    @UniqueIndex
